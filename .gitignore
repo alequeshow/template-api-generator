@@ -1,0 +1,78 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.dll
+
+# Compiled Static libraries
+*.lib
+
+# Compiled executables
+*.exe
+
+# Debug and Release folders
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider files
+.idea/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# DotNet specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Microsoft Azure Web App publish settings
+PublishProfiles/
+
+# npm packages
+node_modules/
+
+# JetBrains Rider
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Backup files
+*.bak
+*.swp
+*.swo
+*.orig
+
+# Other
+*.pdb
+*.cache
+*.csproj.user
+*.pidb
+*.svclog
+*.sln.docstates

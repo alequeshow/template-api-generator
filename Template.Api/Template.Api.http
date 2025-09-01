@@ -1,0 +1,33 @@
+@Template.Api_HostAddress = https://localhost:7241
+
+### Get All Status
+GET {{Template.Api_HostAddress}}/status/
+Accept: application/json
+
+### Get Status By Id
+GET {{Template.Api_HostAddress}}/status/xpto
+Accept: application/json
+
+### Create Status
+POST {{Template.Api_HostAddress}}/status
+Content-Type: application/json
+{
+  "id": "{{$guid}}",
+  "value": "New Status",
+  "description": "Test Status",
+  "timeStamp": "2025-09-01T12:56:15.924Z"
+}
+
+### Change Status
+PUT {{Template.Api_HostAddress}}/status/{{$guid}}
+Content-Type: application/json
+{
+  "id": "{{$guid}}",
+  "value": "Updated Status",
+  "description": "Updated Test Status",
+  "timeStamp": "2025-09-01T12:56:15.924Z"
+}
+
+### Delete Status
+DELETE {{Template.Api_HostAddress}}/status/{{$guid}}
+Accept: application/json
