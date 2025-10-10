@@ -1,12 +1,14 @@
+using Template.Api.Configuration;
 using Template.Api.Extensions;
-using Template.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddApplicationServices();
+builder.Services.Configure<AppConfiguration>(builder.Configuration);
 
+builder.Services.AddEndpointsApiExplorer()
+    .AddSwaggerGen()
+    .ConfigureServices();
+    
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

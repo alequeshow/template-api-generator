@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Template.DatabaseFactory;
+namespace Template.Model.Interfaces;
 
 public interface IRepository<T, TKey> : IQueryable<T>
         where T : IEntity<TKey>

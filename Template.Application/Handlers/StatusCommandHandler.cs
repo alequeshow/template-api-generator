@@ -1,20 +1,37 @@
 ﻿using Template.Application.Commands;
-using Template.Model;
+using Template.Contract;
+using Template.Model.Interfaces;
 
 namespace Template.Application.Handlers;
 
-public class StatusCommandHandler : ICommandHandler<Command<Status>, Status>
+public class StatusCommandHandler(IRepository<Model.Status, string> repository) : ICommandHandler<Command<Status>, Status>
 {
-    public Task<Status> HandleAsync(Command<Status> command, CancellationToken cancellationToken = default)
+    public async Task<Status> HandleAsync(Command<Status> command, CancellationToken cancellationToken = default)
     {
-        var result = command.Operation switch
+        var model = new Model.Status
         {
-            CommandOperation.Create => command.Value,
-            CommandOperation.Update => command.Value,
-            CommandOperation.Delete => new Status { Id = command.Value.Id },
-            _ => throw new NotSupportedException($"Operation {command.Operation} is not supported.")
+            Id = command.Value.Id!,
+            Value = command.Value.Value,
+            Description = command.Value.Description,
+            TimeStamp = command.Value.TimeStamp
         };
 
-        return Task.FromResult(result);
+        switch (command.Operation)
+        {
+            case CommandOperation.Create:
+                await repository.AddAsync(model);
+                command.Value.Id = model.Id;
+                break;
+            case CommandOperation.Update:
+                await repository.UpdateAsync(model);
+                break;
+            case CommandOperation.Delete:
+                await repository.DeleteAsync(model.Id);
+                break;
+            default:
+                throw new NotSupportedException($"Operation {command.Operation} is not supported.");
+        }
+
+        return command.Value;
     }
 }

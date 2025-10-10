@@ -2,7 +2,7 @@
 using Template.Application.Commands;
 using Template.Application.Handlers;
 using Template.Application.Queries;
-using Template.Model;
+using Template.Contract;
 
 namespace Template.Api.Extensions.EndpointMappers
 {
@@ -71,7 +71,7 @@ namespace Template.Api.Extensions.EndpointMappers
             app.MapDelete("/status/{id}", (string id, StatusCommandHandler handler, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
-                var command = new Command<Status>(new Status { Id = id }, CommandOperation.Delete);
+                var command = new Command<Status>(new Status { Id = id, Value = default! }, CommandOperation.Delete);
 
                 await handler.HandleAsync(command, ct);
 

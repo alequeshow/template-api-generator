@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Template.Model\Template.Model.csproj" />
   </ItemGroup>
 
 </Project>

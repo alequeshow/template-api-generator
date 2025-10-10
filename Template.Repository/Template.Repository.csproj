@@ -11,9 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Template.Contract\Template.Contract.csproj" />
     <ProjectReference Include="..\Template.Model\Template.Model.csproj" />
-    <ProjectReference Include="..\Template.Repository\Template.Repository.csproj" />
+    <ProjectReference Include="..\Template.DatabaseFactory\Template.DatabaseFactory.csproj" />
   </ItemGroup>
-
+  
 </Project>
