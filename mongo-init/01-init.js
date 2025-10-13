@@ -13,23 +13,4 @@ db.createUser({
   ]
 });
 
-// Create initial collections if needed
-db.createCollection('Status');
-
-// Insert some sample data
-// db.Status.insertMany([
-//   {
-//     _id: ObjectId(),
-//     Value: "Running",
-//     Description: "Application is running successfully",
-//     TimeStamp: new Date()
-//   },
-//   {
-//     _id: ObjectId(),
-//     Value: "Healthy",
-//     Description: "Database connection is healthy",
-//     TimeStamp: new Date()
-//   }
-// ]);
-
 print('Database initialization completed successfully!');
