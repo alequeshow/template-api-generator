@@ -6,7 +6,9 @@ public static class WebApplicationExtensions
 {
     public static WebApplication MapEndpoints(this WebApplication app)
     {
-        app.MapStatusEndpoint();
+        app
+        .MapStatusEndpoint()
+        .MapUserEndpoint();
 
         return app;
     }

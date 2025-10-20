@@ -10,6 +10,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<StatusQueryHandler>();
         services.AddScoped<StatusCommandHandler>();
+        services.AddScoped<UserQueryHandler>();
+        services.AddScoped<UserCommandHandler>();
 
         services.AddRepositories();
 
