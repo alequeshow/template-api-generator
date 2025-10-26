@@ -17,7 +17,8 @@ namespace Template.Api.Extensions.EndpointMappers
                 var result = await handler.HandleAsync(query, ct);
 
                 return Results.Ok(result);
-            }))
+            })) 
+            .RequireAuthorization()
             .WithName("GetStatusById")
             .Produces<Status>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
@@ -31,6 +32,7 @@ namespace Template.Api.Extensions.EndpointMappers
                 var result = await handler.HandleAsync(query, ct);
                 return Results.Ok(result);
             }))
+            .RequireAuthorization()
             .WithName("GetStatus")
             .Produces<Status>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
@@ -45,6 +47,7 @@ namespace Template.Api.Extensions.EndpointMappers
 
                 return Results.Created($"/status/{result.Id}", result.Id);
             }))
+            .RequireAuthorization()
             .WithName("AddStatus")
             .Produces<Status>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
@@ -61,6 +64,7 @@ namespace Template.Api.Extensions.EndpointMappers
 
                 return Results.NoContent();
             }))
+            .RequireAuthorization()
             .WithName("UpdateStatus")
             .Produces<Status>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -77,6 +81,7 @@ namespace Template.Api.Extensions.EndpointMappers
 
                 return Results.NoContent();
             }))
+            .RequireAuthorization()
             .WithName("DeleteStatus")
             .Produces<Status>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)

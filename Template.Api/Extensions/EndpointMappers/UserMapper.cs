@@ -18,6 +18,7 @@ namespace Template.Api.Extensions.EndpointMappers
 
                 return Results.Ok(result);
             }))
+            .RequireAuthorization()
             .WithName("GetUserById")
             .Produces<User>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
@@ -31,6 +32,7 @@ namespace Template.Api.Extensions.EndpointMappers
                 var result = await handler.HandleAsync(query, ct);
                 return Results.Ok(result);
             }))
+            .RequireAuthorization()
             .WithName("GetUser")
             .Produces<User>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
@@ -61,6 +63,7 @@ namespace Template.Api.Extensions.EndpointMappers
 
                 return Results.NoContent();
             }))
+            .RequireAuthorization()
             .WithName("UpdateUser")
             .Produces<User>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
@@ -84,6 +87,7 @@ namespace Template.Api.Extensions.EndpointMappers
 
                 return Results.NoContent();
             }))
+            .RequireAuthorization()
             .WithName("DeleteUser")
             .Produces<User>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)

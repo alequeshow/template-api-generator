@@ -6,6 +6,6 @@ public record UserIdentifier
 
     public UserIdentifier(string id)
     {
-        Identifier = id;
+        Identifier = id.ToLowerInvariant();
     }
 }

@@ -11,7 +11,8 @@ public static class ServiceCollectionExtensions
         services
         .ConfigureMongoDatabase()
         .AddMongoRepository<Status>()
-        .AddMongoRepository<User>();
+        .AddMongoRepository<User>()
+        .AddMongoRepository<UserAccessInfo>();
 
         return services;
     }    

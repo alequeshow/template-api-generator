@@ -6,6 +6,6 @@ public record Email
 
     public Email(string email)
     {
-        Value = email;
+        Value = email.ToLowerInvariant();
     }
 }
