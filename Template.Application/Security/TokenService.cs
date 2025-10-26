@@ -91,6 +91,6 @@ public class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
     public string? GetUserIdFromToken(string token)
     {
         var principal = ValidateToken(token);
-        return principal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        return principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 }

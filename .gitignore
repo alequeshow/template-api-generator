@@ -76,3 +76,4 @@ node_modules/
 *.pidb
 *.svclog
 *.sln.docstates
+.env
