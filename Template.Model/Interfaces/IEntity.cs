@@ -1,4 +1,4 @@
-﻿namespace Template.DatabaseFactory;
+﻿namespace Template.Model.Interfaces;
 
 /// <summary>
 /// Generic Entity interface.

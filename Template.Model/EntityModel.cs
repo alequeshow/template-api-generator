@@ -1,6 +1,8 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿//using MongoDB.Bson.Serialization.Attributes;
 
-namespace Template.DatabaseFactory.Mongo;
+using Template.Model.Interfaces;
+
+namespace Template.Model;
 
 /// <summary>
 /// "Default" Entity model representation.
@@ -8,6 +10,5 @@ namespace Template.DatabaseFactory.Mongo;
 /// <remarks>Entities are assumed to use strings for Id's.</remarks>
 public abstract class EntityModel : IEntity<string>
 {
-    [BsonId]
     public required string Id { get; set; }
 }

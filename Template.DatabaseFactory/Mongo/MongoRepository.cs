@@ -1,158 +1,178 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System.Collections;
 using System.Linq.Expressions;
+using Template.Model;
+using Template.Model.Interfaces;
 
-namespace Template.DatabaseFactory.Mongo
+namespace Template.DatabaseFactory.Mongo;
+
+public class MongoRepository<T>(IMongoDatabase database, string collectionName) : IRepository<T, string>
+    where T : EntityModel
 {
-    public class MongoRepository<T>(IMongoDatabase database, string collectionName) : IRepository<T, string>
-        where T : IEntity<string>
+    private readonly IMongoCollection<T> _collection = database.GetCollection<T>(collectionName);
+
+    public Type ElementType => _collection.AsQueryable<T>().ElementType;
+
+    public Expression Expression => _collection.AsQueryable<T>().Expression;
+
+    public IQueryProvider Provider => _collection.AsQueryable<T>().Provider;
+
+    public T Add(T entity)
     {
-        private readonly IMongoCollection<T> _collection = database.GetCollection<T>(collectionName);
+        _collection.InsertOne(entity);
 
-        Type IQueryable.ElementType => throw new NotImplementedException();
+        return entity;
+    }
 
-        Expression IQueryable.Expression => throw new NotImplementedException();
+    public async Task<T> AddAsync(T entity)
+    {
+        await _collection.InsertOneAsync(entity).ConfigureAwait(false);
 
-        IQueryProvider IQueryable.Provider => throw new NotImplementedException();
+        return entity;
+    }
 
-        T IRepository<T, string>.Add(T entity)
+    public void AddMany(IEnumerable<T> entities)
+    {
+        _collection.InsertMany(entities);
+    }
+
+    public async Task AddManyAsync(IEnumerable<T> entities)
+    {
+        await _collection.InsertManyAsync(entities).ConfigureAwait(false);
+    }
+
+    public long Count(Expression<Func<T, bool>> predicate)
+    {
+        return _collection.CountDocuments(predicate);
+    }
+
+    public long CountAll()
+    {
+        return _collection.CountDocuments(null);
+    }
+
+    public async Task<long> CountAllAsync()
+    {
+        return await _collection.CountDocumentsAsync(null).ConfigureAwait(false);
+    }
+
+    public async Task<long> CountAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _collection.CountDocumentsAsync(predicate).ConfigureAwait(false);
+    }
+
+    public void Delete(string id)
+    {
+        _collection.DeleteOne(e => e.Id == id);
+    }
+
+    public void Delete(Expression<Func<T, bool>> predicate)
+    {
+        _collection.DeleteMany(predicate);
+    }
+
+    public void DeleteAll()
+    {
+        _collection.DeleteMany(_ => true);
+    }
+
+    public async Task DeleteAllAsync()
+    {
+        await _collection.DeleteManyAsync(_ => true);
+    }
+
+    public async Task DeleteAsync(string id)
+    {
+        await _collection.DeleteOneAsync(e => e.Id == id);
+    }
+
+    public async Task DeleteAsync(Expression<Func<T, bool>> predicate)
+    {
+        await _collection.DeleteManyAsync(predicate);
+    }
+
+    public bool Exists(Expression<Func<T, bool>> predicate)
+    {
+        return _collection.AsQueryable().Any(predicate);
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _collection.AsQueryable().AnyAsync(predicate);
+    }
+
+    public T GetById(string id)
+    {
+        return _collection.AsQueryable().FirstOrDefault(e => e.Id == id)!;
+    }
+
+    public async Task<T> GetByIdAsync(string id)
+    {
+        return await _collection.AsQueryable().FirstOrDefaultAsync(e => e.Id == id)!;
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _collection.AsQueryable<T>().GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _collection.AsQueryable<T>().GetEnumerator();
+    }
+
+    public IEnumerable<T> List(Expression<Func<T, bool>> predicate)
+    {
+        return [.. _collection.AsQueryable().Where(predicate)];
+    }
+
+    public async Task<IEnumerable<T>> ListAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _collection.AsQueryable().Where(predicate).ToListAsync().ConfigureAwait(false);
+    }
+
+    void IRepository<T, string>.RequestDone()
+    {
+        throw new NotImplementedException();
+    }
+
+    IDisposable IRepository<T, string>.RequestStart()
+    {
+        throw new NotImplementedException();
+    }
+
+    public T Update(T entity)
+    {
+        _collection.ReplaceOne(Builders<T>.Filter.Eq("_id", new ObjectId(entity.Id as string)), entity);
+
+        return entity;
+    }
+
+    public async Task<T> UpdateAsync(T entity)
+    {
+        await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq("_id", new ObjectId(entity.Id as string)), entity).ConfigureAwait(false);
+
+        return entity;
+    }
+
+    public long UpdateMany(IEnumerable<T> entities)
+    {
+        foreach (var item in entities)
         {
-            throw new NotImplementedException();
+            Update(item);
         }
 
-        Task<T> IRepository<T, string>.AddAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
+        return entities.Count();
+    }
 
-        void IRepository<T, string>.AddMany(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<long> UpdateManyAsync(IEnumerable<T> entities)
+    {
+        var tasks = entities.Select(UpdateAsync);
 
-        Task IRepository<T, string>.AddManyAsync(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        long IRepository<T, string>.Count(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        long IRepository<T, string>.CountAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<long> IRepository<T, string>.CountAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<long> IRepository<T, string>.CountAsync(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<T, string>.Delete(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<T, string>.Delete(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<T, string>.DeleteAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IRepository<T, string>.DeleteAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IRepository<T, string>.DeleteAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IRepository<T, string>.DeleteAsync(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IRepository<T, string>.Exists(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IRepository<T, string>.ExistsAsync(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        T IRepository<T, string>.GetById(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<T> IRepository<T, string>.GetByIdAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<T> IRepository<T, string>.List(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<T>> IRepository<T, string>.ListAsync(Expression<Func<T, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<T, string>.RequestDone()
-        {
-            throw new NotImplementedException();
-        }
-
-        IDisposable IRepository<T, string>.RequestStart()
-        {
-            throw new NotImplementedException();
-        }
-
-        T IRepository<T, string>.Update(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<T> IRepository<T, string>.UpdateAsync(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        long IRepository<T, string>.UpdateMany(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<long> IRepository<T, string>.UpdateManyAsync(IEnumerable<T> entities)
-        {
-            throw new NotImplementedException();
-        }
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+        
+        return entities.Count();
     }
 }

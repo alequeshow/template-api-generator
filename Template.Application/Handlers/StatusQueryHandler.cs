@@ -1,39 +1,35 @@
 ﻿using Template.Application.Queries;
-using Template.Model;
+using Template.Contract;
+using Template.Model.Exceptions;
+using Template.Model.Interfaces;
 
 namespace Template.Application.Handlers;
 
-public class StatusQueryHandler : IQueryHandler<QuerySingle<Status>, Status>, IQueryHandler<QueryMany<Status>, List<Status>>
+public class StatusQueryHandler(IRepository<Model.Status, string> repository) : IQueryHandler<QuerySingle<Status>, Status>, IQueryHandler<QueryMany<Status>, List<Status>>
 {
-    public Task<Status> HandleAsync(QuerySingle<Status> query, CancellationToken cancellationToken = default)
+    public async Task<Status> HandleAsync(QuerySingle<Status> query, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(new Status
+        var model = await repository.GetByIdAsync(query.Id) ?? throw new ResourceNotFoundException();
+
+        return new Status
         {
-            Id = query.Id,
-            Value = "OK",
-            Description = "Test Application",
-            TimeStamp = DateTime.Now
-        });
+            Id = model.Id,
+            Value = model.Value,
+            Description = model.Description,
+            TimeStamp = model.TimeStamp
+        };
     }
 
-    public Task<List<Status>> HandleAsync(QueryMany<Status> query, CancellationToken cancellationToken)
+    public async Task<List<Status>> HandleAsync(QueryMany<Status> query, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new List<Status>
+        var result = await repository.ListAsync(x => true);
+
+        return [.. result.Select(model => new Status
         {
-            new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Value = "OK",
-                Description = "Test Application #2",
-                TimeStamp = DateTime.Now
-            },
-            new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Value = "Fail",
-                Description = "Test Application #1",
-                TimeStamp = DateTime.Now.AddDays(-1)
-            }
-        });
+            Id = model.Id,
+            Value = model.Value,
+            Description = model.Description,
+            TimeStamp = model.TimeStamp
+        })];
     }
 }
