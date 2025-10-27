@@ -10,7 +10,9 @@ public static class ServiceCollectionExtensions
     {
         services
         .ConfigureMongoDatabase()
-        .AddMongoRepository<Status>();
+        .AddMongoRepository<Status>()
+        .AddMongoRepository<User>()
+        .AddMongoRepository<UserAccessInfo>();
 
         return services;
     }    

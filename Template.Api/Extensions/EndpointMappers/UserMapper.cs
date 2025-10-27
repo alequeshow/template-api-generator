@@ -6,84 +6,90 @@ using Template.Contract;
 
 namespace Template.Api.Extensions.EndpointMappers
 {
-    public static class StatusMapper
+    public static class UserMapper
     {
-        public static WebApplication MapStatusEndpoint(this WebApplication app)
+        public static WebApplication MapUserEndpoint(this WebApplication app)
         {
-            app.MapGet("/status/{id}", (string id, StatusQueryHandler handler, CancellationToken ct) =>
+            app.MapGet("/user/{id}", (string id, UserQueryHandler handler, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
-                var query = new QuerySingle<Status>(id);
+                var query = new QuerySingle<User>(id);
                 var result = await handler.HandleAsync(query, ct);
 
                 return Results.Ok(result);
-            })) 
+            }))
             .RequireAuthorization()
-            .WithName("GetStatusById")
-            .Produces<Status>(StatusCodes.Status200OK)
+            .WithName("GetUserById")
+            .Produces<User>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/status", (StatusQueryHandler handler, CancellationToken ct) =>
+            app.MapGet("/user", (UserQueryHandler handler, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
-                var query = new QueryMany<Status>();
+                var query = new QueryMany<User>();
                 var result = await handler.HandleAsync(query, ct);
                 return Results.Ok(result);
             }))
             .RequireAuthorization()
-            .WithName("GetStatus")
-            .Produces<Status>(StatusCodes.Status200OK)
+            .WithName("GetUser")
+            .Produces<User>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .WithOpenApi();
 
-            app.MapPost("/status", (Status payload, StatusCommandHandler handler, CancellationToken ct) =>
+            app.MapPost("/user", (User payload, UserCommandHandler handler, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
-                var command = new Command<Status>(payload, CommandOperation.Create);
+                var command = new Command<User>(payload, CommandOperation.Create);
 
                 var result = await handler.HandleAsync(command, ct);
 
-                return Results.Created($"/status/{result.Id}", result.Id);
+                return Results.Created($"/user/{result.Id}", result.Id);
             }))
-            .RequireAuthorization()
-            .WithName("AddStatus")
-            .Produces<Status>(StatusCodes.Status201Created)
+            .WithName("AddUser")
+            .Produces<User>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
             .WithOpenApi();
 
-            app.MapPut("/status/{id}", (string id, Status payload, StatusCommandHandler handler, CancellationToken ct) =>
+            app.MapPut("/user/{id}", (string id, User payload, UserCommandHandler handler, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
                 payload.Id = id;
-                var command = new Command<Status>(payload, CommandOperation.Update);
+                var command = new Command<User>(payload, CommandOperation.Update);
 
                 await handler.HandleAsync(command, ct);
 
                 return Results.NoContent();
             }))
             .RequireAuthorization()
-            .WithName("UpdateStatus")
-            .Produces<Status>(StatusCodes.Status204NoContent)
+            .WithName("UpdateUser")
+            .Produces<User>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapDelete("/status/{id}", (string id, StatusCommandHandler handler, CancellationToken ct) =>
+            app.MapDelete("/user/{id}", (string id, UserCommandHandler handler, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
-                var command = new Command<Status>(new Status { Id = id, Value = default! }, CommandOperation.Delete);
+                var command = new Command<User>(new User 
+                { 
+                    Id = id, 
+                    Email = string.Empty,
+                    FirstName = string.Empty,
+                    LastName = string.Empty,
+                    UserId = string.Empty
+                }, CommandOperation.Delete);
 
                 await handler.HandleAsync(command, ct);
 
                 return Results.NoContent();
             }))
             .RequireAuthorization()
-            .WithName("DeleteStatus")
-            .Produces<Status>(StatusCodes.Status204NoContent)
+            .WithName("DeleteUser")
+            .Produces<User>(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
