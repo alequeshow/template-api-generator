@@ -34,6 +34,8 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Api/Extensions/ServiceCollectionExtensions.cs`
 - `Template.Api/Extensions/WebApplicationExtensions.cs`
 - `Template.Api/Handlers/ApiHandler.cs`
+- `Template.Api/Extensions/EndpointMappers/AuthenticationMapper.cs` (ALWAYS COPY)
+- `Template.Api/Extensions/EndpointMappers/UserMapper.cs` (ALWAYS COPY)
 - {SolutionName}.Api.csproj
 
 **{SolutionName}.Application:**
@@ -43,10 +45,27 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Application/Queries/QueryMany.cs`
 - `Template.Application/Handlers/ICommandHandler.cs`
 - `Template.Application/Handlers/IQueryHandler.cs`
+- `Template.Application/Handlers/UserQueryHandler.cs` (ALWAYS COPY)
+- `Template.Application/Handlers/UserCommandHandler.cs` (ALWAYS COPY)
+- `Template.Application/Security/IAuthenticationService.cs` (ALWAYS COPY)
+- `Template.Application/Security/IPasswordHasher.cs` (ALWAYS COPY)
+- `Template.Application/Security/ITokenService.cs` (ALWAYS COPY)
+- `Template.Application/Security/IUserRegistrationService.cs` (ALWAYS COPY)
+- `Template.Application/Security/AuthenticationService.cs` (ALWAYS COPY)
+- `Template.Application/Security/PasswordHasher.cs` (ALWAYS COPY)
+- `Template.Application/Security/TokenService.cs` (ALWAYS COPY)
+- `Template.Application/Security/UserRegistrationService.cs` (ALWAYS COPY)
 - `Template.Application/Extensions/ServiceCollectionExtensions.cs`
 - {SolutionName}.Application.csproj
 
 **{SolutionName}.Contract:**
+- `Template.Contract/User.cs` (ALWAYS COPY)
+- `Template.Contract/Authentication/AuthenticationResult.cs` (ALWAYS COPY)
+- `Template.Contract/Authentication/RefreshTokenRequest.cs` (ALWAYS COPY)
+- `Template.Contract/Authentication/UserCredentialsRequest.cs` (ALWAYS COPY)
+- `Template.Contract/Authentication/UserRegistrationRequest.cs` (ALWAYS COPY)
+- `Template.Contract/Authentication/UserRegistrationResult.cs` (ALWAYS COPY)
+- `Template.Contract/Authentication/UserRegistrationStatus.cs` (ALWAYS COPY)
 - {SolutionName}.Contract.csproj
 
 **{SolutionName}.Model:**
@@ -54,6 +73,12 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Model/Interfaces/IEntity.cs`
 - `Template.Model/Interfaces/IRepository.cs`
 - `Template.Model/Exceptions/ResourceNotFoundException.cs`
+- `Template.Model/User.cs` (ALWAYS COPY)
+- `Template.Model/UserAccessInfo.cs` (ALWAYS COPY)
+- `Template.Model/ValueObjects/PersonName.cs` (ALWAYS COPY)
+- `Template.Model/ValueObjects/Email.cs` (ALWAYS COPY)
+- `Template.Model/ValueObjects/UserIdentifier.cs` (ALWAYS COPY)
+- `Template.Model/ValueObjects/ActiveInfo.cs` (ALWAYS COPY)
 - {SolutionName}.Model.csproj
 
 **{SolutionName}.Repository:**
@@ -84,26 +109,41 @@ Update these files to include all entities:
 ```csharp
 services
     .ConfigureMongoDatabase()
+    .AddMongoRepository<User>()           // ALWAYS INCLUDE
+    .AddMongoRepository<UserAccessInfo>()  // ALWAYS INCLUDE
     .AddMongoRepository<Entity1>()
     .AddMongoRepository<Entity2>()
-    // ... for each entity
+    // ... for each entity from schema
     ;
 ```
 
 **{SolutionName}.Application/Extensions/ServiceCollectionExtensions.cs:**
 ```csharp
+// Handlers
+services.AddScoped<UserQueryHandler>();    // ALWAYS INCLUDE
+services.AddScoped<UserCommandHandler>();  // ALWAYS INCLUDE
 services.AddScoped<Entity1QueryHandler>();
 services.AddScoped<Entity1CommandHandler>();
 services.AddScoped<Entity2QueryHandler>();
 services.AddScoped<Entity2CommandHandler>();
-// ... for each entity
+// ... for each entity from schema
+
+// Authentication services - ALWAYS INCLUDE
+services.AddSingleton<IPasswordHasher, PasswordHasher>();
+services.AddScoped<ITokenService, TokenService>();
+services.AddScoped<IAuthenticationService, AuthenticationService>();
+services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 ```
 
 **{SolutionName}.Api/Extensions/WebApplicationExtensions.cs:**
 ```csharp
-app.MapEntity1Endpoint();
-app.MapEntity2Endpoint();
-// ... for each entity
+app
+    .MapAuthenticationEndpoint()  // ALWAYS INCLUDE
+    .MapUserEndpoint()           // ALWAYS INCLUDE
+    .MapEntity1Endpoint()
+    .MapEntity2Endpoint()
+    // ... for each entity from schema
+    ;
 ```
 
 ### Step 6: Type Conversion Rules
@@ -139,6 +179,9 @@ After generation, ensure:
 - [ ] All endpoints follow the same pattern as Status
 - [ ] Project references are correct in .csproj files
 - [ ] Solution file includes all projects
+- [ ] Authentication system is complete (User, UserAccessInfo, all Security services)
+- [ ] Value Objects are copied (PersonName, Email, UserIdentifier, ActiveInfo)
+- [ ] Authentication and User endpoints are registered
 
 ## Type Mapping Examples
 
@@ -203,6 +246,72 @@ public class WishlistItem
 }
 ```
 
+## Value Objects in User Entity
+
+The User entity uses Value Objects (C# records) to encapsulate domain concepts:
+
+### PersonName Value Object
+```csharp
+public record PersonName
+{
+    public string FirstName { get; init; }
+    public string LastName { get; init; }
+
+    public PersonName(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
+}
+```
+
+### Email Value Object
+```csharp
+public record Email
+{
+    public string Value { get; private set; }
+
+    public Email(string email)
+    {
+        Value = email.ToLowerInvariant();
+    }
+}
+```
+
+### UserIdentifier Value Object
+```csharp
+public record UserIdentifier
+{
+    public string Identifier { get; private set; }
+
+    public UserIdentifier(string id)
+    {
+        Identifier = id.ToLowerInvariant();
+    }
+}
+```
+
+### ActiveInfo Value Object
+```csharp
+public record ActiveInfo
+{
+    public bool IsActive { get; private set; }
+    public DateTime IsActiveFrom { get; private set; }
+    public DateTime? DeactivatedSince { get; private set; }
+
+    public ActiveInfo()
+    {
+        IsActive = true;
+        IsActiveFrom = DateTime.UtcNow;
+    }
+
+    public void Deactivate() { /* implementation */ }
+    public void Reactivate() { /* implementation */ }
+}
+```
+
+**CRITICAL**: These Value Objects MUST be copied to every generated solution. The User entity in Template.Model uses them, and the Contract/User flattens them for API communication.
+
 ## DO NOT
 
 - ❌ Change the architecture or patterns
@@ -213,6 +322,10 @@ public class WishlistItem
 - ❌ Change the error handling approach
 - ❌ Add validation attributes (keep POCOs clean)
 - ❌ Add business logic to entities
+- ❌ Skip copying authentication system
+- ❌ Modify Value Objects pattern
+- ❌ Change JWT implementation
+- ❌ Skip User or UserAccessInfo entities
 
 ## DO
 
@@ -222,3 +335,8 @@ public class WishlistItem
 - ✅ Keep the same dependency injection patterns
 - ✅ Maintain the same API response patterns
 - ✅ Use the same endpoint routing structure
+- ✅ Copy ALL authentication files (marked with "ALWAYS COPY")
+- ✅ Copy ALL Value Objects from Template.Model/ValueObjects
+- ✅ Include User and UserAccessInfo in every solution
+- ✅ Register all authentication services in DI
+- ✅ Map authentication endpoints in WebApplicationExtensions

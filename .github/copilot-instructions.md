@@ -6,11 +6,32 @@ This repository contains a template-based API generator that scaffolds complete 
 
 The template uses a layered architecture:
 - **Template.Api**: Web API with minimal endpoints
-- **Template.Application**: Command/Query handlers (CQRS pattern)
-- **Template.Contract**: DTOs for API communication
-- **Template.Model**: Domain entities
+- **Template.Application**: Command/Query handlers (CQRS pattern), Security services
+- **Template.Contract**: DTOs for API communication, Authentication contracts
+- **Template.Model**: Domain entities, Value Objects
 - **Template.Repository**: Data access layer
 - **Template.DatabaseFactory**: MongoDB implementation
+
+## Built-in Authentication & User Management
+
+The template includes a complete authentication and user management system that should be copied to every generated solution:
+
+### Core Components (COPY ALWAYS)
+- **User Entity**: With Value Objects (PersonName, Email, UserIdentifier, ActiveInfo)
+- **UserAccessInfo Entity**: For password hashing and refresh tokens
+- **Authentication Services**: Login, registration, token refresh, token revocation
+- **Security Interfaces**: IAuthenticationService, ITokenService, IPasswordHasher, IUserRegistrationService
+- **Authentication Endpoints**: `/auth/login`, `/auth/register`, `/auth/refresh`, `/auth/revoke`
+- **User CRUD Endpoints**: Standard endpoints for user management with authorization
+
+### Value Objects Pattern
+The User entity uses Value Objects (records) for domain concepts:
+- `PersonName`: Encapsulates FirstName and LastName
+- `Email`: Encapsulates email with lowercase normalization
+- `UserIdentifier`: Encapsulates user identifier with lowercase normalization
+- `ActiveInfo`: Encapsulates activation state with methods (Activate/Deactivate)
+
+**IMPORTANT**: Always copy these Value Objects when creating User entity in new solutions.
 
 ## Code Generation Rules
 
@@ -22,6 +43,8 @@ When generating code from JSON schemas:
 4. **REPLACE ONLY** the namespace prefix and entity-specific code
 5. **MAINTAIN** all existing patterns (error handling, dependency injection, etc.)
 6. **KEEP** MongoDB as the database technology
+7. **ALWAYS INCLUDE** the complete authentication system (User, UserAccessInfo, Security services)
+8. **ALWAYS COPY** Value Objects when they exist in the template
 
 ## Entity Generation Pattern
 
