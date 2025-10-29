@@ -1,5 +1,17 @@
 # Schema-Based Code Generation Guide
 
+## IMPORTANT: Start Creating Files Immediately
+
+**DO NOT output code in chat. Create files directly using tools.**
+
+When you receive a generation request:
+1. ❌ DO NOT preview code in chat
+2. ❌ DO NOT show examples of what you'll create
+3. ✅ DO read the schema file
+4. ✅ DO start creating files immediately
+5. ✅ DO provide brief progress updates only ("Creating 15 files...")
+6. ✅ DO summarize after completion
+
 ## Step-by-Step Generation Process
 
 When asked to generate a new solution from a JSON schema file:
@@ -19,9 +31,72 @@ When asked to generate a new solution from a JSON schema file:
   {SolutionName}.DatabaseFactory/
   {SolutionName}.Model/
   {SolutionName}.Repository/
+  .vscode/                    (COPY FROM TEMPLATE)
+  mongo-init/                 (COPY FROM TEMPLATE)
+  .dockerignore              (COPY FROM TEMPLATE)
+  .env_template              (COPY FROM TEMPLATE)
+  .gitignore                 (COPY FROM TEMPLATE)
+  docker-compose.yml         (COPY FROM TEMPLATE, UPDATE PROJECT NAMES)
 ```
 
-### Step 3: Copy Template Files
+### Step 3: Copy Local Development Files (DO THIS FIRST)
+
+Copy these files from template root to new solution root, updating namespaces/project names:
+
+**Local Development (COPY ALWAYS):**
+- `.vscode/launch.json` - Update project paths from "Template.Api" to "{SolutionName}.Api"
+- `.vscode/tasks.json` - Update project paths from "Template.Api" to "{SolutionName}.Api"
+- `.vscode/extensions.json` - Copy as-is
+- `mongo-init/01-init.js` - Update database name from "TemplateDb" to "{SolutionName}Db"
+- `.dockerignore` - Copy as-is
+- `.env_template` - Update ConnectionStrings__DefaultConnection database name
+- `.gitignore` - Copy as-is
+- `docker-compose.yml` - Update service names and database name
+
+#### Example Updates Required:
+
+**docker-compose.yml:**
+```yaml
+# Change service name from:
+template-api:
+  # to:
+birthday-wishlist-api:
+
+# Change image name from:
+image: template-api
+  # to:
+image: birthday-wishlist-api
+
+# Update paths from Template.Api to {SolutionName}.Api
+```
+
+**.vscode/launch.json:**
+```json
+// Update all occurrences of "Template.Api" to "{SolutionName}.Api"
+"program": "${workspaceFolder}/Birthday.Wishlist.Api/bin/Debug/net8.0/Birthday.Wishlist.Api.dll"
+```
+
+**.vscode/tasks.json:**
+```json
+// Update project path in all tasks
+"${workspaceFolder}/Birthday.Wishlist.Api/Birthday.Wishlist.Api.csproj"
+```
+
+**mongo-init/01-init.js:**
+```javascript
+// Change database name from:
+db = db.getSiblingDB('TemplateDb');
+// to:
+db = db.getSiblingDB('BirthdayWishlistDb');
+```
+
+**.env_template:**
+```
+# Update connection string database name
+ConnectionStrings__DefaultConnection=mongodb://root:example@localhost:27017/BirthdayWishlistDb?authSource=admin
+```
+
+### Step 4: Copy Template Files
 
 For each project, copy these files from Template.* and replace namespace:
 
@@ -91,7 +166,7 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.DatabaseFactory/Mongo/Extensions/ServiceCollectionExtensions.cs`
 - {SolutionName}.DatabaseFactory.csproj
 
-### Step 4: Generate Entity-Specific Code
+### Step 5: Generate Entity-Specific Code
 
 For each schema in the input file:
 
@@ -101,7 +176,7 @@ For each schema in the input file:
 4. **Generate Command Handler** (use exact pattern from StatusCommandHandler.cs)
 5. **Generate API Mapper** (use exact pattern from StatusMapper.cs)
 
-### Step 5: Register Components
+### Step 6: Register Components
 
 Update these files to include all entities:
 
@@ -146,7 +221,7 @@ app
     ;
 ```
 
-### Step 6: Type Conversion Rules
+### Step 7: Type Conversion Rules
 
 Apply these conversions from JSON schema to C#:
 
@@ -164,14 +239,14 @@ array of objects          → List<NestedClass>
 object                    → nested class
 ```
 
-### Step 7: Property Attributes
+### Step 8: Property Attributes
 
 - If property is in "required" array: use `required` keyword
 - If property is NOT in "required" array: make nullable with `?`
 - Id property in Contract: always `string?`
 - Id property in Model: always `required string`
 
-### Step 8: Validation
+### Step 9: Validation
 
 After generation, ensure:
 - [ ] All namespaces use the new solution name
@@ -182,6 +257,9 @@ After generation, ensure:
 - [ ] Authentication system is complete (User, UserAccessInfo, all Security services)
 - [ ] Value Objects are copied (PersonName, Email, UserIdentifier, ActiveInfo)
 - [ ] Authentication and User endpoints are registered
+- [ ] Local development files are copied (.vscode, mongo-init, docker-compose.yml, etc.)
+- [ ] Project names updated in docker-compose.yml and .vscode files
+- [ ] Database name updated in mongo-init/01-init.js and .env_template
 
 ## Type Mapping Examples
 
@@ -326,6 +404,8 @@ public record ActiveInfo
 - ❌ Modify Value Objects pattern
 - ❌ Change JWT implementation
 - ❌ Skip User or UserAccessInfo entities
+- ❌ Skip local development files (.vscode, docker-compose.yml, etc.)
+- ❌ Forget to update project names in copied config files
 
 ## DO
 
@@ -340,3 +420,6 @@ public record ActiveInfo
 - ✅ Include User and UserAccessInfo in every solution
 - ✅ Register all authentication services in DI
 - ✅ Map authentication endpoints in WebApplicationExtensions
+- ✅ Copy ALL local development files (.vscode/, mongo-init/, docker-compose.yml, etc.)
+- ✅ Update project names in docker-compose.yml and .vscode files
+- ✅ Update database name in mongo-init/01-init.js

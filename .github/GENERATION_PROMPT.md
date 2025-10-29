@@ -11,20 +11,26 @@ Solution name: [SOLUTION_NAME] (e.g., "Birthday.Wishlist")
 
 Follow the exact patterns from the Template.* projects in this workspace. 
 
+IMPORTANT: Do not output code in chat. Start creating files immediately.
+
 Read the schema file and generate:
 1. Solution and project structure
-2. Model classes for each schema
-3. Contract DTOs for each schema  
-4. Repository registrations
-5. Query and Command handlers
-6. API endpoint mappers
-7. Update all service registrations
+2. Copy ALL local development files (.vscode, mongo-init, docker-compose.yml, .dockerignore, .env_template, .gitignore)
+3. Copy ALL authentication and user management files (User, UserAccessInfo, Security services, Value Objects)
+4. Model classes for each schema
+5. Contract DTOs for each schema  
+6. Repository registrations
+7. Query and Command handlers
+8. API endpoint mappers
+9. Update all service registrations
 
 Place the new solution in a folder named [SOLUTION_NAME] in the repository root.
 
 Reference:
 - .github/copilot-instructions.md for generation rules
 - .github/copilot-schema-generator.md for step-by-step process
+
+Work silently. Create all files first, then provide a brief summary.
 ```
 
 ## Example Usage
@@ -36,27 +42,42 @@ Solution name: Birthday.Wishlist
 
 Follow the exact patterns from the Template.* projects in this workspace.
 
+IMPORTANT: Do not output code in chat. Start creating files immediately.
+
 Read the schema file and generate:
 1. Solution and project structure
-2. Copy ALL authentication and user management files (User, UserAccessInfo, Security services, Value Objects)
-3. Model classes for each schema (User, Wishlist)
-4. Contract DTOs for each schema
-5. Repository registrations (including User and UserAccessInfo)
-6. Query and Command handlers for User and Wishlist
-7. API endpoint mappers (Authentication, User, Wishlist)
-8. Update all service registrations with authentication services
+2. Copy ALL local development files (.vscode, mongo-init, docker-compose.yml, .dockerignore, .env_template, .gitignore)
+3. Copy ALL authentication and user management files (User, UserAccessInfo, Security services, Value Objects)
+4. Model classes for each schema (User, Wishlist)
+5. Contract DTOs for each schema
+6. Repository registrations (including User and UserAccessInfo)
+7. Query and Command handlers for User and Wishlist
+8. API endpoint mappers (Authentication, User, Wishlist)
+9. Update all service registrations with authentication services
+10. Update project names in docker-compose.yml, .vscode files, and mongo-init scripts
 
 Place the new solution in a folder named Birthday.Wishlist in the repository root.
 
 Reference the generation instructions in .github/copilot-instructions.md and .github/copilot-schema-generator.md.
 
-CRITICAL: Include the complete authentication system from Template.* (all files marked "ALWAYS COPY").
+Work silently. Create all files first, then provide a brief summary at the end.
+
+CRITICAL: 
+- Do not preview code in chat before creating files
+- Include the complete authentication system from Template.* (all files marked "ALWAYS COPY")
+- Include ALL local development files for Docker and VS Code debugging
 ```
 
 ## Example with @workspace mention
 
 ```
-@workspace Generate a new solution from JSON schema file at schemas/my-schema.json with solution name "MyProject.Name". Follow .github/copilot-instructions.md and .github/copilot-schema-generator.md exactly. Do not refactor or optimize, just copy the Template.* patterns.
+@workspace Generate a new solution from JSON schema file at schemas/my-schema.json with solution name "MyProject.Name". 
+
+IMPORTANT: Do not output code in chat. Start creating files immediately.
+
+Follow .github/copilot-instructions.md and .github/copilot-schema-generator.md exactly. Do not refactor or optimize, just copy the Template.* patterns.
+
+Work silently. Create all files, then summarize at the end.
 ```
 
 ## Expected Output Structure
@@ -64,6 +85,16 @@ CRITICAL: Include the complete authentication system from Template.* (all files 
 ```
 Birthday.Wishlist/
 ├── Birthday.Wishlist.sln
+├── .vscode/                          (ALWAYS INCLUDE)
+│   ├── launch.json                   (update project paths)
+│   ├── tasks.json                    (update project paths)
+│   └── extensions.json
+├── mongo-init/                       (ALWAYS INCLUDE)
+│   └── 01-init.js                    (update database name)
+├── .dockerignore                     (ALWAYS INCLUDE)
+├── .env_template                     (ALWAYS INCLUDE, update db name)
+├── .gitignore                        (ALWAYS INCLUDE)
+├── docker-compose.yml                (ALWAYS INCLUDE, update service names)
 ├── Birthday.Wishlist.Api/
 │   ├── Extensions/
 │   │   └── EndpointMappers/
@@ -117,8 +148,12 @@ Birthday.Wishlist/
 4. **Name the Entities**: Mention which entities you expect (helps Copilot validate)
 5. **Request Step-by-Step**: Ask Copilot to follow the steps in copilot-schema-generator.md
 6. **Emphasize "Exact Copy"**: Remind Copilot not to optimize or refactor
+7. **🔥 MOST IMPORTANT**: Add "Do not output code in chat. Start creating files immediately." at the beginning of your prompt
 
 ## Common Issues and Solutions
+
+### Issue: Output limit reached before file creation
+**Solution**: Add to prompt at the very beginning: "IMPORTANT: Do not output code in chat. Start creating files immediately. Work silently."
 
 ### Issue: Copilot tries to optimize the code
 **Solution**: Add to prompt: "Do not refactor or optimize. Copy the Template.* patterns exactly."
@@ -135,6 +170,12 @@ Birthday.Wishlist/
 ### Issue: Value Objects missing
 **Solution**: Add to prompt: "Copy all Value Objects from Template.Model/ValueObjects (PersonName, Email, UserIdentifier, ActiveInfo)"
 
+### Issue: Local development files not copied
+**Solution**: Emphasize: "Copy ALL local development files (.vscode, mongo-init, docker-compose.yml, .dockerignore, .env_template, .gitignore)"
+
+### Issue: Docker or VS Code debugging not working
+**Solution**: Verify project names were updated in docker-compose.yml, launch.json, tasks.json, and mongo-init/01-init.js
+
 ### Issue: Different patterns used
 **Solution**: Reference specific files: "Follow the exact pattern from Template.Api/Extensions/EndpointMappers/StatusMapper.cs"
 
@@ -148,4 +189,9 @@ Birthday.Wishlist/
    - Verify all authentication services are registered
    - Verify AuthenticationMapper and UserMapper are mapped
    - Verify Value Objects are copied
+   - Verify local development files are copied (.vscode, mongo-init, docker-compose.yml)
+   - Verify project names updated in docker-compose.yml and .vscode files
+   - Verify database name updated in mongo-init/01-init.js
 5. Build and test the new solution
+6. Run `docker-compose up` to test MongoDB and API container
+7. Use VS Code debugger with F5 to verify debugging works

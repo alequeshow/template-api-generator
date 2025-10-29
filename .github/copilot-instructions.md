@@ -33,6 +33,24 @@ The User entity uses Value Objects (records) for domain concepts:
 
 **IMPORTANT**: Always copy these Value Objects when creating User entity in new solutions.
 
+## Local Development Files
+
+The template includes development and infrastructure files that must be copied to every generated solution:
+
+### Development Environment (COPY ALWAYS)
+- **`.vscode/`** folder: VS Code workspace configuration
+  - `launch.json`: Debugging configurations
+  - `tasks.json`: Build and run tasks
+  - `extensions.json`: Recommended extensions
+- **`mongo-init/`** folder: MongoDB initialization scripts
+  - `01-init.js`: Database and collection setup
+- **`.dockerignore`**: Docker build context exclusions
+- **`.env_template`**: Environment variables template
+- **`.gitignore`**: Git ignore patterns
+- **`docker-compose.yml`**: Docker services orchestration (MongoDB, API)
+
+**IMPORTANT**: These files enable local development with Docker and VS Code debugging. Always copy them to new solutions.
+
 ## Code Generation Rules
 
 When generating code from JSON schemas:
@@ -45,6 +63,26 @@ When generating code from JSON schemas:
 6. **KEEP** MongoDB as the database technology
 7. **ALWAYS INCLUDE** the complete authentication system (User, UserAccessInfo, Security services)
 8. **ALWAYS COPY** Value Objects when they exist in the template
+9. **ALWAYS COPY** local development files (.vscode, mongo-init, docker-compose.yml, etc.)
+
+## CRITICAL: Code Generation Behavior
+
+**DO NOT output code in chat before creating files. Start creating files immediately.**
+
+When asked to generate a solution:
+- ❌ **DO NOT** show code examples in chat
+- ❌ **DO NOT** preview the code you will generate
+- ❌ **DO NOT** explain what you will create before creating it
+- ✅ **DO** start creating files immediately using file creation tools
+- ✅ **DO** work silently and report progress briefly ("Creating files...")
+- ✅ **DO** summarize what was created AFTER all files are generated
+
+**Why**: Generating large solutions requires creating many files. Outputting code in chat causes:
+1. Output limit reached before file creation starts
+2. Wasted tokens on displaying code instead of creating it
+3. Incomplete generation requiring restart
+
+**Correct approach**: Read schemas → Immediately start creating files → Brief summary at end
 
 ## Entity Generation Pattern
 
