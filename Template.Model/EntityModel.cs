@@ -1,6 +1,4 @@
-﻿//using MongoDB.Bson.Serialization.Attributes;
-
-using Template.Model.Interfaces;
+﻿using Template.Model.Interfaces;
 
 namespace Template.Model;
 

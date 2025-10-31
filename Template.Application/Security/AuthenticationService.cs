@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 using Template.Contract.Authentication;
 using Template.Model.Configuration;
 using Template.Model.Interfaces;
@@ -18,6 +19,9 @@ public class AuthenticationService(
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
+    [SuppressMessage("Performance",
+        "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons",
+        Justification = "StringComparison is not available in MongoDB.Driver.Linq")]
     public async Task<AuthenticationResult> AuthenticateAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default)
     {
         // Find user by username (assuming UserId is the username)

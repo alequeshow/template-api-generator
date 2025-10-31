@@ -1,5 +1,6 @@
 ﻿using Template.Application.Commands;
 using Template.Contract;
+using Template.Contract.Common;
 using Template.Model.Exceptions;
 using Template.Model.Interfaces;
 
@@ -7,7 +8,7 @@ namespace Template.Application.Handlers;
 
 public class StatusCommandHandler(IRepository<Model.Status, string> repository) : ICommandHandler<Command<Status>, Status>
 {
-    public async Task<Status> HandleAsync(Command<Status> command, CancellationToken cancellationToken = default)
+    public async Task<Result<Status>> HandleAsync(Command<Status> command, CancellationToken cancellationToken = default)
     {
         switch (command.Operation)
         {
@@ -46,6 +47,10 @@ public class StatusCommandHandler(IRepository<Model.Status, string> repository) 
                 throw new NotSupportedException($"Operation {command.Operation} is not supported.");
         }
 
-        return command.Value;
+        return new Result<Status>
+        {
+            Data = command.Value,
+            IsSuccessful = true
+        };
     }
 }

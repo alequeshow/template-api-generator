@@ -1,14 +1,34 @@
-﻿namespace Template.Model.ValueObjects
-{
-    public record PersonName
-    {
-        public string FirstName { get; init; }
-        public string LastName { get; init; }
+﻿using System.Text.RegularExpressions;
 
-        public PersonName(string firstName, string lastName)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-        }
+namespace Template.Model.ValueObjects;
+
+public partial record PersonName
+{
+    [GeneratedRegex(@"^[a-zA-Z0-9]{1,100}$")]
+    private static partial Regex ValidationRegex();
+
+    public string FirstName { get; init; }
+    public string LastName { get; init; }
+
+    public PersonName(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }        
+
+    public static string ValidationMessage =>
+       "PersonName must have both FirstName and LastName as valid names, only alphanumeric characters and 100 characters long.";
+
+    public static bool IsValid(PersonName personName)
+    {
+        if (personName is null || 
+            string.IsNullOrWhiteSpace(personName.FirstName) ||
+            string.IsNullOrWhiteSpace(personName.LastName)
+        )
+            return false;
+
+        return
+            ValidationRegex().IsMatch(personName.FirstName) &&
+            ValidationRegex().IsMatch(personName.LastName);
     }
 }

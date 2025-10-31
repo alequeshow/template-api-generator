@@ -1,37 +1,35 @@
-﻿
-namespace Template.Model.ValueObjects
+﻿namespace Template.Model.ValueObjects;
+
+public record ActiveInfo
 {
-    public record ActiveInfo
+    public bool IsActive { get; private set; }
+
+    public DateTime IsActiveFrom { get; private set; }
+
+    public DateTime? DeactivatedSince { get; private set; }
+
+    public ActiveInfo()
     {
-        public bool IsActive { get; private set; }
+        IsActive = true;
+        IsActiveFrom = DateTime.UtcNow;
+    }
 
-        public DateTime IsActiveFrom { get; private set; }
+    public void Deactivate()
+    {
+        if (!IsActive)
+            return;
 
-        public DateTime? DeactivatedSince { get; private set; }
+        IsActive = false;
+        DeactivatedSince = DateTime.UtcNow;
+    }
 
-        public ActiveInfo()
-        {
-            IsActive = true;
-            IsActiveFrom = DateTime.UtcNow;
-        }
+    public void Reactivate()
+    {
+        if (IsActive)
+            return;
 
-        public void Deactivate()
-        {
-            if (!IsActive)
-                return;
-
-            IsActive = false;
-            DeactivatedSince = DateTime.UtcNow;
-        }
-
-        public void Reactivate()
-        {
-            if (IsActive)
-                return;
-
-            IsActive = true;
-            IsActiveFrom = DateTime.UtcNow;
-            DeactivatedSince = null;
-        }
+        IsActive = true;
+        IsActiveFrom = DateTime.UtcNow;
+        DeactivatedSince = null;
     }
 }
