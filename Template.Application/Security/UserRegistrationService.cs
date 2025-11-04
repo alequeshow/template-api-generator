@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Template.Contract.Authentication;
 using Template.Model;
 using Template.Model.Interfaces;
-using Template.Model.Interfaces.Validations;
+using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;
 
 namespace Template.Application.Security;
@@ -12,7 +12,7 @@ namespace Template.Application.Security;
 /// Implementation of user registration service.
 /// </summary>
 public class UserRegistrationService(
-    IUserValidation userValidation,
+    IUserValidator userValidation,
     IRepository<User, string> userRepository,
     IRepository<UserAccessInfo, string> accessInfoRepository,
     IPasswordHasher passwordHasher,
@@ -143,7 +143,7 @@ public class UserRegistrationService(
             ActiveInfo = new()
         };
 
-        var validationResult = await userValidation.ValidadeForAddAsync(user);
+        var validationResult = await userValidation.ValidateForAddAsync(user);
 
         if (validationResult is not null)
         {

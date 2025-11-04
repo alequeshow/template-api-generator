@@ -4,7 +4,7 @@ namespace Template.Model.ValueObjects;
 
 public partial record PersonName
 {
-    [GeneratedRegex(@"^[a-zA-Z0-9]{1,100}$")]
+    [GeneratedRegex(@"^[a-zA-Z\s'-]{1,100}$")]
     private static partial Regex ValidationRegex();
 
     public string FirstName { get; init; }
@@ -17,7 +17,7 @@ public partial record PersonName
     }        
 
     public static string ValidationMessage =>
-       "PersonName must have both FirstName and LastName as valid names, only alphanumeric characters and 100 characters long.";
+       "PersonName must have both FirstName and LastName as valid names, with max 100 characters long each. Spaces ( ), dashes (-), and apostrophes (') are allowed.";
 
     public static bool IsValid(PersonName personName)
     {

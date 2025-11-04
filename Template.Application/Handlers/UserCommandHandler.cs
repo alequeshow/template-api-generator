@@ -4,14 +4,14 @@ using Template.Contract;
 using Template.Contract.Common;
 using Template.Model.Exceptions;
 using Template.Model.Interfaces;
-using Template.Model.Interfaces.Validations;
+using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;
 
 namespace Template.Application.Handlers;
 
 public class UserCommandHandler(
     IRepository<Model.User, string> repository,
-    IUserValidation userValidation) : ICommandHandler<Command<User>, User>
+    IUserValidator userValidation) : ICommandHandler<Command<User>, User>
 {
     public async Task<Result<User>> HandleAsync(Command<User> command, CancellationToken cancellationToken = default)
     {
@@ -28,7 +28,7 @@ public class UserCommandHandler(
                     ActiveInfo = new ActiveInfo()
                 };
 
-                var addResult = await userValidation.ValidadeForAddAsync(model);
+                var addResult = await userValidation.ValidateForAddAsync(model);
 
                 if (addResult is not null)
                 {
@@ -63,7 +63,7 @@ public class UserCommandHandler(
                     }
                 }
 
-                var updateResult = await userValidation.ValidadeForUpdateAsync(existingUser);
+                var updateResult = await userValidation.ValidateForUpdateAsync(existingUser);
 
                 if (updateResult is not null)
                 {

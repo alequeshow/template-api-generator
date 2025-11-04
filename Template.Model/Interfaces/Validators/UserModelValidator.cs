@@ -1,10 +1,10 @@
 ﻿using Template.Model.ValueObjects;
 
-namespace Template.Model.Interfaces.Validations;
+namespace Template.Model.Interfaces.Validators;
 
-public abstract class UserModelValidation : IUserValidation
+public abstract class UserModelValidator : IUserValidator
 {
-    public async Task<IEnumerable<Error>?> ValidadeForAddAsync(User model)
+    public async Task<IEnumerable<Error>?> ValidateForAddAsync(User model)
     {
         var errors = new List<Error>();
 
@@ -34,7 +34,7 @@ public abstract class UserModelValidation : IUserValidation
         return errors.Count > 0 ? errors : null;
     }
 
-    public async Task<IEnumerable<Error>?> ValidadeForUpdateAsync(User model)
+    public async Task<IEnumerable<Error>?> ValidateForUpdateAsync(User model)
     {
         var errors = new List<Error>();
 

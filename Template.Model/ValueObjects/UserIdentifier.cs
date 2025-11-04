@@ -15,7 +15,7 @@ public partial record UserIdentifier
     }
 
     public static string ValidationMessage =>
-       "UserIdentifier must have only alphanumeric characters and 100 characters long.";
+       "UserIdentifier must have only alphanumeric characters and max 100 characters long.";
 
     public static bool IsValid(UserIdentifier userId)
     {

@@ -3,7 +3,6 @@ using Template.Application.Commands;
 using Template.Application.Handlers;
 using Template.Application.Queries;
 using Template.Contract;
-using Template.Contract.Common;
 
 namespace Template.Api.Extensions.EndpointMappers;
 
@@ -64,7 +63,7 @@ public static class UserMapper
 
             var result = await handler.HandleAsync(command, ct);
 
-            var apiResult = ApiHandler.HandleResult(result);
+            ApiHandler.HandleResult(result);
 
             return Results.NoContent();
         }))

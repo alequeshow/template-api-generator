@@ -1,11 +1,11 @@
 ﻿using Template.Model;
 using Template.Model.Interfaces;
-using Template.Model.Interfaces.Validations;
+using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;
 
-namespace Template.Application.Validations;
+namespace Template.Application.Validators;
 
-public class UserValidation(IRepository<User, string> repository) : UserModelValidation
+public class UserValidator(IRepository<User, string> repository) : UserModelValidator
 {
     protected override async Task<bool> IsEmailUniqueAsync(Email email)
     {
