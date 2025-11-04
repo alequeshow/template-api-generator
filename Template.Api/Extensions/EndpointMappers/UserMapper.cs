@@ -87,7 +87,9 @@ public static class UserMapper
                 UserId = string.Empty
             }, CommandOperation.Delete);
 
-            await handler.HandleAsync(command, ct);
+            var result = await handler.HandleAsync(command, ct);
+
+            ApiHandler.HandleResult(result);
 
             return Results.NoContent();
         }))

@@ -59,10 +59,11 @@ public static class StatusMapper
         app.MapPut("/status/{id}", (string id, Status payload, StatusCommandHandler handler, CancellationToken ct) =>
         ApiHandler.HandleEndpointAsync(async () =>
         {
-            payload.Id = id;
             var command = new Command<Status>(payload, CommandOperation.Update);
 
-            await handler.HandleAsync(command, ct);
+            var result = await handler.HandleAsync(command, ct);
+
+            ApiHandler.HandleResult(result);
 
             return Results.NoContent();
         }))
@@ -79,7 +80,9 @@ public static class StatusMapper
         {
             var command = new Command<Status>(new Status { Id = id, Value = default! }, CommandOperation.Delete);
 
-            await handler.HandleAsync(command, ct);
+            var result = await handler.HandleAsync(command, ct);
+
+            ApiHandler.HandleResult(result);
 
             return Results.NoContent();
         }))
