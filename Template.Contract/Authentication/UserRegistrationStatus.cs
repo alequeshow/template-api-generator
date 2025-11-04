@@ -6,6 +6,7 @@
 public enum UserRegistrationStatus
 {
     Success,
+    InvalidData,
     UserAlreadyRegistered,
     PartialMatchRequiresReset
 }

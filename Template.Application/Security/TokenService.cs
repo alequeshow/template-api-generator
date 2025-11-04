@@ -12,7 +12,7 @@ namespace Template.Application.Security;
 /// <summary>
 /// JWT token generation and validation service.
 /// </summary>
-public class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
+internal sealed class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
     private readonly JwtSecurityTokenHandler _tokenHandler = new();

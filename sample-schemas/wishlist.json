@@ -1,0 +1,37 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Wishlist",
+    "type": "object",
+    "properties": {
+        "Id": {
+            "type": "string",
+            "description": "The unique identifier of the wishlist"
+        },
+        "UserId": {
+            "type": "string",
+            "description": "The identifier of the user who owns the wishlist"
+        },
+        "BirthdayDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date of the birthday event"
+        },
+        "EventTitle": {
+            "type": "string",
+            "description": "The title of the event"
+        },
+        "EventDescription": {
+            "type": "string",
+            "description": "The description of the event"
+        },
+        "IsListPublic": {
+            "type": "boolean",
+            "description": "Indicates whether the wishlist is publicly visible"
+        }
+    },
+    "required": [
+        "UserId",
+        "BirthdayDate",
+        "EventTitle"
+    ]
+}

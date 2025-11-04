@@ -1,4 +1,6 @@
-﻿using Template.Model.Exceptions;
+﻿using Template.Application.Exceptions;
+using Template.Contract.Common;
+using Template.Model.Exceptions;
 
 namespace Template.Api.Handlers;
 
@@ -9,6 +11,10 @@ public class ApiHandler
         try
         {
             return await handler();
+        }
+        catch (ApplicationErrorException ex)
+        {
+            return Results.BadRequest(new { errors = ex.Errors });
         }
         catch (ArgumentException ex)
         {
@@ -27,5 +33,13 @@ public class ApiHandler
             // TODO: Configure Logging
             return Results.Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
         }
+    }
+
+    public static T HandleResult<T>(Result<T> result)
+    {
+        if(result.IsSuccessful)
+            return result.Data!;
+
+        throw new ApplicationErrorException(result.Errors!);
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Template.Application.Handlers;
+﻿using Template.Contract.Common;
+
+namespace Template.Application.Handlers;
 
 public interface ICommandHandler<TCommand, TResult>
 {
-    Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
+    Task<Result<TResult>> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }

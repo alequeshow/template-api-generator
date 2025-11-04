@@ -1,14 +1,19 @@
 ﻿using Template.Application.Commands;
+using Template.Application.Extensions;
 using Template.Contract;
+using Template.Contract.Common;
 using Template.Model.Exceptions;
 using Template.Model.Interfaces;
+using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;
 
 namespace Template.Application.Handlers;
 
-public class UserCommandHandler(IRepository<Model.User, string> repository) : ICommandHandler<Command<User>, User>
+public class UserCommandHandler(
+    IRepository<Model.User, string> repository,
+    IUserValidator userValidation) : ICommandHandler<Command<User>, User>
 {
-    public async Task<User> HandleAsync(Command<User> command, CancellationToken cancellationToken = default)
+    public async Task<Result<User>> HandleAsync(Command<User> command, CancellationToken cancellationToken = default)
     {
         switch (command.Operation)
         {
@@ -23,6 +28,17 @@ public class UserCommandHandler(IRepository<Model.User, string> repository) : IC
                     ActiveInfo = new ActiveInfo()
                 };
 
+                var addResult = await userValidation.ValidateForAddAsync(model);
+
+                if (addResult is not null)
+                {
+                    return new Result<User>
+                    {
+                        IsSuccessful = false,
+                        Errors = addResult.ToErrorsContract()
+                    };
+                }
+
                 await repository.AddAsync(model);
 
                 command.Value.Id = model.Id;
@@ -31,8 +47,32 @@ public class UserCommandHandler(IRepository<Model.User, string> repository) : IC
 
                 var existingUser = await repository.GetByIdAsync(command.Value.Id!) ?? throw new ResourceNotFoundException();
 
+                existingUser.UserId = new UserIdentifier(command.Value.UserId);
                 existingUser.Name = new PersonName(command.Value.FirstName, command.Value.LastName);
                 existingUser.Email = new Email(command.Value.Email);
+
+                if (existingUser.ActiveInfo.IsActive != command.Value.IsActive)
+                {
+                    if (command.Value.IsActive)
+                    {
+                        existingUser.ActiveInfo.Reactivate();
+                    }
+                    else
+                    {
+                        existingUser.ActiveInfo.Deactivate();
+                    }
+                }
+
+                var updateResult = await userValidation.ValidateForUpdateAsync(existingUser);
+
+                if (updateResult is not null)
+                {
+                    return new Result<User>
+                    {
+                        IsSuccessful = false,
+                        Errors = updateResult.ToErrorsContract()
+                    };
+                }
 
                 await repository.UpdateAsync(existingUser);
 
@@ -44,6 +84,10 @@ public class UserCommandHandler(IRepository<Model.User, string> repository) : IC
                 throw new NotSupportedException($"Operation {command.Operation} is not supported.");
         }
 
-        return command.Value;
+        return new Result<User>
+        {
+            Data = command.Value,
+            IsSuccessful = true
+        };
     }
 }
