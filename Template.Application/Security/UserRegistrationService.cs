@@ -1,6 +1,8 @@
-using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using Template.Application.Interfaces.Security;
 using Template.Contract.Authentication;
+using Template.Core.Interfaces.Security;
 using Template.Model;
 using Template.Model.Interfaces;
 using Template.Model.Interfaces.Validators;

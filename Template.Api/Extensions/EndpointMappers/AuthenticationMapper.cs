@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using Template.Api.Handlers;
-using Template.Application.Security;
+using Template.Application.Interfaces.Security;
 using Template.Contract.Authentication;
 
 namespace Template.Api.Extensions.EndpointMappers;
@@ -10,10 +11,10 @@ public static class AuthenticationMapper
 {
     public static WebApplication MapAuthenticationEndpoint(this WebApplication app)
     {
-        app.MapPost("/auth/login", ([FromBody] UserCredentialsRequest credentials, IAuthenticationService authService, CancellationToken ct) =>
+        app.MapPost("/auth/token", ([FromBody] UserCredentialsRequest credentials, Application.Interfaces.Security.IAuthenticationService authService, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
-                var result = await authService.AuthenticateAsync(credentials, ct);
+                var result = await authService.GetTokenAsync(credentials, ct);
 
                 if (!result.IsAuthenticated)
                 {
@@ -23,13 +24,13 @@ public static class AuthenticationMapper
                 return Results.Ok(result);
             }))
         .AllowAnonymous()
-        .WithName("Login")
+        .WithName("GetToken")
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/refresh", ([FromBody] RefreshTokenRequest request, IAuthenticationService authService, CancellationToken ct) =>
+        app.MapPost("/auth/token/refresh", ([FromBody] RefreshTokenRequest request, Application.Interfaces.Security.IAuthenticationService authService, CancellationToken ct) =>
         ApiHandler.HandleEndpointAsync(async () =>
         {
             var result = await authService.RefreshTokenAsync(request, ct);
@@ -53,9 +54,10 @@ public static class AuthenticationMapper
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/revoke", (IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
+        app.MapPost("/auth/token/revoke", (Application.Interfaces.Security.IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
         ApiHandler.HandleEndpointAsync(async () =>
         {
+            // TODO: Extract this logic to revoke token by receiving a ClaimPrincipal parameter
             var userId = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             if(string.IsNullOrEmpty(userId))
@@ -110,6 +112,41 @@ public static class AuthenticationMapper
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status409Conflict)
         .Produces(StatusCodes.Status500InternalServerError)
+        .WithOpenApi()
+        .WithTags("Authentication");
+
+        app.MapPost("/auth/login", ([FromBody] UserCredentialsRequest credentials, Application.Interfaces.Security.IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
+            ApiHandler.HandleEndpointAsync(async () =>
+            {
+                var result = await authService.GetCookieAsync(credentials, ct);
+
+                if (!result.IsAuthenticated)
+                {
+                    return Results.Json(new { error = result.ErrorMessage }, statusCode: StatusCodes.Status401Unauthorized);
+                }
+
+                await httpContext.SignInAsync(
+                    result.AuthenticationScheme,
+                    result.Claims!,
+                    new AuthenticationProperties(result.AuthenticationProperties!)
+                );
+
+                var hasCookie = httpContext.Response.Headers.ContainsKey("Set-Cookie");
+
+                if(!hasCookie)
+                    return Results.Unauthorized();
+
+                return Results.Ok(new
+                {
+                    userId = result.UserId,
+                    isAuthenticated = true,
+                    expiresAt = result.ExpiresAt
+                });
+            }))
+        .AllowAnonymous()
+        .WithName("Login")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");
 

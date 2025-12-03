@@ -1,8 +1,9 @@
 ﻿using Template.Application.Commands;
 using Template.Application.Extensions;
+using Template.Application.Interfaces.Handlers;
 using Template.Contract;
 using Template.Contract.Common;
-using Template.Model.Exceptions;
+using Template.Infrastructure.Exceptions;
 using Template.Model.Interfaces;
 using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;

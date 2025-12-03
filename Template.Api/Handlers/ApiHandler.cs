@@ -1,6 +1,5 @@
-﻿using Template.Application.Exceptions;
-using Template.Contract.Common;
-using Template.Model.Exceptions;
+﻿using Template.Contract.Common;
+using Template.Infrastructure.Exceptions;
 
 namespace Template.Api.Handlers;
 
