@@ -1,7 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Template.Application.Interfaces.Security;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
 using Template.Contract.Authentication;
 using Template.Core.Interfaces.Security;
+using Template.Infrastructure.Configuration;
+using Template.Infrastructure.Exceptions;
 using Template.Model.Interfaces;
 
 namespace Template.Application.Security;
@@ -14,7 +20,7 @@ public class AuthenticationService(
     IRepository<Model.UserAccessInfo, string> userAccessInfoRepository,
     ITokenService tokenService,
     ICookieService cookieService,
-    IPasswordHasher passwordHasher) : IAuthenticationService
+    IPasswordHasher passwordHasher) : Interfaces.Security.IAuthenticationService
 {
 
     public async Task<TokenAuthenticationResult> GetTokenAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default)
@@ -139,7 +145,20 @@ public class AuthenticationService(
         }
     }
 
-    public async Task<CookieAuthenticationResult> GetCookieAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default)
+    public async Task RevokeTokenAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
+    {
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            userId = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            throw new UnauthorizedAccessException();
+
+        await RevokeTokenAsync(userId, cancellationToken);
+    }
+
+    public async Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, HttpContext httpContext, CancellationToken cancellationToken = default)
     {
         var (user, userCred) = await GetVerifiedUserInfoAsync(credentials);
 
@@ -163,6 +182,18 @@ public class AuthenticationService(
 
         var cookie = cookieService.GenerateAuthCookie(user.Id, user.Email.Value);
 
+        await httpContext.SignInAsync(
+            cookie.AuthenticationScheme,
+            cookie.Claims!,
+            new AuthenticationProperties(cookie.AuthenticationProperties!)
+        );
+
+        var hasCookie = httpContext.Response.Headers.ContainsKey("Set-Cookie");
+
+        if (!hasCookie)
+            throw new UnauthorizedAccessException();
+
+
         userCred.LastLoginAt = DateTime.UtcNow;
         userCred.UpdatedAt = DateTime.UtcNow;
 
@@ -170,13 +201,27 @@ public class AuthenticationService(
 
         return new CookieAuthenticationResult
         {
-            IsAuthenticated = true,            
+            IsAuthenticated = true,
             UserId = user.Id,
             ExpiresAt = cookie.ExpiresAt,
-            AuthenticationScheme = cookie.AuthenticationScheme,
-            Claims = cookie.Claims,
-            AuthenticationProperties = cookie.AuthenticationProperties
         };
+    }
+
+    public async Task SignOutCookieAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
+    {
+        var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            userId = httpContext.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            throw new UnauthorizedAccessException();
+
+        _ = await userRepository.GetByIdAsync(userId) ?? throw new ResourceNotFoundException();
+
+        await httpContext.SignOutAsync(
+            CookieSettings.CookieAuthenticationScheme
+        );
     }
 
     [SuppressMessage("Performance",
@@ -207,5 +252,5 @@ public class AuthenticationService(
         }
 
         return (user, userCred);
-    }
+    }    
 }

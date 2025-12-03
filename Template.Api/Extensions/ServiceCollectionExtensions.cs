@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
         });
         
         
-        authBuilder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        authBuilder.AddCookie(CookieSettings.CookieAuthenticationScheme, options =>
         {
             options.Cookie.Name = cookieSettings.CookieName;
             options.Cookie.HttpOnly = cookieSettings.HttpOnly;

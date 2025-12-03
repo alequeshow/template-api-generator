@@ -1,4 +1,6 @@
-﻿using Template.Contract.Authentication;
+﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Template.Contract.Authentication;
 
 namespace Template.Application.Interfaces.Security;
 
@@ -28,7 +30,17 @@ public interface IAuthenticationService
     Task RevokeTokenAsync(string userId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets an authentication cookie for a user with their credentials.
+    /// Revokes a refresh token.
     /// </summary>
-    Task<CookieAuthenticationResult> GetCookieAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default);
+    Task RevokeTokenAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Signs httpContext with the validated user's claims.
+    /// </summary>
+    Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, HttpContext httpContext, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Signs out httpContext from given cookie
+    /// </summary>
+    Task SignOutCookieAsync(HttpContext httpContext, CancellationToken cancellationToken = default);
 }

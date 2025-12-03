@@ -8,7 +8,6 @@ namespace Template.Core.Security;
 
 public class CookieService(IOptions<CookieSettings> cookieSettings) : ICookieService
 {
-    private const string AuthenticationScheme = "Cookies";
     private const string IssuedUtcKey = ".issued";
     private const string ExpiresUtcKey = ".expires";
     private const string IsPersistentKey = ".persistent";
@@ -30,7 +29,7 @@ public class CookieService(IOptions<CookieSettings> cookieSettings) : ICookieSer
             claims.AddRange(additionalClaims);
         }
 
-        var claimsIdentity = new ClaimsIdentity(claims, AuthenticationScheme);
+        var claimsIdentity = new ClaimsIdentity(claims, CookieSettings.CookieAuthenticationScheme);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         var expiresAt = DateTime.UtcNow.AddMinutes(_cookieSettings.ExpirationMinutes);
 
@@ -44,7 +43,7 @@ public class CookieService(IOptions<CookieSettings> cookieSettings) : ICookieSer
 
         return new CookieResult
         {
-            AuthenticationScheme = AuthenticationScheme,
+            AuthenticationScheme = CookieSettings.CookieAuthenticationScheme,
             Claims = claimsPrincipal,
             ExpiresAt = expiresAt,
             AuthenticationProperties = authenticationProperties
