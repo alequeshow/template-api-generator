@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
+using Template.Contract;
 using Template.Contract.Authentication;
 using Template.Core.Interfaces.Security;
 using Template.Infrastructure.Configuration;
-using Template.Infrastructure.Exceptions;
 using Template.Model.Interfaces;
 
 namespace Template.Application.Security;
@@ -172,17 +171,26 @@ public class AuthenticationService(
         };
     }
 
+    public async Task<User> GetUserInfoAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
+    {
+        var model = await GetUserFromClaimAsync(httpContext.User);
+
+        return new User
+        {
+            Id = model.Id,
+            UserId = model.UserId.Identifier,
+            FirstName = model.Name.FirstName,
+            LastName = model.Name.LastName,
+            Email = model.Email.Value,
+            IsActive = model.ActiveInfo.IsActive,
+            IsActiveFrom = model.ActiveInfo.IsActiveFrom,
+            DeactivatedSince = model.ActiveInfo.DeactivatedSince,
+        };
+    }
+
     public async Task SignOutCookieAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
     {
-        var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
-            userId = httpContext.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException();
-
-        _ = await userRepository.GetByIdAsync(userId) ?? throw new UnauthorizedAccessException();
+        _ = await GetUserFromClaimAsync(httpContext.User);
 
         await httpContext.SignOutAsync(
             CookieSettings.CookieAuthenticationScheme
@@ -217,5 +225,18 @@ public class AuthenticationService(
         }
 
         return (user, userCred);
-    }    
+    }
+
+    private async Task<Model.User> GetUserFromClaimAsync(ClaimsPrincipal user)
+    {
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            userId = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            throw new UnauthorizedAccessException();
+
+        return await userRepository.GetByIdAsync(userId) ?? throw new UnauthorizedAccessException();
+    }
 }

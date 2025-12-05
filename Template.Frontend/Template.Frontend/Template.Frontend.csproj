@@ -7,14 +7,18 @@
     <UserSecretsId>aspnet-Template.Frontend-ed63b300-20e4-4665-b39a-0b47314028c3</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Template.Frontend.Client\Template.Frontend.Client.csproj" />
+  <ItemGroup>    
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Template.Contract\Template.Contract.csproj" />
+    <ProjectReference Include="..\Template.Frontend.Client\Template.Frontend.Client.csproj" />
   </ItemGroup>
 
 </Project>

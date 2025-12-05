@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Template.Contract;
 using Template.Contract.Authentication;
 
 namespace Template.Application.Interfaces.Security;
@@ -38,6 +39,8 @@ public interface IAuthenticationService
     /// Signs httpContext with the validated user's claims.
     /// </summary>
     Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, HttpContext httpContext, CancellationToken cancellationToken = default);
+
+    Task<User> GetUserInfoAsync(HttpContext httpContext, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Signs out httpContext from given cookie
