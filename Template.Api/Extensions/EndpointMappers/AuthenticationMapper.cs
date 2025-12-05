@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Template.Api.Handlers;
 using Template.Application.Interfaces.Security;
 using Template.Contract.Authentication;
+using Template.Contract.Common;
 
 namespace Template.Api.Extensions.EndpointMappers;
 
@@ -10,50 +10,38 @@ public static class AuthenticationMapper
 {
     public static WebApplication MapAuthenticationEndpoint(this WebApplication app)
     {
-        app.MapPost("/auth/token", ([FromBody] UserCredentialsRequest credentials, Application.Interfaces.Security.IAuthenticationService authService, CancellationToken ct) =>
+        app.MapPost("/auth/token", ([FromBody] UserCredentialsRequest credentials, IAuthenticationService authService, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
                 var result = await authService.GetTokenAsync(credentials, ct);
-
-                if (!result.IsAuthenticated)
-                {
-                    return Results.Unauthorized();
-                }
 
                 return Results.Ok(result);
             }))
         .AllowAnonymous()
         .WithName("GetToken")
-        .Produces(StatusCodes.Status200OK)
+        .ProducesValidationProblem()
+        .Produces<TokenAuthenticationResult>(StatusCodes.Status200OK)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/token/refresh", ([FromBody] RefreshTokenRequest request, Application.Interfaces.Security.IAuthenticationService authService, CancellationToken ct) =>
+        app.MapPost("/auth/token/refresh", ([FromBody] RefreshTokenRequest request, IAuthenticationService authService, CancellationToken ct) =>
         ApiHandler.HandleEndpointAsync(async () =>
         {
             var result = await authService.RefreshTokenAsync(request, ct);
 
-            if (!result.IsAuthenticated)
-            {
-                return Results.Unauthorized();
-            }
-
-            return Results.Ok(new
-            {
-                token = result.Token,
-                refreshToken = result.RefreshToken,
-                expiresAt = result.ExpiresAt
-            });
+            return Results.Ok(result);
         }))
         .AllowAnonymous()
         .WithName("RefreshToken")
-        .Produces(StatusCodes.Status200OK)
+        .Produces<TokenAuthenticationResult>(StatusCodes.Status200OK)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/token/revoke", (Application.Interfaces.Security.IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
+        app.MapPost("/auth/token/revoke", (IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
         ApiHandler.HandleEndpointAsync(async () =>
         {
             await authService.RevokeTokenAsync(httpContext.User, ct);
@@ -63,6 +51,7 @@ public static class AuthenticationMapper
         .RequireAuthorization()
         .WithName("RevokeToken")
         .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");
@@ -74,58 +63,43 @@ public static class AuthenticationMapper
 
                 return result.Status switch
                 {
-                    UserRegistrationStatus.Success => Results.Created($"/users/{result.UserId}", new
-                    {
-                        userId = result.UserId,
-                        message = result.Message
-                    }),
-                    UserRegistrationStatus.UserAlreadyRegistered => Results.Conflict(new
-                    {
-                        error = result.Message,
-                        status = result.Status.ToString()
-                    }),
-                    UserRegistrationStatus.PartialMatchRequiresReset => Results.Conflict(new
-                    {
-                        error = result.Message,
-                        status = result.Status.ToString()
-                    }),
-                    _ => Results.Problem(result.Message, statusCode: StatusCodes.Status500InternalServerError)
+                    UserRegistrationStatus.Success => Results.Created($"/users/{result.UserId}", new Result<string>(result.UserId)),
+                    UserRegistrationStatus.UserAlreadyRegistered => Results.Conflict(
+                        ApiHandler.MapErrorResult(result.Message!, UserRegistrationStatus.UserAlreadyRegistered.ToString())
+                    ),
+                    UserRegistrationStatus.InvalidData => Results.BadRequest(
+                        ApiHandler.MapErrorResult(result.Message!, UserRegistrationStatus.InvalidData.ToString())
+                    ),
+                    UserRegistrationStatus.PartialMatchRequiresReset => Results.Conflict(
+                        ApiHandler.MapErrorResult(result.Message!, UserRegistrationStatus.PartialMatchRequiresReset.ToString())
+                    ),
+                    _ => throw new Exception(result.Message)
                 };
             }))
         .AllowAnonymous()
         .WithName("RegisterUser")
-        .Produces(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status409Conflict)
-        .Produces(StatusCodes.Status500InternalServerError)
+        .Produces<Result<string>>(StatusCodes.Status201Created)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status409Conflict)
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/cookie", ([FromBody] UserCredentialsRequest credentials, Application.Interfaces.Security.IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
+        app.MapPost("/auth/cookie", ([FromBody] UserCredentialsRequest credentials, IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {
                 var result = await authService.SignInCookieAsync(credentials, httpContext, ct);
 
-                if (!result.IsAuthenticated)
-                {
-                    return Results.Json(new { error = result.ErrorMessage }, statusCode: StatusCodes.Status401Unauthorized);
-                }
-
-                return Results.Ok(new
-                {
-                    userId = result.UserId,
-                    isAuthenticated = true,
-                    expiresAt = result.ExpiresAt
-                });
+                return Results.Ok(result);
             }))
         .AllowAnonymous()
         .WithName("SignInCookie")
-        .Produces(StatusCodes.Status200OK)
+        .Produces<CookieAuthenticationResult>(StatusCodes.Status200OK)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/cookie/logout", (Application.Interfaces.Security.IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
+        app.MapPost("/auth/cookie/signout", (IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
         ApiHandler.HandleEndpointAsync(async () =>
         {
             await authService.SignOutCookieAsync(httpContext, ct);
@@ -135,6 +109,7 @@ public static class AuthenticationMapper
         .RequireAuthorization()
         .WithName("SignOutCookie")
         .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi()
         .WithTags("Authentication");

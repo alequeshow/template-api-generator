@@ -29,20 +29,12 @@ public class AuthenticationService(
 
         if (user is not null && !user.ActiveInfo.IsActive)
         {
-            return new TokenAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "User account is not active"
-            };
+            throw new UnauthorizedAccessException("User account is not active");
         }
 
         if (user is null || userCred is null)
         {
-            return new TokenAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "Invalid user identifier or password"
-            };
+            throw new UnauthorizedAccessException("Invalid user identifier or password");
         }        
 
         // Generate tokens
@@ -58,8 +50,7 @@ public class AuthenticationService(
         await userAccessInfoRepository.UpdateAsync(userCred);
 
         return new TokenAuthenticationResult
-        {
-            IsAuthenticated = true,
+        {            
             Token = accessToken.Token,
             RefreshToken = refreshToken.Token,
             ExpiresAt = accessToken.ExpiresAt,
@@ -73,11 +64,7 @@ public class AuthenticationService(
 
         if (string.IsNullOrEmpty(userId))
         {
-            return new TokenAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "Invalid token"
-            };
+            throw new UnauthorizedAccessException("Invalid token");
         }
 
         var usersAccessInfo = await userAccessInfoRepository.ListAsync(c => c.UserId == userId);
@@ -87,21 +74,13 @@ public class AuthenticationService(
             userAccessInfo.RefreshToken != request.RefreshToken ||
             userAccessInfo.RefreshTokenExpiresAt < DateTime.UtcNow)
         {
-            return new TokenAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "Invalid or expired refresh token"
-            };
+            throw new UnauthorizedAccessException("Invalid or expired refresh token");
         }
 
         var user = await userRepository.GetByIdAsync(userId);
         if (user == null || !user.ActiveInfo.IsActive)
         {
-            return new TokenAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "User not found or inactive"
-            };
+            throw new UnauthorizedAccessException("User not found or inactive");
         }
 
         // Generate new tokens
@@ -117,7 +96,6 @@ public class AuthenticationService(
 
         return new TokenAuthenticationResult
         {
-            IsAuthenticated = true,
             Token = accessToken.Token,
             RefreshToken = refreshToken.Token,
             ExpiresAt = accessToken.ExpiresAt,
@@ -163,22 +141,10 @@ public class AuthenticationService(
         var (user, userCred) = await GetVerifiedUserInfoAsync(credentials);
 
         if (user is not null && !user.ActiveInfo.IsActive)
-        {
-            return new CookieAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "User account is not active"
-            };
-        }
+            throw new UnauthorizedAccessException("User account is not active");
 
         if (user is null || userCred is null)
-        {
-            return new CookieAuthenticationResult
-            {
-                IsAuthenticated = false,
-                ErrorMessage = "Invalid user identifier or password"
-            };
-        }
+            throw new UnauthorizedAccessException("Invalid user identifier or password");
 
         var cookie = cookieService.GenerateAuthCookie(user.Id, user.Email.Value);
 
@@ -200,8 +166,7 @@ public class AuthenticationService(
         await userAccessInfoRepository.UpdateAsync(userCred);
 
         return new CookieAuthenticationResult
-        {
-            IsAuthenticated = true,
+        {            
             UserId = user.Id,
             ExpiresAt = cookie.ExpiresAt,
         };
@@ -217,7 +182,7 @@ public class AuthenticationService(
         if (string.IsNullOrEmpty(userId))
             throw new UnauthorizedAccessException();
 
-        _ = await userRepository.GetByIdAsync(userId) ?? throw new ResourceNotFoundException();
+        _ = await userRepository.GetByIdAsync(userId) ?? throw new UnauthorizedAccessException();
 
         await httpContext.SignOutAsync(
             CookieSettings.CookieAuthenticationScheme

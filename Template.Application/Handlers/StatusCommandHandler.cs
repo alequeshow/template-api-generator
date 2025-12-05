@@ -48,10 +48,6 @@ public class StatusCommandHandler(IRepository<Model.Status, string> repository) 
                 throw new NotSupportedException($"Operation {command.Operation} is not supported.");
         }
 
-        return new Result<Status>
-        {
-            Data = command.Value,
-            IsSuccessful = true
-        };
+        return new Result<Status>(command.Value);
     }
 }
