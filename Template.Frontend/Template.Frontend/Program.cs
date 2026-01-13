@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Refit;
 using Template.Frontend.Components;
-using Template.Frontend.Components.Account;
-using Template.Frontend.Data;
+using Template.Frontend.Services.Authentication;
+using Template.Frontend.Services.Interfaces;
+using Template.Infrastructure.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -13,60 +16,58 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
+var apiBaseAddress = builder.Configuration["ApiSettings:BaseUrl"]
+    ?? throw new InvalidOperationException("API base URL not configured");
+
+builder.Services.AddRefitClient<IAuthenticationApiClient>()
+    .ConfigureHttpClient(httpClient =>
+    {
+        httpClient.BaseAddress = new Uri(apiBaseAddress);        
+    })
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new System.Net.CookieContainer()
+    });
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<ApiAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+
+// Configure Identity with custom stores
+builder.Services.AddScoped<IUserStore<ApplicationUser>, ApiUserStore>();
+builder.Services.AddScoped<SignInManager<ApplicationUser>, ApiSignInManager>();
 
 builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+{
+    options.DefaultScheme = CookieSettings.CookieAuthenticationScheme;
+})
+.AddIdentityCookies();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    // All api managed
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 0;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+})
+.AddSignInManager<ApiSignInManager>()
+.AddDefaultTokenProviders();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
+// No-op email sender for Identity (Mock email sending)
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
-
-// Apply migrations and seed data for SQLite
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-    // Apply any pending migrations
-    await context.Database.MigrateAsync();
-
-    // Seed test user if none exists
-    if (!userManager.Users.Any())
-    {
-        var testUser = new ApplicationUser
-        {
-            UserName = "test@example.com",
-            Email = "test@example.com",
-            EmailConfirmed = true
-        };
-
-        await userManager.CreateAsync(testUser, "Test123!");
-    }
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
-    app.UseMigrationsEndPoint();
 }
 else
 {
@@ -76,17 +77,12 @@ else
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
-
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Template.Frontend.Client._Imports).Assembly);
-
-// Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();

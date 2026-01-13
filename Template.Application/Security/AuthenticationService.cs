@@ -137,6 +137,24 @@ public class AuthenticationService(
 
     public async Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, HttpContext httpContext, CancellationToken cancellationToken = default)
     {
+       var cookieResult = await SignInCookieAsync(credentials, cancellationToken);
+
+        await httpContext.SignInAsync(
+            cookieResult.AuthenticationScheme,
+            new ClaimsPrincipal(cookieResult.Identity),
+            new AuthenticationProperties(cookieResult.AuthenticationProperties!)
+        );
+
+        var hasCookie = httpContext.Response.Headers.ContainsKey("Set-Cookie");
+
+        if (!hasCookie)
+            throw new UnauthorizedAccessException();
+
+        return cookieResult;
+    }
+
+    public async Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default)
+    {
         var (user, userCred) = await GetVerifiedUserInfoAsync(credentials);
 
         if (user is not null && !user.ActiveInfo.IsActive)
@@ -147,27 +165,17 @@ public class AuthenticationService(
 
         var cookie = cookieService.GenerateAuthCookie(user.Id, user.Email.Value);
 
-        await httpContext.SignInAsync(
-            cookie.AuthenticationScheme,
-            cookie.Claims!,
-            new AuthenticationProperties(cookie.AuthenticationProperties!)
-        );
-
-        var hasCookie = httpContext.Response.Headers.ContainsKey("Set-Cookie");
-
-        if (!hasCookie)
-            throw new UnauthorizedAccessException();
-
-
         userCred.LastLoginAt = DateTime.UtcNow;
         userCred.UpdatedAt = DateTime.UtcNow;
 
         await userAccessInfoRepository.UpdateAsync(userCred);
 
         return new CookieAuthenticationResult
-        {            
+        {
             UserId = user.Id,
             ExpiresAt = cookie.ExpiresAt,
+            AuthenticationScheme = cookie.AuthenticationScheme,
+            Identity = cookie.Claims.Identities.First(),
         };
     }
 

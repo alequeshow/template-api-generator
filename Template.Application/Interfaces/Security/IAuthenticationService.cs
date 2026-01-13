@@ -40,6 +40,11 @@ public interface IAuthenticationService
     /// </summary>
     Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, HttpContext httpContext, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Returns cookie with the validated user's claims.
+    /// </summary>
+    Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default);
+
     Task<User> GetUserInfoAsync(HttpContext httpContext, CancellationToken cancellationToken = default);
 
     /// <summary>

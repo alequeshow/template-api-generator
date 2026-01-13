@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Template.Frontend.Components.Account.Pages;
 using Template.Frontend.Components.Account.Pages.Manage;
-using Template.Frontend.Data;
+using Template.Frontend.Services.Authentication;
 
 namespace Microsoft.AspNetCore.Routing
 {
