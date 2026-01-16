@@ -1,9 +1,8 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using Template.Api.Configuration;
 using Template.Application.Extensions;
 using Template.Infrastructure.Configuration;
@@ -25,20 +24,15 @@ public static class ServiceCollectionExtensions
     {
         // Bind JWT settings
         var jwtSettings = configuration.GetSection("Authorization:JwtSettings").Get<JwtSettings>() ?? throw new InvalidOperationException("Authorization:JwtSettings configuration is missing");
-        services.Configure<JwtSettings>(configuration.GetSection("Authorization:JwtSettings"));
-
-        var cookieSettings = configuration.GetSection("Authorization:CookieSettings").Get<CookieSettings>() ?? throw new InvalidOperationException("Authorization:CookieSettings configuration is missing");
-        services.Configure<CookieSettings>(configuration.GetSection("Authorization:CookieSettings"));
+        services.Configure<JwtSettings>(configuration.GetSection("Authorization:JwtSettings"));        
 
         // Configure Authentication
-        var authBuilder = services.AddAuthentication(options =>
+        services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;            
-        });
-
-
-        authBuilder.AddJwtBearer(options =>
+        })
+        .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -50,28 +44,6 @@ public static class ServiceCollectionExtensions
                 ValidAudience = jwtSettings.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
-            };
-        });
-        
-        
-        authBuilder.AddCookie(CookieSettings.CookieAuthenticationScheme, options =>
-        {
-            options.Cookie.Name = cookieSettings.CookieName;
-            options.Cookie.HttpOnly = cookieSettings.HttpOnly;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.MaxAge = TimeSpan.FromDays(cookieSettings.MaxAgeInDays);
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(cookieSettings.ExpirationMinutes);
-            options.SlidingExpiration = true;
-            options.Events.OnRedirectToLogin = context =>
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return Task.CompletedTask;
-            };
-            options.Events.OnRedirectToAccessDenied = context =>
-            {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                return Task.CompletedTask;
             };
         });
 

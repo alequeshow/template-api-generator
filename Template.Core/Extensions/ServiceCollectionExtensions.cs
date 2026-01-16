@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
         // Security services
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<ICookieService, CookieService>();        
 
         return services;
     }

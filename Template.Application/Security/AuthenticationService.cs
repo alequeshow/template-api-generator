@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Template.Contract;
 using Template.Contract.Authentication;
 using Template.Core.Interfaces.Security;
-using Template.Infrastructure.Configuration;
 using Template.Model.Interfaces;
 
 namespace Template.Application.Security;
@@ -18,7 +16,6 @@ public class AuthenticationService(
     IRepository<Model.User, string> userRepository,
     IRepository<Model.UserAccessInfo, string> userAccessInfoRepository,
     ITokenService tokenService,
-    ICookieService cookieService,
     IPasswordHasher passwordHasher) : Interfaces.Security.IAuthenticationService
 {
 
@@ -133,51 +130,7 @@ public class AuthenticationService(
             throw new UnauthorizedAccessException();
 
         await RevokeTokenAsync(userId, cancellationToken);
-    }
-
-    public async Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, HttpContext httpContext, CancellationToken cancellationToken = default)
-    {
-       var cookieResult = await SignInCookieAsync(credentials, cancellationToken);
-
-        await httpContext.SignInAsync(
-            cookieResult.AuthenticationScheme,
-            new ClaimsPrincipal(cookieResult.Identity),
-            new AuthenticationProperties(cookieResult.AuthenticationProperties!)
-        );
-
-        var hasCookie = httpContext.Response.Headers.ContainsKey("Set-Cookie");
-
-        if (!hasCookie)
-            throw new UnauthorizedAccessException();
-
-        return cookieResult;
-    }
-
-    public async Task<CookieAuthenticationResult> SignInCookieAsync(UserCredentialsRequest credentials, CancellationToken cancellationToken = default)
-    {
-        var (user, userCred) = await GetVerifiedUserInfoAsync(credentials);
-
-        if (user is not null && !user.ActiveInfo.IsActive)
-            throw new UnauthorizedAccessException("User account is not active");
-
-        if (user is null || userCred is null)
-            throw new UnauthorizedAccessException("Invalid user identifier or password");
-
-        var cookie = cookieService.GenerateAuthCookie(user.Id, user.Email.Value);
-
-        userCred.LastLoginAt = DateTime.UtcNow;
-        userCred.UpdatedAt = DateTime.UtcNow;
-
-        await userAccessInfoRepository.UpdateAsync(userCred);
-
-        return new CookieAuthenticationResult
-        {
-            UserId = user.Id,
-            ExpiresAt = cookie.ExpiresAt,
-            AuthenticationScheme = cookie.AuthenticationScheme,
-            Identity = cookie.Claims.Identities.First(),
-        };
-    }
+    }    
 
     public async Task<User> GetUserInfoAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
     {
@@ -194,15 +147,6 @@ public class AuthenticationService(
             IsActiveFrom = model.ActiveInfo.IsActiveFrom,
             DeactivatedSince = model.ActiveInfo.DeactivatedSince,
         };
-    }
-
-    public async Task SignOutCookieAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
-    {
-        _ = await GetUserFromClaimAsync(httpContext.User);
-
-        await httpContext.SignOutAsync(
-            CookieSettings.CookieAuthenticationScheme
-        );
     }
 
     [SuppressMessage("Performance",

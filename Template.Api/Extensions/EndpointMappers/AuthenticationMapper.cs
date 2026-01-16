@@ -85,36 +85,6 @@ public static class AuthenticationMapper
         .WithOpenApi()
         .WithTags("Authentication");
 
-        app.MapPost("/auth/cookie", ([FromBody] UserCredentialsRequest credentials, IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
-            ApiHandler.HandleEndpointAsync(async () =>
-            {
-                var result = await authService.SignInCookieAsync(credentials, httpContext, ct);
-
-                return Results.Ok(result);
-            }))
-        .AllowAnonymous()
-        .WithName("SignInCookie")
-        .Produces<CookieAuthenticationResult>(StatusCodes.Status200OK)
-        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status401Unauthorized)
-        .WithOpenApi()
-        .WithTags("Authentication");
-
-        app.MapPost("/auth/cookie/signout", (IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
-        ApiHandler.HandleEndpointAsync(async () =>
-        {
-            await authService.SignOutCookieAsync(httpContext, ct);
-
-            return Results.NoContent();
-        }))
-        .RequireAuthorization()
-        .WithName("SignOutCookie")
-        .Produces(StatusCodes.Status204NoContent)
-        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status401Unauthorized)
-        .WithOpenApi()
-        .WithTags("Authentication");
-
         app.MapPost("/auth/userinfo", (IAuthenticationService authService, HttpContext httpContext, CancellationToken ct) =>
             ApiHandler.HandleEndpointAsync(async () =>
             {

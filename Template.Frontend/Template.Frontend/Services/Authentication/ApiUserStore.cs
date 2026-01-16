@@ -1,22 +1,29 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Template.Contract.Authentication;
 using Template.Frontend.Services.Interfaces;
 
 namespace Template.Frontend.Services.Authentication;
 
-public class ApiUserStore : IUserStore<ApplicationUser>, IUserEmailStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
+public class ApiUserStore(
+    IAuthenticationApiClient apiClient,
+    IHttpContextAccessor httpContextAccessor) 
+    : IUserStore<ApplicationUser>, IUserEmailStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>
 {
-    private readonly IAuthenticationApiClient _apiClient;
-
-    public ApiUserStore(IAuthenticationApiClient apiClient)
+    public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        _apiClient = apiClient;
-    }
+        var registrationRequest = new UserRegistrationRequest
+        {
+            UserIdentifier = user.UserName!,
+            Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Password = user.PasswordHash!
+        };
 
-    public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
-    {
-        // TODO: Review this assumption: Registration is handled separately via RegisterAsync
-        // Why return success here once it does nothing?
-        return Task.FromResult(IdentityResult.Success);
+        await apiClient.RegisterUserAsync(registrationRequest);
+
+        return IdentityResult.Success;
     }
 
     public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -24,64 +31,41 @@ public class ApiUserStore : IUserStore<ApplicationUser>, IUserEmailStore<Applica
         throw new NotImplementedException("Delete not supported");
     }
 
-    public async Task<ApplicationUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+    public Task<ApplicationUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
     {
-        var user = await _apiClient.GetUserInfoAsync();
-
-        if (user is null || (user?.Email.Equals(normalizedEmail, StringComparison.InvariantCultureIgnoreCase) ?? false))
-        {
-            return null;
-        }
-
-        return new ApplicationUser
-        {
-            Id = user!.Id!,
-            UserName = user.UserId,
-            Email = user.Email,
-            NormalizedEmail = user.Email.ToLowerInvariant(),
-            NormalizedUserName = user.UserId.ToLowerInvariant(),
-            EmailConfirmed = true
-        };
+        //TODO: implement endpoint to fetch from by email
+        return Task.FromResult<ApplicationUser?>(default);
     }
 
     public async Task<ApplicationUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
     {
-        var user = await _apiClient.GetUserInfoAsync();
 
-        if (user is null || (!user?.Id?.Equals(userId, StringComparison.InvariantCultureIgnoreCase) ?? false))
+        // TODO: implement endpoint client to fetch from /users/id
+        var user = await apiClient.GetUserInfoAsync();
+
+        if (user is null)
         {
             return null;
         }
 
-        return new ApplicationUser
+        var appUser = user.MapFromUserContract();
+
+        var contextUserId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (appUser.Id.Equals(contextUserId, StringComparison.InvariantCultureIgnoreCase))
         {
-            Id = user!.Id!,
-            UserName = user.UserId,
-            Email = user.Email,
-            NormalizedEmail = user.Email.ToUpperInvariant(),
-            NormalizedUserName = user.UserId.ToUpperInvariant(),
-            EmailConfirmed = true
-        };
+            appUser.AuthToken = httpContextAccessor.HttpContext?.User?.GetAuthToken();
+            appUser.RefreshAuthToken = httpContextAccessor.HttpContext?.User?.GetRefreshAuthToken();
+            appUser.TokenExpiresAt = httpContextAccessor.HttpContext?.User?.GetTokenExpiresAt();
+        }
+
+        return appUser;
     }
 
-    public async Task<ApplicationUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+    public Task<ApplicationUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
     {
-        var user = await _apiClient.GetUserInfoAsync();
-
-        if (user is null || (!user?.UserId.Equals(normalizedUserName, StringComparison.InvariantCultureIgnoreCase) ?? false))
-        {
-            return null;
-        }
-
-        return new ApplicationUser
-        {
-            Id = user!.Id!,
-            UserName = user.UserId,
-            Email = user.Email,
-            NormalizedEmail = user.Email.ToUpperInvariant(),
-            NormalizedUserName = user.UserId.ToUpperInvariant(),
-            EmailConfirmed = true
-        };
+        //TODO: implement endpoint to fetch from by username
+        return Task.FromResult<ApplicationUser?>(default);
     }
 
     public Task<string?> GetEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -91,7 +75,8 @@ public class ApiUserStore : IUserStore<ApplicationUser>, IUserEmailStore<Applica
 
     public Task<bool> GetEmailConfirmedAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(true); // API handles confirmation
+        // TODO: Implement endpoint to validate user email confirmation
+        return Task.FromResult(user.EmailConfirmed);
     }
 
     public Task<string?> GetNormalizedEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -122,48 +107,74 @@ public class ApiUserStore : IUserStore<ApplicationUser>, IUserEmailStore<Applica
 
     public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(true);
+        return Task.FromResult(user.AuthToken is not null);
     }
 
-    public Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken)
+    public async Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken)
     {
-        // Email is managed by API
-        throw new NotImplementedException("Method not allowed");
+        ArgumentNullException.ThrowIfNull(email);
+        
+        user.Email = email;
+        await SetNormalizedEmailAsync(user, email.ToLowerInvariant(), cancellationToken);
     }
 
     public Task SetEmailConfirmedAsync(ApplicationUser user, bool confirmed, CancellationToken cancellationToken)
     {
+        user.EmailConfirmed = confirmed;
+
         return Task.CompletedTask;
     }
 
     public Task SetNormalizedEmailAsync(ApplicationUser user, string? normalizedEmail, CancellationToken cancellationToken)
     {
-        // Email is managed by API
-        throw new NotImplementedException("Method not allowed");
+        ArgumentNullException.ThrowIfNull(normalizedEmail);
+
+        if(!normalizedEmail.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new ArgumentException("Normalized email does not match current email.");
+        }
+
+        user.NormalizedEmail = user.Email.ToLowerInvariant();
+
+        return Task.CompletedTask;
     }
 
     public Task SetNormalizedUserNameAsync(ApplicationUser user, string? normalizedName, CancellationToken cancellationToken)
     {
-        // User is managed by API
-        throw new NotImplementedException("Method not allowed");
+        ArgumentNullException.ThrowIfNull(normalizedName);
+
+        if (!normalizedName.Equals(user.UserName, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new ArgumentException("Normalized email does not match current email.");
+        }
+
+        user.NormalizedUserName = user.UserName.ToLowerInvariant();
+
+        return Task.CompletedTask;
     }
 
     public Task SetPasswordHashAsync(ApplicationUser user, string? passwordHash, CancellationToken cancellationToken)
     {
-        // Password is managed by API
-        throw new NotImplementedException("Method not allowed");
+        // Used only for create user workflow
+        user.PasswordHash = passwordHash;
+        return Task.CompletedTask;
     }
 
-    public Task SetUserNameAsync(ApplicationUser user, string? userName, CancellationToken cancellationToken)
+    public async Task SetUserNameAsync(ApplicationUser user, string? userName, CancellationToken cancellationToken)
     {
-        // User is managed by API
-        throw new NotImplementedException("Method not allowed");
+        ArgumentNullException.ThrowIfNull(userName);
+
+        user.UserName = userName;
+        await SetNormalizedEmailAsync(user, userName.ToLowerInvariant(), cancellationToken);
     }
 
-    public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
+    public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        // User is managed by API
-        throw new NotImplementedException("Method not allowed");
+        var userRequest = user.MapToUserContract();
+
+        await apiClient.UpdateUserAsync(user.Id, userRequest);
+
+        return IdentityResult.Success;
     }
 
     public void Dispose()

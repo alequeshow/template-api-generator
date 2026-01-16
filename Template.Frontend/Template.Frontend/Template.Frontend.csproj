@@ -24,8 +24,4 @@
     <ProjectReference Include="..\Template.Frontend.Client\Template.Frontend.Client.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
-
 </Project>
