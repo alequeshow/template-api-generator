@@ -1,0 +1,24 @@
+﻿@if (!string.IsNullOrEmpty(Message))
+{
+    var statusMessageClass = Type switch
+    {
+        AlertType.Success => "success",
+        AlertType.Warning => "warning",
+        AlertType.Error => "danger",
+        _ => "info" // default case
+    };
+
+    <div class="alert alert-@statusMessageClass" role="alert">
+        @Message
+    </div>
+}
+
+@code {
+    private string? messageFromCookie;
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public AlertType? Type { get; set; }
+}

@@ -1,0 +1,75 @@
+﻿@using Template.Contract
+@using System.ComponentModel.DataAnnotations
+
+<EditForm FormName="StatusForm" Model="@model" OnSubmit="HandleSubmitAsync">
+    <div class="mb-3">
+        <label for="Value" class="form-label">Value</label>
+        <InputText class="form-control" type="text" id="Value" 
+                   @bind-Value="model.Value" />
+    </div>
+    <div class="mb-3">
+        <label for="Description" class="form-label">Description</label>
+        <InputText class="form-control" type="text" id="Description" 
+                   @bind-Value="model.Description" />
+    </div>    
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Status? InputModel { get; set; }
+
+    [Parameter]
+    public EventCallback<Status> OnValidSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnValidationFailed { get; set; }
+
+    private Status model = new Status
+    {
+        Value = string.Empty,
+        TimeStamp = DateTime.UtcNow
+    };
+
+    private bool isCreate = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isCreate = InputModel is null;
+        model = InputModel ?? model;
+    }
+
+    private async Task HandleSubmitAsync(EditContext context)
+    {
+        // Manually validate
+        var isValid = context.Validate();
+
+        if (isValid)
+        {
+            // Additional custom validation
+            if (await ValidateModel())
+            {
+                await OnValidSubmit.InvokeAsync(model);
+            }
+        }
+        else
+        {
+            // Validation failed
+            var errors = context.GetValidationMessages();
+            var errorMessage = string.Join(", ", errors);
+            await OnValidationFailed.InvokeAsync(errorMessage);
+        }
+    }
+
+    private async Task<bool> ValidateModel()
+    {
+        var isValid = !string.IsNullOrWhiteSpace(model?.Value);
+
+        if (!isValid)
+        {
+            await OnValidationFailed.InvokeAsync("Value is required");
+        }
+        
+        return isValid;
+    }
+}

@@ -1,0 +1,45 @@
+﻿@page "/status/create"
+
+@using Microsoft.AspNetCore.Authorization
+@using Template.Contract
+@using Template.Frontend.Services.Interfaces.ApiClients
+@inject IStatusApiClient statusClient
+@attribute [Authorize]
+
+<PageTitle>Status Creation</PageTitle>
+
+<h1>Status</h1>
+
+<AlertMessage Message="@message" Type="@alertType"/>
+<StatusForm
+    OnValidSubmit="CreateStatusAsync"
+    OnValidationFailed="HandleValidationFailed" />
+
+@code {
+
+    private string? message;
+    private AlertType? alertType;    
+
+    private async Task CreateStatusAsync(Status newModel)
+    {
+        try
+        {
+            var result = await statusClient.AddStatusAsync(newModel);
+            message = "Status created successfully.";
+            alertType = AlertType.Success;
+
+            await Task.Delay(5000);
+        }
+        catch (Refit.ApiException ex)
+        {
+            message = ex.Message;
+            alertType = AlertType.Error;
+        }
+    }
+
+    private void HandleValidationFailed(string? validationMessage)
+    {
+        message = validationMessage;
+        alertType = AlertType.Warning;
+    }
+}

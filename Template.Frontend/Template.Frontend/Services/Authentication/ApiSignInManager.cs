@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Net;
 using System.Security.Claims;
 using Template.Contract.Authentication;
-using Template.Frontend.Services.Interfaces;
+using Template.Frontend.Services.Interfaces.ApiClients;
 
 namespace Template.Frontend.Services.Authentication;
 

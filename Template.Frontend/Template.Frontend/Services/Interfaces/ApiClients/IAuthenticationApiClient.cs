@@ -3,7 +3,7 @@ using Template.Contract;
 using Template.Contract.Authentication;
 using Template.Contract.Common;
 
-namespace Template.Frontend.Services.Interfaces;
+namespace Template.Frontend.Services.Interfaces.ApiClients;
 
 public interface IAuthenticationApiClient
 {

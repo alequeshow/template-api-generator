@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Identity;
-using Refit;
 using Template.Frontend.Components;
-using Template.Frontend.Services.Authentication;
-using Template.Frontend.Services.Interfaces;
+using Template.Frontend.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,58 +11,7 @@ builder.Services
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
-var apiBaseAddress = builder.Configuration["ApiSettings:BaseUrl"]
-    ?? throw new InvalidOperationException("API base URL not configured");
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<AuthTokenForwardingHandler>();
-builder.Services.AddHttpClient("BackendAPI", client =>
-{
-    client.BaseAddress = new Uri(apiBaseAddress);
-})
-.AddHttpMessageHandler<AuthTokenForwardingHandler>();
-
-builder.Services.AddScoped(sp =>
-{
-    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-    var httpClient = httpClientFactory.CreateClient("BackendAPI");
-    return RestService.For<IAuthenticationApiClient>(httpClient);
-});
-
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-
-builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
-
-builder.Services.AddScoped<IUserStore<ApplicationUser>, ApiUserStore>();
-builder.Services.AddScoped<SignInManager<ApplicationUser>, ApiSignInManager>();
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;    
-})
-.AddIdentityCookies();
-
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
-{
-    // All api managed
-    options.Password.RequireDigit = false;
-    options.Password.RequiredLength = 0;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
-
-    // Two-factor authentication settings
-    options.Tokens.AuthenticatorTokenProvider = null!;
-    options.Tokens.ChangePhoneNumberTokenProvider = null!;
-})
-.AddSignInManager<ApiSignInManager>()
-.AddDefaultTokenProviders();
-
-// No-op email sender for Identity (Mock email sending)
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.ConfigureServices(configuration);
 
 var app = builder.Build();
 

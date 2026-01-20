@@ -1,0 +1,55 @@
+﻿@page "/status"
+
+@using Microsoft.AspNetCore.Authorization
+@using Template.Contract
+@using Template.Frontend.Services.Interfaces.ApiClients
+@inject IStatusApiClient statusClient
+@attribute [Authorize]
+
+<PageTitle>Status</PageTitle>
+
+<h1>Status</h1>
+
+<p>
+    <button type="button" class="btn btn-primary" onclick="location.href='/status/create'">
+        <i class="bi bi-plus-lg"></i> New
+    </button>
+</p>
+
+@if (status == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Description</th>
+                <th>Date</th>                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in status)
+            {
+                <tr>
+                    <td>@item.Value</td>
+                    <td>@item.Description</td>
+                    <td>@item.TimeStamp.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Status[]? status;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await statusClient.GetStatusAsync();
+
+        status ??= result.ToArray(); 
+    }    
+}

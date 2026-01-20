@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Template.Contract.Authentication;
-using Template.Frontend.Services.Interfaces;
+using Template.Frontend.Services.Interfaces.ApiClients;
 
 namespace Template.Frontend.Services.Authentication;
 
