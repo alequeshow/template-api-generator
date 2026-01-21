@@ -1,17 +1,20 @@
 ﻿@using Template.Contract
-@using System.ComponentModel.DataAnnotations
 
-<EditForm FormName="StatusForm" Model="@model" OnSubmit="HandleSubmitAsync">
+<EditForm FormName="StatusForm" Model="@_model" OnSubmit="@HandleSubmitAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
     <div class="mb-3">
         <label for="Value" class="form-label">Value</label>
-        <InputText class="form-control" type="text" id="Value" 
-                   @bind-Value="model.Value" />
+        <InputText class="form-control" type="text" id="Value"
+                   @bind-Value="_model.Value"/>
+        <ValidationMessage For="() => _model.Value" />
     </div>
     <div class="mb-3">
         <label for="Description" class="form-label">Description</label>
-        <InputText class="form-control" type="text" id="Description" 
-                   @bind-Value="model.Description" />
-    </div>    
+        <InputText class="form-control" type="text" id="Description"
+                   @bind-Value="_model.Description"/>
+        <ValidationMessage For="() => _model.Description" />
+    </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
 
@@ -25,36 +28,44 @@
     [Parameter]
     public EventCallback<string?> OnValidationFailed { get; set; }
 
-    private Status model = new Status
-    {
-        Value = string.Empty,
-        TimeStamp = DateTime.UtcNow
-    };
+    private Status _model = null!;
 
-    private bool isCreate = false;
+    private bool _isCreate = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        isCreate = InputModel is null;
-        model = InputModel ?? model;
+        InitializeModel();
+    }
+
+    protected override void OnParametersSet()
+    {
+        InitializeModel();
+    }
+
+    private void InitializeModel()
+    {
+        _isCreate = InputModel is null;
+        
+        _model ??= InputModel ?? new Status
+        {
+            Value = string.Empty,
+            TimeStamp = DateTime.UtcNow
+        };
     }
 
     private async Task HandleSubmitAsync(EditContext context)
     {
-        // Manually validate
         var isValid = context.Validate();
 
         if (isValid)
         {
-            // Additional custom validation
             if (await ValidateModel())
             {
-                await OnValidSubmit.InvokeAsync(model);
+                await OnValidSubmit.InvokeAsync(_model);
             }
         }
         else
         {
-            // Validation failed
             var errors = context.GetValidationMessages();
             var errorMessage = string.Join(", ", errors);
             await OnValidationFailed.InvokeAsync(errorMessage);
@@ -63,13 +74,10 @@
 
     private async Task<bool> ValidateModel()
     {
-        var isValid = !string.IsNullOrWhiteSpace(model?.Value);
-
-        if (!isValid)
-        {
-            await OnValidationFailed.InvokeAsync("Value is required");
-        }
+        if (!string.IsNullOrWhiteSpace(_model?.Value)) return true;
         
-        return isValid;
+        await OnValidationFailed.InvokeAsync("Value is required");
+
+        return false;
     }
 }
