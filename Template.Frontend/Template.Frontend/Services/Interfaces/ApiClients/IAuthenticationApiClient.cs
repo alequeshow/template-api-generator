@@ -11,7 +11,7 @@ public interface IAuthenticationApiClient
     Task<TokenAuthenticationResult> GetTokenAsync(UserCredentialsRequest userCredentials);
 
     [Post("/auth/token/refresh")]
-    Task<TokenAuthenticationResult> RefreshTokenAsync(UserCredentialsRequest userCredentials);
+    Task<TokenAuthenticationResult> RefreshTokenAsync(RefreshTokenRequest request);
 
     [Post("/auth/token/revoke")]
     Task RevokeTokenAsync();

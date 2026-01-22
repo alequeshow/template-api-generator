@@ -27,7 +27,7 @@ else
             <tr>
                 <th>Value</th>
                 <th>Description</th>
-                <th>Date</th>                
+                <th>Time stamp</th>                
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@ else
                 <tr>
                     <td>@item.Value</td>
                     <td>@item.Description</td>
-                    <td>@item.TimeStamp.ToShortDateString()</td>
+                    <td>@item.TimeStamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
                 </tr>
             }
         </tbody>

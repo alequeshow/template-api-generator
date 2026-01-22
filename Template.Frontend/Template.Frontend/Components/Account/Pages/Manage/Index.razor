@@ -54,7 +54,7 @@
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
-        
+
         firstName = user.FirstName;
         Input.FirstName ??= firstName;
 
@@ -64,14 +64,27 @@
 
     private async Task OnValidSubmitAsync()
     {
+        var userChanged = false;
+
         if (Input.FirstName != firstName)
         {
             user.FirstName = Input.FirstName!;
             user.LastName = Input.LastName!;
+            userChanged = true;
         }
 
-        await UserManager.UpdateAsync(user);
-        await SignInManager.RefreshSignInAsync(user);
+        if (Input.LastName != lastName)
+        {
+            user.LastName = Input.LastName!;
+            userChanged = true;
+        }
+
+        if (userChanged)
+        {
+            await UserManager.UpdateAsync(user);
+            await SignInManager.RefreshSignInAsync(user);
+        }
+
         RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
     }
 

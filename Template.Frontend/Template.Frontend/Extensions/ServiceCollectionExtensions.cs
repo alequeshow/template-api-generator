@@ -21,16 +21,37 @@ public static class ServiceCollectionExtensions
         services.AddCascadingAuthenticationState();
         services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
+        services.AddScoped<AuthTokenValidationService>();
+        services.AddScoped<SignInManager<ApplicationUser>, ApiSignInManager>();
         services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
         services.AddScoped<IUserStore<ApplicationUser>, ApiUserStore>();
-        services.AddScoped<SignInManager<ApplicationUser>, ApiSignInManager>();
 
         services.AddAuthentication(options =>
         {
             options.DefaultScheme = IdentityConstants.ApplicationScheme;
             options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
         })
-        .AddIdentityCookies();
+        .AddIdentityCookies(options =>
+        {
+            options.ApplicationCookie?.Configure(cookieOptions =>
+            {
+                cookieOptions.Events.OnValidatePrincipal = async context =>
+                {
+                    var tokenValidationService = context.HttpContext.RequestServices
+                                .GetRequiredService<AuthTokenValidationService>();
+
+                    var user = context.Principal;
+
+                    var isTokenValid = await tokenValidationService.ValidateAndRefreshTokenAsync(user);
+
+                    if (!isTokenValid)
+                        context.RejectPrincipal();
+                };
+
+                cookieOptions.ExpireTimeSpan = TimeSpan.FromHours(8);
+                cookieOptions.SlidingExpiration = true;
+            });
+        });
 
         services.AddIdentityCore<ApplicationUser>(options =>
         {
