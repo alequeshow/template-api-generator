@@ -98,10 +98,6 @@
         {
             ShowAlert($"Error creating status: {ex.Message}", AlertType.Error);
         }
-        catch (TaskCanceledException)
-        {
-            ShowAlert($"O servidor demorou para responder, tente novamente:", AlertType.Error);
-        }
         catch (Exception ex)
         {
             ShowAlert($"Unexpected error: {ex.Message}", AlertType.Error);

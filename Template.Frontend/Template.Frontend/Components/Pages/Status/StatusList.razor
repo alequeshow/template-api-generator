@@ -12,7 +12,7 @@
 
 <p>
     <button type="button" class="btn btn-primary" onclick="location.href='/status/create'">
-        <i class="bi bi-plus-lg"></i> New
+        <i class="mdi mdi-plus"></i> New
     </button>
 </p>
 
@@ -37,6 +37,11 @@ else
                     <td>@item.Value</td>
                     <td>@item.Description</td>
                     <td>@item.TimeStamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>
+                        <a href="/status/edit/@item.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="mdi mdi-pencil"></i>
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>

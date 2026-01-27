@@ -70,7 +70,6 @@ public class AuthTokenValidationService(
                 applicationUser.RefreshAuthToken = refreshResult.RefreshToken;
                 applicationUser.TokenExpiresAt = refreshResult.ExpiresAt;
 
-                await userManager.UpdateAsync(applicationUser);
                 await signInManager.RefreshSignInAsync(applicationUser);
 
                 return true;
