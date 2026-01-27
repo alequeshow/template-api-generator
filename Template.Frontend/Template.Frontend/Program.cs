@@ -6,7 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services
-    .AddRazorComponents()
+    .AddRazorComponents(options =>
+        options.DetailedErrors = builder.Environment.IsDevelopment())
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();

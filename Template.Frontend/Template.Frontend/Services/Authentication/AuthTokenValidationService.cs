@@ -43,7 +43,7 @@ public class AuthTokenValidationService(
 
         // Refresh token if close to expiration
         var refreshToken = principal.GetRefreshAuthToken();
-        if (tokenExpirationDate <= DateTime.UtcNow.AddMinutes(10) && !string.IsNullOrEmpty(refreshToken))
+        if (tokenExpirationDate <= DateTime.UtcNow.AddMinutes(30) && !string.IsNullOrEmpty(refreshToken))
         {
             logger.LogInformation("Refreshing token with at {ExpirationTime}", tokenExpirationDate);
 

@@ -1,17 +1,19 @@
 ﻿@page "/status/create"
+@rendermode InteractiveServer
+@attribute [Authorize]
 
 @using Microsoft.AspNetCore.Authorization
 @using Template.Contract
 @using Template.Frontend.Services.Interfaces.ApiClients
+
 @inject IStatusApiClient _statusClient
 @inject NavigationManager NavigationManager
-@attribute [Authorize]
 
 <PageTitle>Status Creation</PageTitle>
 
 <h1>Create Status</h1>
 
-<AlertMessage @bind-Message="_message" @bind-Type="_alertType" @bind-TimeoutMilliseconds="_alertTimeout" />
+<AlertMessage @bind-Message="_message" @bind-Type="_alertType"/>
 
 <EditForm Model="@StatusModel" OnValidSubmit="@HandleValidSubmitAsync" FormName="CreateStatusForm">
     <DataAnnotationsValidator />
@@ -47,10 +49,10 @@
 @code {
     private string? _message;
     private AlertType? _alertType;
-    private int _alertTimeout;
+    private bool operationSucess;
 
     [SupplyParameterFromForm(FormName = "CreateStatusForm")]
-    private Status StatusModel { get; set; } = null!;
+    private Status StatusModel { get; set; } = null!;    
 
     protected override void OnInitialized()
     {
@@ -62,19 +64,27 @@
         };
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (operationSucess)
+            await RedirectAfterDelayAsync(5000);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private async Task HandleValidSubmitAsync()
     {
         try
         {
             if (string.IsNullOrWhiteSpace(StatusModel?.Value))
             {
-                await ShowAlert("Value is required", AlertType.Warning);
+                ShowAlert("Value is required", AlertType.Warning);
                 return;
             }
 
             var result = await _statusClient.AddStatusAsync(StatusModel);
-
-            await ShowAlert("Status created successfully.", AlertType.Success, 5000);
+            operationSucess = true;
+            ShowAlert("Status created successfully.", AlertType.Success);
 
             // Reset form after successful creation
             StatusModel = new Status
@@ -86,18 +96,27 @@
         }
         catch (Refit.ApiException ex)
         {
-            await ShowAlert($"Error creating status: {ex.Message}", AlertType.Error, 5000);
+            ShowAlert($"Error creating status: {ex.Message}", AlertType.Error);
+        }
+        catch (TaskCanceledException)
+        {
+            ShowAlert($"O servidor demorou para responder, tente novamente:", AlertType.Error);
         }
         catch (Exception ex)
         {
-            await ShowAlert($"Unexpected error: {ex.Message}", AlertType.Error, 5000);
+            ShowAlert($"Unexpected error: {ex.Message}", AlertType.Error);
         }
     }
 
-    private async Task ShowAlert(string message, AlertType type, int durationInMilliseconds = 0)
+    private void ShowAlert(string message, AlertType type)
     {
         _message = message;
         _alertType = type;
-        _alertTimeout = durationInMilliseconds;
+    }
+
+    private async Task RedirectAfterDelayAsync(int delayMilliseconds)
+    {
+        await Task.Delay(delayMilliseconds);
+        NavigationManager.NavigateTo("/status");
     }
 }

@@ -9,7 +9,7 @@ public interface IStatusApiClient
     Task<IReadOnlyCollection<Status>> GetStatusAsync();
 
     [Post("/status")]
-    Task<string> AddStatusAsync(Status status);
+    Task<string> AddStatusAsync(Status status, CancellationToken cancellationToken = default);
 
     [Get("/status/{id}")]
     Task<Status> GetStatusAsync(string id);

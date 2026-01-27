@@ -5,17 +5,15 @@
         AlertType.Success => "success",
         AlertType.Warning => "warning",
         AlertType.Error => "danger",
-        _ => "info" // default case
+        _ => "info"
     };
 
     <div class="alert alert-@statusMessageClass" role="alert">
         @Message
-    </div>
+    </div>    
 }
 
 @code {
-    private CancellationTokenSource? _cancellationTokenSource;
-
     [Parameter]
     public string? Message { get; set; }
 
@@ -27,40 +25,4 @@
 
     [Parameter]
     public EventCallback<AlertType?> TypeChanged { get; set; }
-
-    [Parameter]
-    public int TimeoutMilliseconds { get; set; } = 0;
-
-    [Parameter]
-    public EventCallback<int> TimeoutMillisecondsChanged { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        // Cancel any existing auto-dismiss timer
-        _cancellationTokenSource?.Cancel();
-
-        if (!string.IsNullOrEmpty(Message) && TimeoutMilliseconds > 0)
-        {
-            _cancellationTokenSource = new CancellationTokenSource();
-
-            try
-            {
-                await Task.Delay(TimeoutMilliseconds, _cancellationTokenSource.Token);
-
-                // Clear the message
-                await MessageChanged.InvokeAsync(null);
-                await TypeChanged.InvokeAsync(null);
-            }
-            catch (TaskCanceledException)
-            {
-                // Ignore cancellation
-            }
-        }
-    }
-
-    public void Dispose()
-    {
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource?.Dispose();
-    }
 }
