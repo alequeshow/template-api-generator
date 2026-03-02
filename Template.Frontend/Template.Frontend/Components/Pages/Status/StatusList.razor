@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Template.Contract
 @using Template.Frontend.Services.Interfaces.ApiClients
-@inject IStatusApiClient statusClient
+@inject IStatusApiClient StatusClient
 @attribute [Authorize]
 
 <PageTitle>Status</PageTitle>
@@ -16,7 +16,7 @@
     </button>
 </p>
 
-@if (status == null)
+@if (_status == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -27,11 +27,12 @@ else
             <tr>
                 <th>Value</th>
                 <th>Description</th>
-                <th>Time stamp</th>                
+                <th>Time stamp</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in status)
+            @foreach (var item in _status)
             {
                 <tr>
                     <td>@item.Value</td>
@@ -41,6 +42,9 @@ else
                         <a href="/status/edit/@item.Id" class="btn btn-sm btn-outline-primary">
                             <i class="mdi mdi-pencil"></i>
                         </a>
+                        <a href="/status/delete/@item.Id" class="btn btn-sm btn-outline-danger">
+                            <i class="mdi mdi-delete"></i>
+                        </a>
                     </td>
                 </tr>
             }
@@ -49,12 +53,12 @@ else
 }
 
 @code {
-    private Status[]? status;
+    private Status[]? _status;
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await statusClient.GetStatusAsync();
+        var result = await StatusClient.GetStatusAsync();
 
-        status ??= result.ToArray(); 
+        _status ??= result.ToArray(); 
     }    
 }
