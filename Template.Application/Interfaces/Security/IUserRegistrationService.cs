@@ -10,7 +10,7 @@ public interface IUserRegistrationService
     /// <summary>
     /// Registers a new user with the provided information.
     /// </summary>
-    Task<RegistrationResult> RegisterUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken = default);
+    Task<UserRegistrationResult> RegisterUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Validates if a username or email is available for registration.
