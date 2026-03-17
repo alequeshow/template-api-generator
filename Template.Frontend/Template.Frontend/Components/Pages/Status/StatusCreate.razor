@@ -49,7 +49,7 @@
 @code {
     private string? _message;
     private AlertType? _alertType;
-    private bool operationSucess;
+    private bool operationSuccess;
 
     [SupplyParameterFromForm(FormName = "CreateStatusForm")]
     private Status StatusModel { get; set; } = null!;    
@@ -66,7 +66,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (operationSucess)
+        if (operationSuccess)
             await RedirectAfterDelayAsync(5000);
 
         await base.OnAfterRenderAsync(firstRender);
@@ -83,7 +83,7 @@
             }
 
             var result = await _statusClient.AddStatusAsync(StatusModel);
-            operationSucess = true;
+            operationSuccess = true;
             ShowAlert("Status created successfully.", AlertType.Success);
 
             // Reset form after successful creation

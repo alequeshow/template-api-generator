@@ -59,7 +59,7 @@ else
 @code {
     private string? _message;
     private AlertType? _alertType;
-    private bool _operationSucess;
+    private bool _operationSuccess;
 
     [Parameter]
     public string Id { get; set; } = string.Empty;
@@ -85,7 +85,7 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_operationSucess)
+        if (_operationSuccess)
             await RedirectAfterDelayAsync(5000);
 
         await base.OnAfterRenderAsync(firstRender);
@@ -102,8 +102,8 @@ else
             }
 
             await _statusClient.DeleteStatusAsync(StatusModel.Id!);
-            _operationSucess = true;
-            ShowAlert("Status changed successfully.", AlertType.Success);
+            _operationSuccess = true;
+            ShowAlert("Status deleted successfully.", AlertType.Success);
         }
         catch (Refit.ApiException ex)
         {
