@@ -1,4 +1,4 @@
-﻿namespace Template.Core.Security;
+﻿namespace Template.Security;
 
 public class TokenResult
 {

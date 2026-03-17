@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Template.Contract;
 using Template.Contract.Authentication;
-using Template.Core.Interfaces.Security;
+using Template.Security.Interfaces;
 using Template.Model.Interfaces;
 
 namespace Template.Application.Security;

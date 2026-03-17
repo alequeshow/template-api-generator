@@ -1,4 +1,4 @@
-﻿namespace Template.Core.Interfaces.Security;
+﻿namespace Template.Security.Interfaces;
 
 /// <summary>
 /// Service for hashing and verifying passwords.

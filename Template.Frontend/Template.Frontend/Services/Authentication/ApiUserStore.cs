@@ -106,7 +106,7 @@ public class ApiUserStore(
 
     public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(string.IsNullOrEmpty(user.PasswordHash));
+        return Task.FromResult(!string.IsNullOrEmpty(user.PasswordHash));
     }
 
     public async Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken)
@@ -154,7 +154,7 @@ public class ApiUserStore(
         ArgumentNullException.ThrowIfNull(userName);
 
         user.UserName = userName;
-        await SetNormalizedEmailAsync(user, userName.ToLowerInvariant(), cancellationToken);
+        await SetNormalizedUserNameAsync(user, userName.ToLowerInvariant(), cancellationToken);
     }
 
     public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)

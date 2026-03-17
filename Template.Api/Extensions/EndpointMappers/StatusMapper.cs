@@ -52,7 +52,7 @@ public static class StatusMapper
         }))
         .RequireAuthorization()
         .WithName("AddStatus")
-        .Produces<Status>(StatusCodes.Status201Created)
+        .Produces<string>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi();

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Template.Core.Interfaces.Security;
+using Template.Security.Interfaces;
 
 namespace Template.Frontend.Services.Authentication;
 

@@ -4,10 +4,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Template.Core.Interfaces.Security;
 using Template.Infrastructure.Configuration;
+using Template.Security.Interfaces;
 
-namespace Template.Core.Security;
+namespace Template.Security;
 
 /// <summary>
 /// JWT token generation and validation service.

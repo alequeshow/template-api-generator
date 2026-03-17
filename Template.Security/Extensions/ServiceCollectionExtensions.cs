@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Template.Core.Interfaces.Security;
-using Template.Core.Security;
+using Template.Security.Interfaces;
 
-namespace Template.Core.Extensions;
+namespace Template.Security.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCoreServices(this IServiceCollection services)
+    public static IServiceCollection AddSecurityServices(this IServiceCollection services)
     {
         // Security services
         services.AddSingleton<IPasswordHasher, PasswordHasher>();

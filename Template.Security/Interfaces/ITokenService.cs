@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
-using Template.Core.Security;
 
-namespace Template.Core.Interfaces.Security;
+namespace Template.Security.Interfaces;
 
 /// <summary>
 /// Service for generating and validating JWT tokens.

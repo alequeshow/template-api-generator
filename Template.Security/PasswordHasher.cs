@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
-using Template.Core.Interfaces.Security;
+using Template.Security.Interfaces;
 
-namespace Template.Core.Security;
+namespace Template.Security;
 
 /// <summary>
 /// Implementation of password hashing using PBKDF2.
