@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-Template.Frontend-ed63b300-20e4-4665-b39a-0b47314028c3</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>    
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />    
+    <PackageReference Include="Refit" Version="9.0.2" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="9.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Template.Contract\Template.Contract.csproj" />
+    <ProjectReference Include="..\..\Template.Infrastructure\Template.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Template.Security\Template.Security.csproj" />
+    <ProjectReference Include="..\Template.Frontend.Client\Template.Frontend.Client.csproj" />
+  </ItemGroup>
+
+</Project>

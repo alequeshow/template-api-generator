@@ -1,7 +1,8 @@
 ﻿using Template.Application.Commands;
+using Template.Application.Interfaces.Handlers;
 using Template.Contract;
 using Template.Contract.Common;
-using Template.Model.Exceptions;
+using Template.Infrastructure.Exceptions;
 using Template.Model.Interfaces;
 
 namespace Template.Application.Handlers;
@@ -47,10 +48,6 @@ public class StatusCommandHandler(IRepository<Model.Status, string> repository) 
                 throw new NotSupportedException($"Operation {command.Operation} is not supported.");
         }
 
-        return new Result<Status>
-        {
-            Data = command.Value,
-            IsSuccessful = true
-        };
+        return new Result<Status>(command.Value);
     }
 }

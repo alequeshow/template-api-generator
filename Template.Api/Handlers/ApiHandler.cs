@@ -1,6 +1,5 @@
-﻿using Template.Application.Exceptions;
-using Template.Contract.Common;
-using Template.Model.Exceptions;
+﻿using Template.Contract.Common;
+using Template.Infrastructure.Exceptions;
 
 namespace Template.Api.Handlers;
 
@@ -14,15 +13,15 @@ public class ApiHandler
         }
         catch (ApplicationErrorException ex)
         {
-            return Results.BadRequest(new { errors = ex.Errors });
+            return Results.BadRequest(MapErrorResult(ex.Errors));
         }
         catch (ArgumentException ex)
         {
-            return Results.BadRequest(new { error = ex.Message });
+            return Results.BadRequest(MapErrorResult(ex.Message));
         }
         catch (ResourceNotFoundException ex)
         {
-            return Results.NotFound(new { error = ex.Message });
+            return Results.NotFound(MapErrorResult(ex.Message));
         }
         catch (UnauthorizedAccessException)
         {
@@ -37,9 +36,25 @@ public class ApiHandler
 
     public static T HandleResult<T>(Result<T> result)
     {
-        if(result.IsSuccessful)
-            return result.Data!;
+        return result.Data!;
+    }
 
-        throw new ApplicationErrorException(result.Errors!);
+    public static ErrorResult MapErrorResult(string errorMessage, string code = "")
+    {
+        return new ErrorResult
+        {
+            Errors = [ new(code, errorMessage) ]
+        };
+    }
+
+    public static ErrorResult MapErrorResult(IEnumerable<Error>? errors)
+    {
+        if (errors is null)
+            return new ErrorResult();
+
+        return new ErrorResult
+        {
+            Errors = [.. errors]
+        };
     }
 }

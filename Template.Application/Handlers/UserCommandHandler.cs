@@ -1,8 +1,9 @@
 ﻿using Template.Application.Commands;
 using Template.Application.Extensions;
+using Template.Application.Interfaces.Handlers;
 using Template.Contract;
 using Template.Contract.Common;
-using Template.Model.Exceptions;
+using Template.Infrastructure.Exceptions;
 using Template.Model.Interfaces;
 using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;
@@ -31,13 +32,7 @@ public class UserCommandHandler(
                 var addResult = await userValidation.ValidateForAddAsync(model);
 
                 if (addResult is not null)
-                {
-                    return new Result<User>
-                    {
-                        IsSuccessful = false,
-                        Errors = addResult.ToErrorsContract()
-                    };
-                }
+                    throw new ApplicationErrorException(addResult.ToErrorsContract()!);
 
                 await repository.AddAsync(model);
 
@@ -66,13 +61,7 @@ public class UserCommandHandler(
                 var updateResult = await userValidation.ValidateForUpdateAsync(existingUser);
 
                 if (updateResult is not null)
-                {
-                    return new Result<User>
-                    {
-                        IsSuccessful = false,
-                        Errors = updateResult.ToErrorsContract()
-                    };
-                }
+                    throw new ApplicationErrorException(updateResult.ToErrorsContract()!);
 
                 await repository.UpdateAsync(existingUser);
 
@@ -84,10 +73,6 @@ public class UserCommandHandler(
                 throw new NotSupportedException($"Operation {command.Operation} is not supported.");
         }
 
-        return new Result<User>
-        {
-            Data = command.Value,
-            IsSuccessful = true
-        };
+        return new Result<User>(command.Value);
     }
 }

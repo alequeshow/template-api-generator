@@ -34,5 +34,5 @@ public class UserValidator(IRepository<User, string> repository) : UserModelVali
         var exists = await repository.ExistsAsync(u =>
             u.UserId.Identifier == userId.Identifier);
         return !exists;
-    }        
+    }
 }

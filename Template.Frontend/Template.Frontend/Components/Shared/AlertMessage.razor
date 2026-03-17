@@ -1,0 +1,28 @@
+﻿@if (!string.IsNullOrEmpty(Message))
+{
+    var statusMessageClass = Type switch
+    {
+        AlertType.Success => "success",
+        AlertType.Warning => "warning",
+        AlertType.Error => "danger",
+        _ => "info"
+    };
+
+    <div class="alert alert-@statusMessageClass" role="alert">
+        @Message
+    </div>    
+}
+
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> MessageChanged { get; set; }
+
+    [Parameter]
+    public AlertType? Type { get; set; }
+
+    [Parameter]
+    public EventCallback<AlertType?> TypeChanged { get; set; }
+}

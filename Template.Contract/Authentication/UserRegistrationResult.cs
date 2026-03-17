@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents the result of a user registration attempt.
 /// </summary>
-public class RegistrationResult
+public class UserRegistrationResult
 {
     public bool IsSuccessful { get; set; }
     public string? UserId { get; set; }

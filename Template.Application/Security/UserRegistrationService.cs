@@ -1,6 +1,8 @@
-using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using Template.Application.Interfaces.Security;
 using Template.Contract.Authentication;
+using Template.Security.Interfaces;
 using Template.Model;
 using Template.Model.Interfaces;
 using Template.Model.Interfaces.Validators;
@@ -18,7 +20,7 @@ public class UserRegistrationService(
     IPasswordHasher passwordHasher,
     ILogger<UserRegistrationService>? logger = null) : IUserRegistrationService
 {
-    public async Task<RegistrationResult> RegisterUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken = default)
+    public async Task<UserRegistrationResult> RegisterUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -52,7 +54,7 @@ public class UserRegistrationService(
                 logger?.LogWarning("Registration attempt for already registered user. Id: {Id}, UserIdentifier: {UserIdentifier}",
                     user.Id, user.UserId.Identifier);
 
-                return new RegistrationResult
+                return new UserRegistrationResult
                 {
                     IsSuccessful = false,
                     Status = UserRegistrationStatus.UserAlreadyRegistered,
@@ -64,7 +66,7 @@ public class UserRegistrationService(
             logger?.LogWarning("Registration attempt with partial match. UserIdentifier: {UserIdentifier}, Email: {Email}",
                 request.UserIdentifier, request.Email);
 
-            return new RegistrationResult
+            return new UserRegistrationResult
             {
                 IsSuccessful = false,
                 Status = UserRegistrationStatus.PartialMatchRequiresReset,
@@ -131,7 +133,7 @@ public class UserRegistrationService(
         return accessInfos.FirstOrDefault();
     }
 
-    private async Task<RegistrationResult> TryCreateNewUserAsync(UserRegistrationRequest request)
+    private async Task<UserRegistrationResult> TryCreateNewUserAsync(UserRegistrationRequest request)
     {
         // Create User entity
         var user = new User
@@ -151,7 +153,7 @@ public class UserRegistrationService(
                     ? UserRegistrationStatus.UserAlreadyRegistered
                     : UserRegistrationStatus.InvalidData;
 
-            return new RegistrationResult
+            return new UserRegistrationResult
             {
                 IsSuccessful = false,
                 Status = status,
@@ -175,7 +177,7 @@ public class UserRegistrationService(
         logger?.LogInformation("New user registered successfully. Id: {Id}, UserIdentifier: {UserIdentifier}",
             user.Id, user.UserId.Identifier);
 
-        return new RegistrationResult
+        return new UserRegistrationResult
         {
             IsSuccessful = true,
             UserId = user.Id,
@@ -184,7 +186,7 @@ public class UserRegistrationService(
         };
     }
 
-    private async Task<RegistrationResult> CompleteUserRegistrationAsync(User user, UserRegistrationRequest request)
+    private async Task<UserRegistrationResult> CompleteUserRegistrationAsync(User user, UserRegistrationRequest request)
     {
         // Create UserAccessInfo for existing user
         var accessInfo = new UserAccessInfo
@@ -208,7 +210,7 @@ public class UserRegistrationService(
         logger?.LogInformation("User registration completed. Id: {Id}, UserIdentifier: {UserIdentifier}",
             user.Id, user.UserId.Identifier);
 
-        return new RegistrationResult
+        return new UserRegistrationResult
         {
             IsSuccessful = true,
             UserId = user.Id,

@@ -1,0 +1,129 @@
+﻿@page "/status/delete/{id}"
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using Template.Contract
+@using Template.Frontend.Services.Interfaces.ApiClients
+
+@inject IStatusApiClient _statusClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Status Deletion</PageTitle>
+
+<h1>Delete Status ?</h1>
+
+<AlertMessage @bind-Message="_message" @bind-Type="_alertType"/>
+
+@if (StatusModel == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="@StatusModel" OnValidSubmit="@HandleValidSubmitAsync" FormName="DeleteStatusForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        @* Hidden field to preserve the ID *@
+        <InputText type="hidden" @bind-Value="StatusModel.Id" />
+        
+        <div class="mb-3">
+            <label for="Value" class="form-label">Value</label>
+            <InputText class="form-control" type="text" id="Value"
+                @bind-Value="StatusModel.Value" disabled/>
+            <ValidationMessage For="() => StatusModel.Value" />
+        </div>
+        
+        <div class="mb-3">
+            <label for="Description" class="form-label">Description</label>
+            <InputText class="form-control" type="text" id="Description"
+                @bind-Value="StatusModel.Description" disabled/>
+            <ValidationMessage For="() => StatusModel.Description" />
+        </div>
+        
+        <div class="mb-3">
+            <label for="TimeStamp" class="form-label">Time stamp</label>
+            <InputDate class="form-control" id="TimeStamp"
+                Type="InputDateType.DateTimeLocal"
+                @bind-Value="StatusModel.TimeStamp" disabled/>
+                    
+            <ValidationMessage For="() => StatusModel.TimeStamp" />
+        </div>
+        
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="/status" class="btn btn-secondary ms-2">Cancel</a>
+    </EditForm>
+}
+
+@code {
+    private string? _message;
+    private AlertType? _alertType;
+    private bool _operationSuccess;
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    [SupplyParameterFromForm(FormName = "DeleteStatusForm")]
+    private Status StatusModel { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            StatusModel ??= await _statusClient.GetStatusAsync(Id);
+        }
+        catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            ShowAlert("Status not found.", AlertType.Error);
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Error loading status: {ex.Message}", AlertType.Error);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_operationSuccess)
+            await RedirectAfterDelayAsync(5000);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task HandleValidSubmitAsync()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(StatusModel?.Id))
+            {
+                ShowAlert("The Status could not be loaded properly, try refreshing the page", AlertType.Error);
+                return;
+            }
+
+            await _statusClient.DeleteStatusAsync(StatusModel.Id!);
+            _operationSuccess = true;
+            ShowAlert("Status deleted successfully.", AlertType.Success);
+        }
+        catch (Refit.ApiException ex)
+        {
+            ShowAlert($"Error changing the status: {ex.Message}", AlertType.Error);
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Unexpected error: {ex.Message}", AlertType.Error);
+        }
+    }
+
+    private void ShowAlert(string message, AlertType type)
+    {
+        _message = message;
+        _alertType = type;
+    }
+
+    private async Task RedirectAfterDelayAsync(int delayMilliseconds)
+    {
+        await Task.Delay(delayMilliseconds);
+        NavigationManager.NavigateTo("/status");
+    }
+}

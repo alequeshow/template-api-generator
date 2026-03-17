@@ -3,6 +3,7 @@ using Template.Application.Commands;
 using Template.Application.Handlers;
 using Template.Application.Queries;
 using Template.Contract;
+using Template.Contract.Common;
 
 namespace Template.Api.Extensions.EndpointMappers;
 
@@ -21,8 +22,8 @@ public static class UserMapper
         .RequireAuthorization()
         .WithName("GetUserById")
         .Produces<User>(StatusCodes.Status200OK)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
         app.MapGet("/user", (UserQueryHandler handler, CancellationToken ct) =>
@@ -34,7 +35,7 @@ public static class UserMapper
         }))
         .RequireAuthorization()
         .WithName("GetUser")
-        .Produces<User>(StatusCodes.Status200OK)
+        .Produces<IEnumerable<User>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi();
 
@@ -45,13 +46,13 @@ public static class UserMapper
 
             var result = await handler.HandleAsync(command, ct);
 
-            var apiResult = ApiHandler.HandleResult(result);
+            var successResult = ApiHandler.HandleResult(result);
 
-            return Results.Created($"/user/{apiResult.Id}", apiResult.Id);
+            return Results.Created($"/user/{successResult.Id}", new Result<string>(successResult.Id));
         }))
         .WithName("AddUser")
-        .Produces<User>(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces<Result<string>>(StatusCodes.Status201Created)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi();
 
@@ -69,10 +70,10 @@ public static class UserMapper
         }))
         .RequireAuthorization()
         .WithName("UpdateUser")
-        .Produces<User>(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
         app.MapDelete("/user/{id}", (string id, UserCommandHandler handler, CancellationToken ct) =>
@@ -96,8 +97,9 @@ public static class UserMapper
         .RequireAuthorization()
         .WithName("DeleteUser")
         .Produces<User>(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
         return app;

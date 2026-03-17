@@ -3,6 +3,7 @@ using Template.Application.Commands;
 using Template.Application.Handlers;
 using Template.Application.Queries;
 using Template.Contract;
+using Template.Contract.Common;
 
 namespace Template.Api.Extensions.EndpointMappers;
 
@@ -21,8 +22,8 @@ public static class StatusMapper
         .RequireAuthorization()
         .WithName("GetStatusById")
         .Produces<Status>(StatusCodes.Status200OK)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
         app.MapGet("/status", (StatusQueryHandler handler, CancellationToken ct) =>
@@ -34,7 +35,7 @@ public static class StatusMapper
         }))
         .RequireAuthorization()
         .WithName("GetStatus")
-        .Produces<Status>(StatusCodes.Status200OK)
+        .Produces<IEnumerable<Status>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi();
 
@@ -51,7 +52,7 @@ public static class StatusMapper
         }))
         .RequireAuthorization()
         .WithName("AddStatus")
-        .Produces<Status>(StatusCodes.Status201Created)
+        .Produces<string>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .WithOpenApi();
@@ -69,10 +70,10 @@ public static class StatusMapper
         }))
         .RequireAuthorization()
         .WithName("UpdateStatus")
-        .Produces<Status>(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
         app.MapDelete("/status/{id}", (string id, StatusCommandHandler handler, CancellationToken ct) =>
@@ -88,9 +89,10 @@ public static class StatusMapper
         }))
         .RequireAuthorization()
         .WithName("DeleteStatus")
-        .Produces<Status>(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
         return app;
