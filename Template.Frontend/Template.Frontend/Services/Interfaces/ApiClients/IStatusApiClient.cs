@@ -18,5 +18,5 @@ public interface IStatusApiClient
     Task UpdateStatusAsync(string id, Status status);
 
     [Delete("/status/{id}")]
-    Task<Status> DeleteStatusAsync(string id);
+    Task DeleteStatusAsync(string id);
 }
