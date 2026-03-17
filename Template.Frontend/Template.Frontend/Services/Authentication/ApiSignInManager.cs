@@ -44,7 +44,7 @@ public class ApiSignInManager(
             }
         }
         catch (Refit.ApiException ex) 
-            when (ex.StatusCode != HttpStatusCode.Unauthorized && ex.StatusCode != HttpStatusCode.Unauthorized)
+            when (ex.StatusCode != HttpStatusCode.Unauthorized)
         {
             logger.LogError(ex, "Error during API sign-in for user {UserName}", userName);
         }

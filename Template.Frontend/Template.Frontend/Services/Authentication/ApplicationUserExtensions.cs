@@ -49,7 +49,7 @@ public static class ApplicationUserExtensions
 
         if (long.TryParse(expirationTicks, out var ticks))
         {
-            return new DateTime(ticks);
+            return new DateTime(ticks, DateTimeKind.Utc);
         }
 
         return null;

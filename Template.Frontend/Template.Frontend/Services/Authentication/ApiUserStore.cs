@@ -91,8 +91,7 @@ public class ApiUserStore(
 
     public Task<string?> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        // Password is managed by API
-        throw new NotImplementedException("Method not allowed");
+        return Task.FromResult(user.PasswordHash);
     }
 
     public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -107,7 +106,7 @@ public class ApiUserStore(
 
     public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
-        return Task.FromResult(user.AuthToken is not null);
+        return Task.FromResult(string.IsNullOrEmpty(user.PasswordHash));
     }
 
     public async Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken)
@@ -129,12 +128,7 @@ public class ApiUserStore(
     {
         ArgumentNullException.ThrowIfNull(normalizedEmail);
 
-        if(!normalizedEmail.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase))
-        {
-            throw new ArgumentException("Normalized email does not match current email.");
-        }
-
-        user.NormalizedEmail = user.Email.ToLowerInvariant();
+        user.NormalizedEmail = normalizedEmail.ToLowerInvariant();
 
         return Task.CompletedTask;
     }
@@ -143,12 +137,7 @@ public class ApiUserStore(
     {
         ArgumentNullException.ThrowIfNull(normalizedName);
 
-        if (!normalizedName.Equals(user.UserName, StringComparison.InvariantCultureIgnoreCase))
-        {
-            throw new ArgumentException("Normalized email does not match current email.");
-        }
-
-        user.NormalizedUserName = user.UserName.ToLowerInvariant();
+        user.NormalizedUserName = normalizedName.ToLowerInvariant();
 
         return Task.CompletedTask;
     }

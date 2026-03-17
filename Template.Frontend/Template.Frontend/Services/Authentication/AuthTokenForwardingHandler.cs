@@ -20,8 +20,6 @@ public class AuthTokenForwardingHandler(
             if (!string.IsNullOrEmpty(userToken))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
-                logger.LogDebug("Forwarding Authorization header to API from x-authorization header: {Authorization}", userToken);
-
                 request.Headers.Remove("x-authorization");
             }
         }
@@ -33,7 +31,6 @@ public class AuthTokenForwardingHandler(
             if (!string.IsNullOrEmpty(contextToken))
             {
                 request!.Headers.Authorization = new AuthenticationHeaderValue("Bearer", contextToken);
-                logger.LogDebug("Forwarding Authorization header to API from context: {Authorization}", contextToken);
             }
         }
 

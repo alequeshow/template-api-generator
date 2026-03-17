@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Template.Contract\Template.Contract.csproj" />
+    <ProjectReference Include="..\..\Template.Core\Template.Core.csproj" />
     <ProjectReference Include="..\..\Template.Infrastructure\Template.Infrastructure.csproj" />
     <ProjectReference Include="..\Template.Frontend.Client\Template.Frontend.Client.csproj" />
   </ItemGroup>

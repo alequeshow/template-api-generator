@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Refit;
+using Template.Core.Interfaces.Security;
+using Template.Core.Security;
 using Template.Frontend.Services.Authentication;
 using Template.Frontend.Services.Interfaces.ApiClients;
 
@@ -25,6 +27,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<SignInManager<ApplicationUser>, ApiSignInManager>();
         services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
         services.AddScoped<IUserStore<ApplicationUser>, ApiUserStore>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IPasswordHasher<ApplicationUser>, IdentityPasswordHasherAdapter>();
 
         services.AddAuthentication(options =>
         {
