@@ -1,7 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using Template.Application.Interfaces.Security;
 using Template.Contract.Authentication;
+using Template.Security.Interfaces;
 using Template.Model;
 using Template.Model.Interfaces;
+using Template.Model.Interfaces.Validators;
 using Template.Model.ValueObjects;
 
 namespace Template.Application.Security;
@@ -10,27 +14,28 @@ namespace Template.Application.Security;
 /// Implementation of user registration service.
 /// </summary>
 public class UserRegistrationService(
+    IUserValidator userValidation,
     IRepository<User, string> userRepository,
     IRepository<UserAccessInfo, string> accessInfoRepository,
     IPasswordHasher passwordHasher,
     ILogger<UserRegistrationService>? logger = null) : IUserRegistrationService
 {
-    public async Task<RegistrationResult> RegisterUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken = default)
+    public async Task<UserRegistrationResult> RegisterUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
             // Validate input
             ValidateRegistrationRequest(request);
 
+            // Scenario 1: No user exists - Create new user and access info
+            var creationResult = await TryCreateNewUserAsync(request);
+
+            if (creationResult.IsSuccessful)
+                return creationResult;
+
             // Check if user exists by username or email
             var existingUserByUsername = await FindUserByUsernameAsync(request.UserIdentifier);
             var existingUserByEmail = await FindUserByEmailAsync(request.Email);
-
-            // Scenario 1: No user exists - Create new user and access info
-            if (existingUserByUsername == null && existingUserByEmail == null)
-            {
-                return await CreateNewUserAsync(request, cancellationToken);
-            }
 
             // Scenario 2: User exists with matching username AND email
             if (existingUserByUsername != null && existingUserByEmail != null &&
@@ -42,14 +47,14 @@ public class UserRegistrationService(
                 // Scenario 2a: User exists but no access info - Complete registration
                 if (accessInfo == null)
                 {
-                    return await CompleteUserRegistrationAsync(user, request, cancellationToken);
+                    return await CompleteUserRegistrationAsync(user, request);
                 }
 
                 // Scenario 2b: User fully registered - Deny registration
                 logger?.LogWarning("Registration attempt for already registered user. Id: {Id}, UserIdentifier: {UserIdentifier}",
                     user.Id, user.UserId.Identifier);
 
-                return new RegistrationResult
+                return new UserRegistrationResult
                 {
                     IsSuccessful = false,
                     Status = UserRegistrationStatus.UserAlreadyRegistered,
@@ -61,7 +66,7 @@ public class UserRegistrationService(
             logger?.LogWarning("Registration attempt with partial match. UserIdentifier: {UserIdentifier}, Email: {Email}",
                 request.UserIdentifier, request.Email);
 
-            return new RegistrationResult
+            return new UserRegistrationResult
             {
                 IsSuccessful = false,
                 Status = UserRegistrationStatus.PartialMatchRequiresReset,
@@ -102,6 +107,9 @@ public class UserRegistrationService(
             throw new ArgumentException("Last name is required.", nameof(request));
     }
 
+    [SuppressMessage("Performance",
+        "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons",
+        Justification = "StringComparison is not available in MongoDB.Driver.Linq")]
     private async Task<User?> FindUserByUsernameAsync(string username)
     {
         var users = await userRepository.ListAsync(u =>
@@ -109,6 +117,9 @@ public class UserRegistrationService(
         return users.FirstOrDefault();
     }
 
+    [SuppressMessage("Performance",
+        "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons",
+        Justification = "StringComparison is not available in MongoDB.Driver.Linq")]
     private async Task<User?> FindUserByEmailAsync(string email)
     {
         var users = await userRepository.ListAsync(u =>
@@ -122,7 +133,7 @@ public class UserRegistrationService(
         return accessInfos.FirstOrDefault();
     }
 
-    private async Task<RegistrationResult> CreateNewUserAsync(UserRegistrationRequest request, CancellationToken cancellationToken)
+    private async Task<UserRegistrationResult> TryCreateNewUserAsync(UserRegistrationRequest request)
     {
         // Create User entity
         var user = new User
@@ -133,6 +144,22 @@ public class UserRegistrationService(
             Email = new Email(request.Email),
             ActiveInfo = new()
         };
+
+        var validationResult = await userValidation.ValidateForAddAsync(user);
+
+        if (validationResult is not null)
+        {
+            var status = validationResult.Select(v => v.Key).Distinct().ToList().Contains("NotUnique")
+                    ? UserRegistrationStatus.UserAlreadyRegistered
+                    : UserRegistrationStatus.InvalidData;
+
+            return new UserRegistrationResult
+            {
+                IsSuccessful = false,
+                Status = status,
+                Message = string.Join(", ", validationResult.Select(v => v.Message).Distinct().ToList()),
+            };
+        }
 
         await userRepository.AddAsync(user);
 
@@ -150,7 +177,7 @@ public class UserRegistrationService(
         logger?.LogInformation("New user registered successfully. Id: {Id}, UserIdentifier: {UserIdentifier}",
             user.Id, user.UserId.Identifier);
 
-        return new RegistrationResult
+        return new UserRegistrationResult
         {
             IsSuccessful = true,
             UserId = user.Id,
@@ -159,7 +186,7 @@ public class UserRegistrationService(
         };
     }
 
-    private async Task<RegistrationResult> CompleteUserRegistrationAsync(User user, UserRegistrationRequest request, CancellationToken cancellationToken)
+    private async Task<UserRegistrationResult> CompleteUserRegistrationAsync(User user, UserRegistrationRequest request)
     {
         // Create UserAccessInfo for existing user
         var accessInfo = new UserAccessInfo
@@ -176,13 +203,14 @@ public class UserRegistrationService(
         if (!user.ActiveInfo.IsActive)
         {
             user.ActiveInfo.Reactivate();
+
             await userRepository.UpdateAsync(user);
         }
 
         logger?.LogInformation("User registration completed. Id: {Id}, UserIdentifier: {UserIdentifier}",
             user.Id, user.UserId.Identifier);
 
-        return new RegistrationResult
+        return new UserRegistrationResult
         {
             IsSuccessful = true,
             UserId = user.Id,

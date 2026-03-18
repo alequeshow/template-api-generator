@@ -3,98 +3,105 @@ using Template.Application.Commands;
 using Template.Application.Handlers;
 using Template.Application.Queries;
 using Template.Contract;
+using Template.Contract.Common;
 
-namespace Template.Api.Extensions.EndpointMappers
+namespace Template.Api.Extensions.EndpointMappers;
+
+public static class UserMapper
 {
-    public static class UserMapper
+    public static WebApplication MapUserEndpoint(this WebApplication app)
     {
-        public static WebApplication MapUserEndpoint(this WebApplication app)
+        app.MapGet("/user/{id}", (string id, UserQueryHandler handler, CancellationToken ct) =>
+        ApiHandler.HandleEndpointAsync(async () =>
         {
-            app.MapGet("/user/{id}", (string id, UserQueryHandler handler, CancellationToken ct) =>
-            ApiHandler.HandleEndpointAsync(async () =>
-            {
-                var query = new QuerySingle<User>(id);
-                var result = await handler.HandleAsync(query, ct);
+            var query = new QuerySingle<User>(id);
+            var result = await handler.HandleAsync(query, ct);
 
-                return Results.Ok(result);
-            }))
-            .RequireAuthorization()
-            .WithName("GetUserById")
-            .Produces<User>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            return Results.Ok(result);
+        }))
+        .RequireAuthorization()
+        .WithName("GetUserById")
+        .Produces<User>(StatusCodes.Status200OK)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .WithOpenApi();
 
-            app.MapGet("/user", (UserQueryHandler handler, CancellationToken ct) =>
-            ApiHandler.HandleEndpointAsync(async () =>
-            {
-                var query = new QueryMany<User>();
-                var result = await handler.HandleAsync(query, ct);
-                return Results.Ok(result);
-            }))
-            .RequireAuthorization()
-            .WithName("GetUser")
-            .Produces<User>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .WithOpenApi();
+        app.MapGet("/user", (UserQueryHandler handler, CancellationToken ct) =>
+        ApiHandler.HandleEndpointAsync(async () =>
+        {
+            var query = new QueryMany<User>();
+            var result = await handler.HandleAsync(query, ct);
+            return Results.Ok(result);
+        }))
+        .RequireAuthorization()
+        .WithName("GetUser")
+        .Produces<IEnumerable<User>>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .WithOpenApi();
 
-            app.MapPost("/user", (User payload, UserCommandHandler handler, CancellationToken ct) =>
-            ApiHandler.HandleEndpointAsync(async () =>
-            {
-                var command = new Command<User>(payload, CommandOperation.Create);
+        app.MapPost("/user", (User payload, UserCommandHandler handler, CancellationToken ct) =>
+        ApiHandler.HandleEndpointAsync(async () =>
+        {
+            var command = new Command<User>(payload, CommandOperation.Create);
 
-                var result = await handler.HandleAsync(command, ct);
+            var result = await handler.HandleAsync(command, ct);
 
-                return Results.Created($"/user/{result.Id}", result.Id);
-            }))
-            .WithName("AddUser")
-            .Produces<User>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .WithOpenApi();
+            var successResult = ApiHandler.HandleResult(result);
 
-            app.MapPut("/user/{id}", (string id, User payload, UserCommandHandler handler, CancellationToken ct) =>
-            ApiHandler.HandleEndpointAsync(async () =>
-            {
-                payload.Id = id;
-                var command = new Command<User>(payload, CommandOperation.Update);
+            return Results.Created($"/user/{successResult.Id}", new Result<string>(successResult.Id));
+        }))
+        .WithName("AddUser")
+        .Produces<Result<string>>(StatusCodes.Status201Created)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .WithOpenApi();
 
-                await handler.HandleAsync(command, ct);
+        app.MapPut("/user/{id}", (string id, User payload, UserCommandHandler handler, CancellationToken ct) =>
+        ApiHandler.HandleEndpointAsync(async () =>
+        {
+            payload.Id = id;
+            var command = new Command<User>(payload, CommandOperation.Update);
 
-                return Results.NoContent();
-            }))
-            .RequireAuthorization()
-            .WithName("UpdateUser")
-            .Produces<User>(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+            var result = await handler.HandleAsync(command, ct);
 
-            app.MapDelete("/user/{id}", (string id, UserCommandHandler handler, CancellationToken ct) =>
-            ApiHandler.HandleEndpointAsync(async () =>
-            {
-                var command = new Command<User>(new User 
-                { 
-                    Id = id, 
-                    Email = string.Empty,
-                    FirstName = string.Empty,
-                    LastName = string.Empty,
-                    UserId = string.Empty
-                }, CommandOperation.Delete);
+            ApiHandler.HandleResult(result);
 
-                await handler.HandleAsync(command, ct);
+            return Results.NoContent();
+        }))
+        .RequireAuthorization()
+        .WithName("UpdateUser")
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .WithOpenApi();
 
-                return Results.NoContent();
-            }))
-            .RequireAuthorization()
-            .WithName("DeleteUser")
-            .Produces<User>(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status404NotFound)
-            .WithOpenApi();
+        app.MapDelete("/user/{id}", (string id, UserCommandHandler handler, CancellationToken ct) =>
+        ApiHandler.HandleEndpointAsync(async () =>
+        {
+            var command = new Command<User>(new User 
+            { 
+                Id = id, 
+                Email = string.Empty,
+                FirstName = string.Empty,
+                LastName = string.Empty,
+                UserId = string.Empty
+            }, CommandOperation.Delete);
 
-            return app;
-        }
+            var result = await handler.HandleAsync(command, ct);
+
+            ApiHandler.HandleResult(result);
+
+            return Results.NoContent();
+        }))
+        .RequireAuthorization()
+        .WithName("DeleteUser")
+        .Produces<User>(StatusCodes.Status204NoContent)
+        .Produces<ErrorResult>(StatusCodes.Status400BadRequest)
+        .Produces<ErrorResult>(StatusCodes.Status404NotFound)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .WithOpenApi();
+
+        return app;
     }
 }

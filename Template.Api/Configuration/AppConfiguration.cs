@@ -4,5 +4,5 @@ namespace Template.Api.Configuration;
 
 public class AppConfiguration
 {
-    public MongoConfiguration MongoConfiguration { get; set; }
+    public MongoConfiguration MongoConfiguration { get; set; } = new();
 }

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using Template.Api.Configuration;
 using Template.Application.Extensions;
-using Template.Model.Configuration;
+using Template.Infrastructure.Configuration;
 
 namespace Template.Api.Extensions;
 
@@ -22,15 +23,14 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         // Bind JWT settings
-        var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>() ?? throw new InvalidOperationException("JwtSettings configuration is missing");
+        var jwtSettings = configuration.GetSection("Authorization:JwtSettings").Get<JwtSettings>() ?? throw new InvalidOperationException("Authorization:JwtSettings configuration is missing");
+        services.Configure<JwtSettings>(configuration.GetSection("Authorization:JwtSettings"));        
 
-        services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
-
-        // Configure JWT authentication
+        // Configure Authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;            
         })
         .AddJwtBearer(options =>
         {
@@ -48,6 +48,47 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddAuthorization();
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(options =>
+        {
+            // Add JWT Bearer authentication to Swagger
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter your JWT token in the format: Bearer {your token}"
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Template API",
+                Version = "v1",
+                Description = "API with JWT Bearer Authentication"
+            });
+        });
 
         return services;
     }

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Template.Contract.Authentication;
+﻿namespace Template.Contract.Authentication;
 
 /// <summary>
 /// Represents the result of a user registration attempt.
 /// </summary>
-public class RegistrationResult
+public class UserRegistrationResult
 {
     public bool IsSuccessful { get; set; }
     public string? UserId { get; set; }

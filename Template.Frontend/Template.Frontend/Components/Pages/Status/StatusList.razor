@@ -1,0 +1,64 @@
+﻿@page "/status"
+
+@using Microsoft.AspNetCore.Authorization
+@using Template.Contract
+@using Template.Frontend.Services.Interfaces.ApiClients
+@inject IStatusApiClient StatusClient
+@attribute [Authorize]
+
+<PageTitle>Status</PageTitle>
+
+<h1>Status</h1>
+
+<p>
+    <button type="button" class="btn btn-primary" onclick="location.href='/status/create'">
+        <i class="mdi mdi-plus"></i> New
+    </button>
+</p>
+
+@if (_status == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Description</th>
+                <th>Time stamp</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _status)
+            {
+                <tr>
+                    <td>@item.Value</td>
+                    <td>@item.Description</td>
+                    <td>@item.TimeStamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>
+                        <a href="/status/edit/@item.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="mdi mdi-pencil"></i>
+                        </a>
+                        <a href="/status/delete/@item.Id" class="btn btn-sm btn-outline-danger">
+                            <i class="mdi mdi-delete"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Status[]? _status;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await StatusClient.GetStatusAsync();
+
+        _status ??= result.ToArray(); 
+    }    
+}

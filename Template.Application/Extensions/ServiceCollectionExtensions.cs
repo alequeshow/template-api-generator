@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Template.Application.Handlers;
+using Template.Application.Interfaces.Security;
 using Template.Application.Security;
-using Template.Model.Interfaces.Security;
+using Template.Application.Validators;
+using Template.Security.Extensions;
+using Template.Model.Interfaces.Validators;
 using Template.Repository.Extensions;
 
 namespace Template.Application.Extensions;
@@ -16,12 +19,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<UserQueryHandler>();
         services.AddScoped<UserCommandHandler>();
 
-        // Authentication services
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddScoped<ITokenService, TokenService>();
+        // Validators
+        services.AddScoped<IUserValidator, UserValidator>();
+
+        // Authentication services        
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 
+        services.AddSecurityServices();
         services.AddRepositories();
 
         return services;
