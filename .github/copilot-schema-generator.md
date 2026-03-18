@@ -51,11 +51,12 @@ Copy these files from template root to new solution root, updating namespaces/pr
 - `.vscode/launch.json` - Update project paths from "Template.Api" to "{SolutionName}.Api"
 - `.vscode/tasks.json` - Update project paths from "Template.Api" to "{SolutionName}.Api"
 - `.vscode/extensions.json` - Copy as-is
-- `mongo-init/01-init.js` - Update database name from "TemplateDb" to "{SolutionName}Db"
+- `mongo-init/01-init.js` - Update database name from "TemplateDb" to "{SanitizedSolutionName}Db"
+  - `{SanitizedSolutionName}` is `{SolutionName}` with all `.` characters removed (e.g., "Birthday.Wishlist" → "BirthdayWishlist")
 - `.dockerignore` - Copy as-is
-- `.env_template` - Update ConnectionStrings__DefaultConnection database name
+- `.env_template` - Update ConnectionStrings__DefaultConnection database name to "{SanitizedSolutionName}Db"
 - `.gitignore` - Copy as-is
-- `docker-compose.yml` - Update service names and database name
+- `docker-compose.yml` - Update service names and database name to use "{SanitizedSolutionName}Db"
 
 #### Example Updates Required:
 
@@ -72,6 +73,11 @@ image: template-api
 image: birthday-wishlist-api
 
 # Update paths from Template.Api to {SolutionName}.Api
+
+# Update MongoDB database name from:
+#   TemplateDb
+# to (for SolutionName "Birthday.Wishlist"):
+#   BirthdayWishlistDb  # "{SanitizedSolutionName}Db" where SanitizedSolutionName = SolutionName without '.'
 ```
 
 **.vscode/launch.json:**
