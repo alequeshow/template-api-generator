@@ -110,8 +110,6 @@ Birthday.Wishlist/
 │   │   └── WishlistCommandHandler.cs
 │   ├── Security/
 │   │   ├── IAuthenticationService.cs (ALWAYS INCLUDE)
-│   │   ├── IPasswordHasher.cs (ALWAYS INCLUDE)
-│   │   ├── ITokenService.cs (ALWAYS INCLUDE)
 │   │   ├── IUserRegistrationService.cs (ALWAYS INCLUDE)
 │   │   ├── AuthenticationService.cs (ALWAYS INCLUDE)
 │   │   ├── PasswordHasher.cs (ALWAYS INCLUDE)
