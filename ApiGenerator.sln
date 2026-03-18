@@ -3,25 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.3.11222.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Api", "Template.Api\Template.Api.csproj", "{1C87EDFA-C4D3-4F81-AC4C-9C79BB698BC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Api", "src\Template.Api\Template.Api.csproj", "{1C87EDFA-C4D3-4F81-AC4C-9C79BB698BC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Application", "Template.Application\Template.Application.csproj", "{EAA33B75-1148-4B4D-950E-F55F36CE186B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Application", "src\Template.Application\Template.Application.csproj", "{EAA33B75-1148-4B4D-950E-F55F36CE186B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Model", "Template.Model\Template.Model.csproj", "{AEE1A03E-56BE-4C0C-B3EF-A2BB0A99BDCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Model", "src\Template.Model\Template.Model.csproj", "{AEE1A03E-56BE-4C0C-B3EF-A2BB0A99BDCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.DatabaseFactory", "Template.DatabaseFactory\Template.DatabaseFactory.csproj", "{31527A82-B594-4644-8051-3B46A8F08A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.DatabaseFactory", "src\Template.DatabaseFactory\Template.DatabaseFactory.csproj", "{31527A82-B594-4644-8051-3B46A8F08A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Repository", "Template.Repository\Template.Repository.csproj", "{8ACEB90C-D106-42FD-A579-4B8BAAC524AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Repository", "src\Template.Repository\Template.Repository.csproj", "{8ACEB90C-D106-42FD-A579-4B8BAAC524AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Contract", "Template.Contract\Template.Contract.csproj", "{F9D45090-475D-43FC-9DFA-73DB170B0509}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Contract", "src\Template.Contract\Template.Contract.csproj", "{F9D45090-475D-43FC-9DFA-73DB170B0509}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Frontend", "Template.Frontend\Template.Frontend\Template.Frontend.csproj", "{AFF1C73C-64AA-4FD8-A0B1-81117641FE45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Frontend", "src\Template.Frontend\Template.Frontend\Template.Frontend.csproj", "{AFF1C73C-64AA-4FD8-A0B1-81117641FE45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Frontend.Client", "Template.Frontend\Template.Frontend.Client\Template.Frontend.Client.csproj", "{CB50E386-122D-486A-AC5D-12D6FEEB94B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Frontend.Client", "src\Template.Frontend\Template.Frontend.Client\Template.Frontend.Client.csproj", "{CB50E386-122D-486A-AC5D-12D6FEEB94B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Infrastructure", "Template.Infrastructure\Template.Infrastructure.csproj", "{56F1C5E1-7507-44E9-A743-03A78B28117A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Infrastructure", "src\Template.Infrastructure\Template.Infrastructure.csproj", "{56F1C5E1-7507-44E9-A743-03A78B28117A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Security", "Template.Security\Template.Security.csproj", "{6002C8E2-A17B-41C5-B90F-37ECC229460E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Security", "src\Template.Security\Template.Security.csproj", "{6002C8E2-A17B-41C5-B90F-37ECC229460E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

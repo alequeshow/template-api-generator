@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj",
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -23,7 +23,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj",
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -37,7 +37,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj"
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj"
       ],
       "problemMatcher": "$msCompile",
       "isBackground": true,
@@ -52,7 +52,7 @@
       "type": "process",
       "args": [
         "clean",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj",
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
