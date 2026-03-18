@@ -31,6 +31,9 @@ When asked to generate a new solution from a JSON schema file:
   {SolutionName}.DatabaseFactory/
   {SolutionName}.Model/
   {SolutionName}.Repository/
+  {SolutionName}.Security/           (COPY FROM Template.Security)
+  {SolutionName}.Frontend/           (COPY FROM Template.Frontend)
+  {SolutionName}.Frontend.Client/    (COPY FROM Template.Frontend.Client)
   .vscode/                    (COPY FROM TEMPLATE)
   mongo-init/                 (COPY FROM TEMPLATE)
   .dockerignore              (COPY FROM TEMPLATE)
@@ -122,16 +125,48 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Application/Handlers/IQueryHandler.cs`
 - `Template.Application/Handlers/UserQueryHandler.cs` (ALWAYS COPY)
 - `Template.Application/Handlers/UserCommandHandler.cs` (ALWAYS COPY)
-- `Template.Application/Security/IAuthenticationService.cs` (ALWAYS COPY)
-- `Template.Application/Security/IPasswordHasher.cs` (ALWAYS COPY)
-- `Template.Application/Security/ITokenService.cs` (ALWAYS COPY)
-- `Template.Application/Security/IUserRegistrationService.cs` (ALWAYS COPY)
+- `Template.Application/Interfaces/Security/IAuthenticationService.cs` (ALWAYS COPY)
+- `Template.Application/Interfaces/Security/IUserRegistrationService.cs` (ALWAYS COPY)
 - `Template.Application/Security/AuthenticationService.cs` (ALWAYS COPY)
-- `Template.Application/Security/PasswordHasher.cs` (ALWAYS COPY)
-- `Template.Application/Security/TokenService.cs` (ALWAYS COPY)
 - `Template.Application/Security/UserRegistrationService.cs` (ALWAYS COPY)
 - `Template.Application/Extensions/ServiceCollectionExtensions.cs`
 - {SolutionName}.Application.csproj
+
+**{SolutionName}.Security:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+- `Template.Security/PasswordHasher.cs` (ALWAYS COPY)
+- `Template.Security/TokenService.cs` (ALWAYS COPY)
+- `Template.Security/TokenResult.cs` (ALWAYS COPY)
+- `Template.Security/Interfaces/IPasswordHasher.cs` (ALWAYS COPY)
+- `Template.Security/Interfaces/ITokenService.cs` (ALWAYS COPY)
+- `Template.Security/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY)
+- {SolutionName}.Security.csproj (update namespace and project reference from Template.Infrastructure)
+
+**{SolutionName}.Frontend:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+- `Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
+- `Template.Frontend/appsettings.json` (ALWAYS COPY)
+- `Template.Frontend/appsettings.Development.json` (ALWAYS COPY)
+- `Template.Frontend/Components/App.razor` (ALWAYS COPY)
+- `Template.Frontend/Components/Routes.razor` (ALWAYS COPY)
+- `Template.Frontend/Components/_Imports.razor` (ALWAYS COPY, update namespace)
+- `Template.Frontend/Components/Layout/` (ALWAYS COPY all files)
+- `Template.Frontend/Components/Pages/Home.razor` (ALWAYS COPY)
+- `Template.Frontend/Components/Pages/Error.razor` (ALWAYS COPY)
+- `Template.Frontend/Components/Shared/AlertMessage.razor` (ALWAYS COPY)
+- `Template.Frontend/Components/Shared/AlertType.cs` (ALWAYS COPY)
+- `Template.Frontend/Components/Account/` (ALWAYS COPY entire folder)
+- `Template.Frontend/Services/Authentication/` (ALWAYS COPY entire folder)
+- `Template.Frontend/Services/Interfaces/ApiClients/IAuthenticationApiClient.cs` (ALWAYS COPY)
+- `Template.Frontend/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY, register entity API clients)
+- {SolutionName}.Frontend.csproj (update references)
+- **DO NOT COPY** `Components/Pages/Status/` — replace with entity-specific pages
+- **DO NOT COPY** `Services/Interfaces/ApiClients/IStatusApiClient.cs` — replace with entity-specific clients
+
+**{SolutionName}.Frontend.Client:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+- `Template.Frontend.Client/Program.cs` (ALWAYS COPY)
+- `Template.Frontend.Client/_Imports.razor` (ALWAYS COPY, update namespace)
+- `Template.Frontend.Client/RedirectToLogin.razor` (ALWAYS COPY)
+- `Template.Frontend.Client/Pages/Auth.razor` (ALWAYS COPY)
+- {SolutionName}.Frontend.Client.csproj (update namespace)
 
 **{SolutionName}.Contract:**
 - `Template.Contract/User.cs` (ALWAYS COPY)
@@ -175,6 +210,8 @@ For each schema in the input file:
 3. **Generate Query Handler** (use exact pattern from StatusQueryHandler.cs)
 4. **Generate Command Handler** (use exact pattern from StatusCommandHandler.cs)
 5. **Generate API Mapper** (use exact pattern from StatusMapper.cs)
+6. **Generate Frontend API Client** (use exact pattern from IStatusApiClient.cs)
+7. **Generate Frontend Pages** (use exact pattern from Components/Pages/Status/)
 
 ### Step 6: Register Components
 
@@ -204,8 +241,7 @@ services.AddScoped<Entity2CommandHandler>();
 // ... for each entity from schema
 
 // Authentication services - ALWAYS INCLUDE
-services.AddSingleton<IPasswordHasher, PasswordHasher>();
-services.AddScoped<ITokenService, TokenService>();
+services.AddSecurityServices();  // from {SolutionName}.Security (registers IPasswordHasher + ITokenService)
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 ```
@@ -219,6 +255,106 @@ app
     .MapEntity2Endpoint()
     // ... for each entity from schema
     ;
+```
+
+**{SolutionName}.Frontend/Extensions/ServiceCollectionExtensions.cs:**
+```csharp
+// In ConfigureBackendClients, register each entity API client:
+services.AddScopedApiClient<IAuthenticationApiClient>(); // ALWAYS INCLUDE
+services.AddScopedApiClient<IEntity1ApiClient>();
+services.AddScopedApiClient<IEntity2ApiClient>();
+// ... for each entity from schema
+```
+
+**{SolutionName}.Frontend/Components/Pages/:** Create one subfolder per entity
+```
+Pages/
+  Entity1/
+    Entity1List.razor
+    Entity1Create.razor
+    Entity1Edit.razor
+    Entity1Delete.razor
+  Entity2/
+    Entity2List.razor
+    ...
+```
+
+### Entity API Client Pattern
+
+For each entity, create `I{EntityName}ApiClient.cs` in `Services/Interfaces/ApiClients/`:
+
+```csharp
+using Refit;
+using {SolutionName}.Contract;
+
+namespace {SolutionName}.Frontend.Services.Interfaces.ApiClients;
+
+public interface I{EntityName}ApiClient
+{
+    [Get("/{entityname}")]
+    Task<IReadOnlyCollection<{EntityName}>> Get{EntityName}Async();
+
+    [Post("/{entityname}")]
+    Task<string> Add{EntityName}Async([Body] {EntityName} body);
+
+    [Get("/{entityname}/{id}")]
+    Task<{EntityName}> Get{EntityName}Async(string id);
+
+    [Put("/{entityname}/{id}")]
+    Task Update{EntityName}Async(string id, [Body] {EntityName} body);
+
+    [Delete("/{entityname}/{id}")]
+    Task Delete{EntityName}Async(string id);
+}
+```
+
+Routes must match exactly the endpoints registered in `{SolutionName}.Api`.
+
+### Entity Frontend Page Pattern
+
+All entity pages are modelled on the Status pages. Key conventions:
+
+**{EntityName}List.razor** — route `/{entityname}`, no render mode (static SSR)
+```razor
+@page "/{entityname}"
+@attribute [Authorize]
+@inject I{EntityName}ApiClient _{entityname}Client
+
+// OnInitializedAsync: load list with Get{EntityName}Async()
+// Render in a table or list with links to Create/Edit/Delete
+```
+
+**{EntityName}Create.razor** — route `/{entityname}/create`, `InteractiveServer`
+```razor
+@page "/{entityname}/create"
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject I{EntityName}ApiClient _{entityname}Client
+@inject NavigationManager NavigationManager
+
+// Form bound with [SupplyParameterFromForm]
+// On submit: Add{EntityName}Async(model), show AlertMessage, RedirectAfterDelayAsync
+```
+
+**{EntityName}Edit.razor** — route `/{entityname}/edit/{id}`, `InteractiveServer`
+```razor
+@page "/{entityname}/edit/{id}"
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+// OnInitializedAsync: Get{EntityName}Async(Id)
+// On submit: Update{EntityName}Async(Id, model)
+```
+
+**{EntityName}Delete.razor** — route `/{entityname}/delete/{id}`, `InteractiveServer`
+```razor
+@page "/{entityname}/delete/{id}"
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+// OnInitializedAsync: Get{EntityName}Async(Id) to show entity before deletion
+// On confirm: Delete{EntityName}Async(Id), show alert, redirect
 ```
 
 ### Step 7: Type Conversion Rules
@@ -253,13 +389,20 @@ After generation, ensure:
 - [ ] All entities are registered in DI
 - [ ] All endpoints follow the same pattern as Status
 - [ ] Project references are correct in .csproj files
-- [ ] Solution file includes all projects
+- [ ] Solution file includes all projects (including Security, Frontend, Frontend.Client)
 - [ ] Authentication system is complete (User, UserAccessInfo, all Security services)
 - [ ] Value Objects are copied (PersonName, Email, UserIdentifier, ActiveInfo)
 - [ ] Authentication and User endpoints are registered
 - [ ] Local development files are copied (.vscode, mongo-init, docker-compose.yml, etc.)
 - [ ] Project names updated in docker-compose.yml and .vscode files
 - [ ] Database name updated in mongo-init/01-init.js and .env_template
+- [ ] Template.Security copied as {SolutionName}.Security with updated namespaces
+- [ ] Template.Frontend copied as {SolutionName}.Frontend with updated namespaces
+- [ ] Template.Frontend.Client copied as {SolutionName}.Frontend.Client with updated namespaces
+- [ ] Status pages replaced by entity-specific pages (List/Create/Edit/Delete per entity)
+- [ ] IStatusApiClient replaced by entity-specific Refit API clients
+- [ ] All entity API clients registered in Frontend ServiceCollectionExtensions
+- [ ] NavMenu updated to include links to all generated entity pages
 
 ## Type Mapping Examples
 

@@ -6,11 +6,14 @@ This repository contains a template-based API generator that scaffolds complete 
 
 The template uses a layered architecture:
 - **Template.Api**: Web API with minimal endpoints
-- **Template.Application**: Command/Query handlers (CQRS pattern), Security services
+- **Template.Application**: Command/Query handlers (CQRS pattern), Authentication services
 - **Template.Contract**: DTOs for API communication, Authentication contracts
 - **Template.Model**: Domain entities, Value Objects
 - **Template.Repository**: Data access layer
 - **Template.DatabaseFactory**: MongoDB implementation
+- **Template.Security**: Password hashing (PBKDF2) and JWT token services
+- **Template.Frontend**: Blazor Server+WASM hybrid UI with Identity integration
+- **Template.Frontend.Client**: Blazor WebAssembly client-side project
 
 ## Built-in Authentication & User Management
 
@@ -20,7 +23,8 @@ The template includes a complete authentication and user management system that 
 - **User Entity**: With Value Objects (PersonName, Email, UserIdentifier, ActiveInfo)
 - **UserAccessInfo Entity**: For password hashing and refresh tokens
 - **Authentication Services**: Login, registration, token refresh, token revocation
-- **Security Interfaces**: IAuthenticationService, ITokenService, IPasswordHasher, IUserRegistrationService
+- **Security Project** (`Template.Security`): `PasswordHasher` (PBKDF2/SHA-256), `TokenService` (JWT), `IPasswordHasher`, `ITokenService`, `TokenResult`, `AddSecurityServices()` extension
+- **Security Interfaces** (in Application): `IAuthenticationService`, `IUserRegistrationService`
 - **Authentication Endpoints**: `/auth/login`, `/auth/register`, `/auth/refresh`, `/auth/revoke`
 - **User CRUD Endpoints**: Standard endpoints for user management with authorization
 
@@ -51,6 +55,42 @@ The template includes development and infrastructure files that must be copied t
 
 **IMPORTANT**: These files enable local development with Docker and VS Code debugging. Always copy them to new solutions.
 
+## Frontend Layer (Template.Frontend)
+
+The template includes a complete Blazor Server+WASM hybrid frontend that must be copied to every generated solution:
+
+### Frontend Core Components (COPY ALWAYS)
+- **Template.Frontend**: Server-side Blazor host with Identity, auth state serialization, Layout, Account pages (Login, Register, Manage)
+- **Template.Frontend.Client**: WASM client project with `RedirectToLogin.razor` and `Auth.razor`
+- **Authentication services**: `ApiSignInManager`, `ApiUserStore`, `ApplicationUser`, `AuthTokenForwardingHandler`, `AuthTokenValidationService`, `IdentityPasswordHasherAdapter`
+- **Shared components**: `AlertMessage.razor`, `AlertType.cs`
+- **`IAuthenticationApiClient`**: Refit client for all auth endpoints (ALWAYS COPY)
+
+### Entity Page Generation (replaces Status pages)
+For each entity generated from JSON schema, create 4 Razor pages modelled on the `Status` pages:
+- `EntityNameList.razor` — route `/entityname`, static render, calls `GetEntityNameAsync()` in `OnInitializedAsync`
+- `EntityNameCreate.razor` — route `/entityname/create`, `InteractiveServer`, calls `AddEntityNameAsync()`
+- `EntityNameEdit.razor` — route `/entityname/edit/{id}`, `InteractiveServer`, calls `GetEntityNameAsync(id)` + `UpdateEntityNameAsync()`
+- `EntityNameDelete.razor` — route `/entityname/delete/{id}`, `InteractiveServer`, calls `GetEntityNameAsync(id)` + `DeleteEntityNameAsync()`
+
+All pages follow the `Status` page conventions:
+- `@attribute [Authorize]`
+- `@inject IEntityNameApiClient _entityNameClient`
+- `@inject NavigationManager NavigationManager`
+- Use `AlertMessage` shared component with `@bind-Message` / `@bind-Type`
+- `ShowAlert()` + `RedirectAfterDelayAsync(5000)` helpers
+
+### Entity API Client Generation (replaces IStatusApiClient)
+For each entity, create `IEntityNameApiClient.cs` in `Services/Interfaces/ApiClients/` using Refit:
+```csharp
+[Get("/entityname")]          Task<IReadOnlyCollection<EntityName>> GetEntityNameAsync();
+[Post("/entityname")]         Task<string> AddEntityNameAsync([Body] EntityName body);
+[Get("/entityname/{id}")]     Task<EntityName> GetEntityNameAsync(string id);
+[Put("/entityname/{id}")]     Task UpdateEntityNameAsync(string id, [Body] EntityName body);
+[Delete("/entityname/{id}")]  Task DeleteEntityNameAsync(string id);
+```
+Register via `services.AddScopedApiClient<IEntityNameApiClient>()` in `ServiceCollectionExtensions.cs`.
+
 ## Code Generation Rules
 
 When generating code from JSON schemas:
@@ -64,6 +104,10 @@ When generating code from JSON schemas:
 7. **ALWAYS INCLUDE** the complete authentication system (User, UserAccessInfo, Security services)
 8. **ALWAYS COPY** Value Objects when they exist in the template
 9. **ALWAYS COPY** local development files (.vscode, mongo-init, docker-compose.yml, etc.)
+10. **ALWAYS COPY** Template.Security project (PasswordHasher, TokenService, interfaces)
+11. **ALWAYS COPY** Template.Frontend and Template.Frontend.Client projects
+12. **REPLACE** Status pages with entity-specific pages for each schema entity
+13. **CREATE** entity-specific Refit API client interfaces replacing IStatusApiClient
 
 ## CRITICAL: Code Generation Behavior
 
@@ -148,6 +192,9 @@ Given schema with title "Product":
 6. Register handlers in Application extensions
 7. Create `ProductMapper.cs` in Api/Extensions/EndpointMappers
 8. Register mapper in Api extensions
+9. Create `IProductApiClient.cs` in Frontend/Services/Interfaces/ApiClients
+10. Register `IProductApiClient` in Frontend ServiceCollectionExtensions
+11. Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in Frontend/Components/Pages/Product
 
 ## File Naming Conventions
 
