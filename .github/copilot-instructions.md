@@ -201,7 +201,7 @@ Given schema with title "Product":
 
 - Use PascalCase for all class names
 - Use lowercase for endpoint routes
-- Use plural form for collection endpoints (optional, follow Status example)
+- Use plural form for collection endpoints (e.g., `/products`), but keep `/status` singular to match the existing Status endpoints
 - Match file names to class names exactly
 
 ## Important Notes
