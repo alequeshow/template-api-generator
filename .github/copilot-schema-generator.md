@@ -164,7 +164,7 @@ For each project, copy these files from Template.* and replace namespaces:
 - `Template.Frontend/Template.Frontend/Services/Authentication/` (ALWAYS COPY entire folder)
 - `Template.Frontend/Template.Frontend/Services/Interfaces/ApiClients/IAuthenticationApiClient.cs` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY, register entity API clients)
-- `Template.Frontend/Template.Frontend/Template.Frontend.csproj` → `{SolutionName}.Frontend.csproj` (update references)
+- `Template.Frontend/Template.Frontend/Template.Frontend.csproj` → `{SolutionName}.Frontend/{SolutionName}.Frontend.csproj` (update references)
 - **DO NOT COPY** `Components/Pages/Status/` — replace with entity-specific pages
 - **DO NOT COPY** `Services/Interfaces/ApiClients/IStatusApiClient.cs` — replace with entity-specific clients
 
@@ -173,7 +173,7 @@ For each project, copy these files from Template.* and replace namespaces:
 - `Template.Frontend/Template.Frontend.Client/_Imports.razor` (ALWAYS COPY, update namespace)
 - `Template.Frontend/Template.Frontend.Client/RedirectToLogin.razor` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend.Client/Pages/Auth.razor` (ALWAYS COPY)
-- `Template.Frontend/Template.Frontend.Client/Template.Frontend.Client.csproj` → `{SolutionName}.Frontend.Client.csproj` (update namespace)
+- `Template.Frontend/Template.Frontend.Client/Template.Frontend.Client.csproj` → `{SolutionName}.Frontend.Client/{SolutionName}.Frontend.Client.csproj` (update namespace)
 
 **{SolutionName}.Contract:**
 - `Template.Contract/User.cs` (ALWAYS COPY)
