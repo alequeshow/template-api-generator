@@ -26,7 +26,7 @@ The template includes a complete authentication and user management system that 
 - **Authentication Services**: Login, registration, token refresh, token revocation
 - **Security Project** (`Template.Security`): `PasswordHasher` (PBKDF2/SHA-256), `TokenService` (JWT), `IPasswordHasher`, `ITokenService`, `TokenResult`, `AddSecurityServices()` extension
 - **Security Interfaces** (in Application): `IAuthenticationService`, `IUserRegistrationService`
-- **Authentication Endpoints**: `/auth/login`, `/auth/register`, `/auth/refresh`, `/auth/revoke`
+- **Authentication Endpoints**: `/auth/token`, `/auth/register`, `/auth/token/refresh`, `/auth/token/revoke`, `/auth/userinfo`
 - **User CRUD Endpoints**: Standard endpoints for user management with authorization
 
 ### Value Objects Pattern
