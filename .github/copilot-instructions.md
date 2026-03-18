@@ -34,7 +34,7 @@ The User entity uses Value Objects (records) for domain concepts:
 - `PersonName`: Encapsulates FirstName and LastName
 - `Email`: Encapsulates email with lowercase normalization
 - `UserIdentifier`: Encapsulates user identifier with lowercase normalization
-- `ActiveInfo`: Encapsulates activation state with methods (Activate/Deactivate)
+- `ActiveInfo`: Encapsulates activation state with methods (Reactivate/Deactivate)
 
 **IMPORTANT**: Always copy these Value Objects when creating User entity in new solutions.
 
