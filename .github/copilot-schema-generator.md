@@ -108,7 +108,7 @@ ConnectionStrings__DefaultConnection=mongodb://root:example@localhost:27017/Birt
 
 ### Step 4: Copy Template Files
 
-For each project, copy these files from Template.* and replace namespace:
+For each project, copy these files from Template.* and replace namespaces:
 
 **{SolutionName}.Api:**
 - `Template.Api/Program.cs`
@@ -121,7 +121,7 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Api/Handlers/ApiHandler.cs`
 - `Template.Api/Extensions/EndpointMappers/AuthenticationMapper.cs` (ALWAYS COPY)
 - `Template.Api/Extensions/EndpointMappers/UserMapper.cs` (ALWAYS COPY)
-- {SolutionName}.Api.csproj
+- `Template.Api/Template.Api.csproj` → `{SolutionName}.Api/{SolutionName}.Api.csproj`
 
 **{SolutionName}.Application:**
 - `Template.Application/Commands/Command.cs`
@@ -137,7 +137,7 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Application/Security/AuthenticationService.cs` (ALWAYS COPY)
 - `Template.Application/Security/UserRegistrationService.cs` (ALWAYS COPY)
 - `Template.Application/Extensions/ServiceCollectionExtensions.cs`
-- {SolutionName}.Application.csproj
+- `Template.Application/Template.Application.csproj` → `{SolutionName}.Application/{SolutionName}.Application.csproj`
 
 **{SolutionName}.Security:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Security/PasswordHasher.cs` (ALWAYS COPY)
@@ -146,7 +146,7 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Security/Interfaces/IPasswordHasher.cs` (ALWAYS COPY)
 - `Template.Security/Interfaces/ITokenService.cs` (ALWAYS COPY)
 - `Template.Security/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY)
-- {SolutionName}.Security.csproj (update namespace and project reference from Template.Infrastructure)
+- `Template.Api/Security.Api.csproj` → `{SolutionName}.Security/{SolutionName}.Security.csproj`
 
 **{SolutionName}.Frontend:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Frontend/Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
@@ -183,7 +183,7 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Contract/Authentication/UserRegistrationRequest.cs` (ALWAYS COPY)
 - `Template.Contract/Authentication/UserRegistrationResult.cs` (ALWAYS COPY)
 - `Template.Contract/Authentication/UserRegistrationStatus.cs` (ALWAYS COPY)
-- {SolutionName}.Contract.csproj
+- `Template.Contract/Template.Contract.csproj` → `{SolutionName}.Contract/{SolutionName}.Contract.csproj`
 
 **{SolutionName}.Model:**
 - `Template.Model/EntityModel.cs`
@@ -196,24 +196,31 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Model/ValueObjects/Email.cs` (ALWAYS COPY)
 - `Template.Model/ValueObjects/UserIdentifier.cs` (ALWAYS COPY)
 - `Template.Model/ValueObjects/ActiveInfo.cs` (ALWAYS COPY)
-- {SolutionName}.Model.csproj
+- `Template.Model/Template.Model.csproj` → `{SolutionName}.Model/{SolutionName}.Model.csproj`
 
  **{SolutionName}.Infrastructure:**
- - Copy all files and folders from `Template.Infrastructure/` into `{SolutionName}.Infrastructure/` (including all `.cs` source files and configuration files).
- - Copy and rename `Template.Infrastructure/Template.Infrastructure.csproj` to `{SolutionName}.Infrastructure/{SolutionName}.Infrastructure.csproj`.
- - Ensure `{SolutionName}.Infrastructure` is added to the solution file (`.sln`) and referenced by any projects that depend on Infrastructure.
+ - `Template.Infrastructure/Configuration/CookieSettings.cs`
+ - `Template.Infrastructure/Configuration/JwtSettings.cs`
+ - `Template.Infrastructure/Exceptions/ApplicationErrorException.cs`
+ - `Template.Infrastructure/Exceptions/ResourceNotFoundException.cs`
+ - `Template.Infrastructure/Template.Infrastructure.csproj` → `{SolutionName}.Infrastructure/{SolutionName}.Infrastructure.csproj`
 
 **{SolutionName}.Repository:**
 - `Template.Repository/Extensions/ServiceCollectionExtensions.cs`
-- {SolutionName}.Repository.csproj
+- `Template.Repository/Template.Repository.csproj` → `{SolutionName}.Repository/{SolutionName}.Repository.csproj`
 
 **{SolutionName}.DatabaseFactory:**
 - `Template.DatabaseFactory/Mongo/MongoRepository.cs`
 - `Template.DatabaseFactory/Mongo/Configuration/MongoConfiguration.cs`
 - `Template.DatabaseFactory/Mongo/Extensions/ServiceCollectionExtensions.cs`
-- {SolutionName}.DatabaseFactory.csproj
+- `Template.DatabaseFactory/Template.DatabaseFactory.csproj` → `{SolutionName}.DatabaseFactory/{SolutionName}.DatabaseFactory.csproj`
 
-### Step 5: Generate Entity-Specific Code
+### Step 5: Add generated projects to `{SolutionName}.sln`
+
+- Ensure the generated `.csproj` files from previous step is added to the solution file `{SolutionName}.sln`
+- Review project references in each `.csproj`file matches the name of the existing projects
+
+### Step 6: Generate Entity-Specific Code
 
 For each schema in the input file:
 
@@ -222,78 +229,12 @@ For each schema in the input file:
 3. **Generate Query Handler** (use exact pattern from StatusQueryHandler.cs)
 4. **Generate Command Handler** (use exact pattern from StatusCommandHandler.cs)
 5. **Generate API Mapper** (use exact pattern from StatusMapper.cs)
-6. **Generate Frontend API Client** (use exact pattern from IStatusApiClient.cs)
-7. **Generate Frontend Pages** (use exact pattern from Components/Pages/Status/)
+6. **Generate Frontend API Client** (use exact pattern from IStatusApiClient.cs) - Refer to "Entity API Client Pattern" section
+7. **Generate Frontend Pages** (use exact pattern from Components/Pages/Status/) - Refer to "Entity Frontend Page Pattern" section
 
-### Step 6: Register Components
+#### Entity API Client Pattern
 
-Update these files to include all entities:
-
-**{SolutionName}.Repository/Extensions/ServiceCollectionExtensions.cs:**
-```csharp
-services
-    .ConfigureMongoDatabase()
-    .AddMongoRepository<User>()           // ALWAYS INCLUDE
-    .AddMongoRepository<UserAccessInfo>()  // ALWAYS INCLUDE
-    .AddMongoRepository<Entity1>()
-    .AddMongoRepository<Entity2>()
-    // ... for each entity from schema
-    ;
-```
-
-**{SolutionName}.Application/Extensions/ServiceCollectionExtensions.cs:**
-```csharp
-// Handlers
-services.AddScoped<UserQueryHandler>();    // ALWAYS INCLUDE
-services.AddScoped<UserCommandHandler>();  // ALWAYS INCLUDE
-services.AddScoped<Entity1QueryHandler>();
-services.AddScoped<Entity1CommandHandler>();
-services.AddScoped<Entity2QueryHandler>();
-services.AddScoped<Entity2CommandHandler>();
-// ... for each entity from schema
-
-// Authentication services - ALWAYS INCLUDE
-services.AddSecurityServices();  // from {SolutionName}.Security (registers IPasswordHasher + ITokenService)
-services.AddScoped<IAuthenticationService, AuthenticationService>();
-services.AddScoped<IUserRegistrationService, UserRegistrationService>();
-```
-
-**{SolutionName}.Api/Extensions/WebApplicationExtensions.cs:**
-```csharp
-app
-    .MapAuthenticationEndpoint()  // ALWAYS INCLUDE
-    .MapUserEndpoint()           // ALWAYS INCLUDE
-    .MapEntity1Endpoint()
-    .MapEntity2Endpoint()
-    // ... for each entity from schema
-    ;
-```
-
-**{SolutionName}.Frontend/Extensions/ServiceCollectionExtensions.cs:**
-```csharp
-// In ConfigureBackendClients, register each entity API client:
-services.AddScopedApiClient<IAuthenticationApiClient>(); // ALWAYS INCLUDE
-services.AddScopedApiClient<IEntity1ApiClient>();
-services.AddScopedApiClient<IEntity2ApiClient>();
-// ... for each entity from schema
-```
-
-**{SolutionName}.Frontend/Components/Pages/:** Create one subfolder per entity
-```
-Pages/
-  Entity1/
-    Entity1List.razor
-    Entity1Create.razor
-    Entity1Edit.razor
-    Entity1Delete.razor
-  Entity2/
-    Entity2List.razor
-    ...
-```
-
-### Entity API Client Pattern
-
-For each entity, create `I{EntityName}ApiClient.cs` in `Services/Interfaces/ApiClients/`:
+For each entity, create `I{EntityName}ApiClient.cs` in `{SolutionName}.Frontend/{SolutionName}.Frontend/Services/Interfaces/ApiClients/`:
 
 ```csharp
 using Refit;
@@ -320,11 +261,24 @@ public interface I{EntityName}ApiClient
 }
 ```
 
-Routes must match exactly the endpoints registered in `{SolutionName}.Api`.
+Routes must match exactly the endpoints registered in `{SolutionName}.Api/Extensions/EndpointMappers`.
 
-### Entity Frontend Page Pattern
+#### Entity Frontend Page Pattern
 
 All entity pages are modelled on the Status pages. Key conventions:
+
+**{SolutionName}.Frontend/{SolutionName}.Frontend/Components/Pages/:** Create one subfolder per entity
+```
+Pages/
+  Entity1/
+    Entity1List.razor
+    Entity1Create.razor
+    Entity1Edit.razor
+    Entity1Delete.razor
+  Entity2/
+    Entity2List.razor
+    ...
+```
 
 **{EntityName}List.razor** — route `/{entityname}`, no render mode (static SSR)
 ```razor
@@ -369,7 +323,60 @@ All entity pages are modelled on the Status pages. Key conventions:
 // On confirm: Delete{EntityName}Async(Id), show alert, redirect
 ```
 
-### Step 7: Type Conversion Rules
+### Step 7: Register Components
+
+Update these files to include all entities:
+
+**{SolutionName}.Repository/Extensions/ServiceCollectionExtensions.cs:**
+```csharp
+services
+    .ConfigureMongoDatabase()
+    .AddMongoRepository<User>()           // ALWAYS INCLUDE
+    .AddMongoRepository<UserAccessInfo>()  // ALWAYS INCLUDE
+    .AddMongoRepository<Entity1>()
+    .AddMongoRepository<Entity2>()
+    // ... for each entity from schema
+    ;
+```
+
+**{SolutionName}.Application/Extensions/ServiceCollectionExtensions.cs:**
+```csharp
+// Handlers
+services.AddScoped<UserQueryHandler>();    // ALWAYS INCLUDE
+services.AddScoped<UserCommandHandler>();  // ALWAYS INCLUDE
+services.AddScoped<Entity1QueryHandler>();
+services.AddScoped<Entity1CommandHandler>();
+services.AddScoped<Entity2QueryHandler>();
+services.AddScoped<Entity2CommandHandler>();
+// ... for each entity from schema
+
+// Authentication services - ALWAYS INCLUDE
+services.AddSecurityServices();  // from {SolutionName}.Security (registers IPasswordHasher + ITokenService)
+services.AddScoped<IAuthenticationService, AuthenticationService>();
+services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+```
+
+**{SolutionName}.Api/Extensions/WebApplicationExtensions.cs:**
+```csharp
+app
+    .MapAuthenticationEndpoint()  // ALWAYS INCLUDE
+    .MapUserEndpoint()           // ALWAYS INCLUDE
+    .MapEntity1Endpoint()
+    .MapEntity2Endpoint()
+    // ... for each entity from schema
+    ;
+```
+
+**{SolutionName}.Frontend/{SolutionName}.Frontend/Extensions/ServiceCollectionExtensions.cs:**
+```csharp
+// In ConfigureBackendClients, register each entity API client:
+services.AddScopedApiClient<IAuthenticationApiClient>(); // ALWAYS INCLUDE
+services.AddScopedApiClient<IEntity1ApiClient>();
+services.AddScopedApiClient<IEntity2ApiClient>();
+// ... for each entity from schema
+```
+
+### Step 8: Type Conversion Rules
 
 Apply these conversions from JSON schema to C#:
 
@@ -387,14 +394,14 @@ array of objects          → List<NestedClass>
 object                    → nested class
 ```
 
-### Step 8: Property Attributes
+### Step 9: Property Attributes
 
 - If property is in "required" array: use `required` keyword
 - If property is NOT in "required" array: make nullable with `?`
 - Id property in Contract: always `string?`
 - Id property in Model: always `required string`
 
-### Step 9: Validation
+### Step 10: Validation
 
 After generation, ensure:
 - [ ] All namespaces use the new solution name

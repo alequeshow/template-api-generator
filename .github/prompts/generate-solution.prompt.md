@@ -29,7 +29,7 @@ Extract `schemaPath` and `solutionName` from `$ARGS`. Read the schema file. Iden
 
 **Step 2 — Scaffold projects** (create .csproj + .sln)
 Projects to create: `.Api`, `.Application`, `.Contract`, `.DatabaseFactory`, `.Infrastructure`, `.Model`, `.Repository`, `.Security`, `.Frontend`, `.Frontend.Client`
-For each of these projects, including `.Infrastructure`, scaffold it by copying the corresponding `Template.*` project (e.g., copy `Template.Infrastructure` to `{SolutionName}.Infrastructure`, update the .csproj and namespaces, and add the project to the solution file).
+For each of these projects, including `.Infrastructure`, scaffold it by copying the corresponding `Template.*` project. For backend and supporting projects, copy from root-level projects (e.g., copy `Template.Infrastructure` to `{SolutionName}.Infrastructure`, update the .csproj and namespaces, and add the project to the solution file). For frontend projects, copy `Template.Frontend/Template.Frontend` to `{SolutionName}.Frontend` and `Template.Frontend/Template.Frontend.Client` to `{SolutionName}.Frontend.Client`, preserving the nested directory structure.
 
 **Step 3 — Copy dev environment files** (update names/paths)
 `.vscode/launch.json`, `.vscode/tasks.json`, `.vscode/extensions.json`, `mongo-init/01-init.js`, `.dockerignore`, `.env_template`, `.gitignore`, `docker-compose.yml`
