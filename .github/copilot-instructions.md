@@ -10,6 +10,7 @@ The template uses a layered architecture:
 - **Template.Contract**: DTOs for API communication, Authentication contracts
 - **Template.Model**: Domain entities, Value Objects
 - **Template.Repository**: Data access layer
+- **Template.Infrastructure**: Infrastructure services and cross-cutting concerns
 - **Template.DatabaseFactory**: MongoDB implementation
 - **Template.Security**: Password hashing (PBKDF2) and JWT token services
 - **Template.Frontend**: Blazor Server+WASM hybrid UI with Identity integration
