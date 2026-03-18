@@ -139,8 +139,8 @@ For each JSON schema titled "EntityName":
 - Use required/optional based on schema's "required" array
 - Type mappings:
   - `string` → `string`
-  - `number` → `decimal` or `double`
-  - `integer` → `int` or `long`
+  - `number` → `decimal`
+  - `integer` → `int`
   - `boolean` → `bool`
   - `string` with `format: "date-time"` → `DateTime`
   - `array` → `List<T>` or nested class
