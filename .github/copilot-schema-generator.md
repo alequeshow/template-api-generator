@@ -77,7 +77,7 @@ image: birthday-wishlist-api
 **.vscode/launch.json:**
 ```json
 // Update all occurrences of "Template.Api" to "{SolutionName}.Api"
-"program": "${workspaceFolder}/Birthday.Wishlist.Api/bin/Debug/net8.0/Birthday.Wishlist.Api.dll"
+"program": "${workspaceFolder}/Birthday.Wishlist.Api/bin/Debug/net9.0/Birthday.Wishlist.Api.dll"
 ```
 
 **.vscode/tasks.json:**
