@@ -31,6 +31,7 @@ When asked to generate a new solution from a JSON schema file:
   {SolutionName}.DatabaseFactory/
   {SolutionName}.Model/
   {SolutionName}.Repository/
+  {SolutionName}.Infrastructure/     (COPY FROM Template.Infrastructure)
   {SolutionName}.Security/           (COPY FROM Template.Security)
   {SolutionName}.Frontend/           (COPY FROM Template.Frontend)
   {SolutionName}.Frontend.Client/    (COPY FROM Template.Frontend.Client)
