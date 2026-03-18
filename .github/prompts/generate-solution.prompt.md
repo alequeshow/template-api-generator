@@ -14,7 +14,7 @@ Generate a complete .NET solution from a JSON schema file.
 - DO NOT output code to chat before creating files
 - DO NOT refactor, optimize, or change any architectural patterns
 - DO NOT skip any file marked "ALWAYS COPY"
-- ONLY replace the `Template.` namespace prefix with `{SolutionName}.`
+- ONLY replace the `Template.` namespace prefix with `{SolutionName}.` in C# namespaces and `using` statements; perform other renames/updates only where explicitly described in the steps below
 - Create all files silently; report progress as one-line updates only
 
 ## Reference Files

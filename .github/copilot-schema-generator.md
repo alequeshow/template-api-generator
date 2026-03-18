@@ -48,8 +48,8 @@ When asked to generate a new solution from a JSON schema file:
 Copy these files from template root to new solution root, updating namespaces/project names:
 
 **Local Development (COPY ALWAYS):**
-- `.vscode/launch.json` - Update project paths from "Template.Api" to "{SolutionName}.Api"
-- `.vscode/tasks.json` - Update project paths from "Template.Api" to "{SolutionName}.Api"
+- `.vscode/launch.json` - Update project paths from "Template.Api" to "{SolutionName}.Api" and any solution references from "ApiGenerator.sln" to "{SolutionName}.sln"
+- `.vscode/tasks.json` - Update project paths from "Template.Api" to "{SolutionName}.Api" and any solution references (for example in restore/build tasks) from "ApiGenerator.sln" to "{SolutionName}.sln"
 - `.vscode/extensions.json` - Copy as-is
 - `mongo-init/01-init.js` - Update database name from "TemplateDb" to "{SanitizedSolutionName}Db"
   - `{SanitizedSolutionName}` is `{SolutionName}` with all `.` characters removed (e.g., "Birthday.Wishlist" → "BirthdayWishlist")
@@ -149,15 +149,15 @@ For each project, copy these files from Template.* and replace namespace:
 - {SolutionName}.Security.csproj (update namespace and project reference from Template.Infrastructure)
 
 **{SolutionName}.Frontend:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
-- `Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
-- `Template.Frontend/appsettings.json` (ALWAYS COPY)
-- `Template.Frontend/appsettings.Development.json` (ALWAYS COPY)
-- `Template.Frontend/Components/App.razor` (ALWAYS COPY)
-- `Template.Frontend/Components/Routes.razor` (ALWAYS COPY)
-- `Template.Frontend/Components/_Imports.razor` (ALWAYS COPY, update namespace)
-- `Template.Frontend/Components/Layout/` (ALWAYS COPY all files)
-- `Template.Frontend/Components/Pages/Home.razor` (ALWAYS COPY)
-- `Template.Frontend/Components/Pages/Error.razor` (ALWAYS COPY)
+- `Template.Frontend/Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
+- `Template.Frontend/Template.Frontend/appsettings.json` (ALWAYS COPY)
+- `Template.Frontend/Template.Frontend/appsettings.Development.json` (ALWAYS COPY)
+- `Template.Frontend/Template.Frontend/Components/App.razor` (ALWAYS COPY)
+- `Template.Frontend/Template.Frontend/Components/Routes.razor` (ALWAYS COPY)
+- `Template.Frontend/Template.Frontend/Components/_Imports.razor` (ALWAYS COPY, update namespace)
+- `Template.Frontend/Template.Frontend/Components/Layout/` (ALWAYS COPY all files)
+- `Template.Frontend/Template.Frontend/Components/Pages/Home.razor` (ALWAYS COPY)
+- `Template.Frontend/Template.Frontend/Components/Pages/Error.razor` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend/Components/Shared/AlertMessage.razor` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend/Components/Shared/AlertType.cs` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend/Components/Account/` (ALWAYS COPY entire folder)
