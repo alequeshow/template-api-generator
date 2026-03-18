@@ -6,9 +6,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/Template.Api/bin/Debug/net9.0/Template.Api.dll",
+      "program": "${workspaceFolder}/src/Template.Api/bin/Debug/net9.0/Template.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/Template.Api",
+      "cwd": "${workspaceFolder}/src/Template.Api",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
@@ -27,9 +27,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/Template.Api/bin/Debug/net9.0/Template.Api.dll",
+      "program": "${workspaceFolder}/src/Template.Api/bin/Debug/net9.0/Template.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/Template.Api",
+      "cwd": "${workspaceFolder}/src/Template.Api",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
@@ -67,7 +67,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj",
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
         "--no-restore"
@@ -85,7 +85,7 @@
       "type": "process",
       "args": [
         "clean",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj",
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -98,7 +98,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj",
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -114,7 +114,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/Template.Api/Template.Api.csproj"
+        "${workspaceFolder}/src/Template.Api/Template.Api.csproj"
       ],
       "problemMatcher": "$msCompile",
       "isBackground": true,
