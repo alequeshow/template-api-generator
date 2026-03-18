@@ -14,7 +14,7 @@ Generate a complete .NET solution from a JSON schema file.
 - DO NOT output code to chat before creating files
 - DO NOT refactor, optimize, or change any architectural patterns
 - DO NOT skip any file marked "ALWAYS COPY"
-- ONLY replace the `Template.` namespace prefix with `{SolutionName}.` in C# namespaces and `using` statements; perform other renames/updates only where explicitly described in the steps below
+- ONLY replace the `Template.` namespace prefix with `{SolutionName}.` in C# namespaces and `using` statements, plus perform the specific project/assembly/csproj and project-reference updates explicitly required by copilot-schema-generator.md; do not perform any other renames or refactors
 - Create all files silently; report progress as one-line updates only
 
 ## Reference Files
@@ -34,8 +34,8 @@ For each of these projects, including `.Infrastructure`, scaffold it by copying 
 **Step 3 — Copy dev environment files** (update names/paths)
 `.vscode/launch.json`, `.vscode/tasks.json`, `.vscode/extensions.json`, `mongo-init/01-init.js`, `.dockerignore`, `.env_template`, `.gitignore`, `docker-compose.yml`
 
-**Step 4 — Copy fixed template files** (namespace substitution only)
-Copy every file listed under "Step 4: Copy Template Files" in copilot-schema-generator.md, including all auth/user/security files marked ALWAYS COPY.
+**Step 4 — Copy fixed template files** (namespace substitution + required project/csproj updates)
+ Copy every file listed under "Step 4: Copy Template Files" in copilot-schema-generator.md, including all auth/user/security files marked ALWAYS COPY. Apply `Template.` → `{SolutionName}.` in C# namespaces and `using` statements, and perform the specific project/assembly/csproj and project-reference updates (e.g., `.Security.csproj` references, `.Frontend` csproj/assembly names) described in copilot-schema-generator.md. Do not perform any other refactors or renames.
 
 **Step 5 — Generate per-entity files** (one entity at a time)
 For each entity from the schema, in order:
@@ -48,7 +48,7 @@ For each entity from the schema, in order:
 
 **Step 6 — Update registrations**
 - `.Repository`: add `AddMongoRepository<{Entity}>()` for each entity + User + UserAccessInfo
-- `.Application`: register handlers + `AddSecurityServices()`
+- `.Application`: register handlers + `AddSecurityServices()` and ALWAYS register `IAuthenticationService` → `AuthenticationService` and `IUserRegistrationService` → `UserRegistrationService` (per copilot-schema-generator.md)
 - `.Api`: register all endpoint mappers
 - `.Frontend`: register all Refit API clients + update NavMenu links
 

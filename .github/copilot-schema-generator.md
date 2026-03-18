@@ -198,6 +198,11 @@ For each project, copy these files from Template.* and replace namespace:
 - `Template.Model/ValueObjects/ActiveInfo.cs` (ALWAYS COPY)
 - {SolutionName}.Model.csproj
 
+ **{SolutionName}.Infrastructure:**
+ - Copy all files and folders from `Template.Infrastructure/` into `{SolutionName}.Infrastructure/` (including all `.cs` source files and configuration files).
+ - Copy and rename `Template.Infrastructure/Template.Infrastructure.csproj` to `{SolutionName}.Infrastructure/{SolutionName}.Infrastructure.csproj`.
+ - Ensure `{SolutionName}.Infrastructure` is added to the solution file (`.sln`) and referenced by any projects that depend on Infrastructure.
+
 **{SolutionName}.Repository:**
 - `Template.Repository/Extensions/ServiceCollectionExtensions.cs`
 - {SolutionName}.Repository.csproj
