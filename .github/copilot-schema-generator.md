@@ -146,7 +146,7 @@ For each project, copy these files from Template.* and replace namespaces:
 - `Template.Security/Interfaces/IPasswordHasher.cs` (ALWAYS COPY)
 - `Template.Security/Interfaces/ITokenService.cs` (ALWAYS COPY)
 - `Template.Security/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY)
-- `Template.Api/Security.Api.csproj` → `{SolutionName}.Security/{SolutionName}.Security.csproj`
+- `Template.Security/Template.Security.csproj` → `{SolutionName}.Security/{SolutionName}.Security.csproj`
 
 **{SolutionName}.Frontend:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Frontend/Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
