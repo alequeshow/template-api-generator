@@ -1,6 +1,6 @@
 ---
 description: "Generate a complete .NET solution from a JSON schema using Template.* patterns. Use when: scaffold new project, generate solution from schema, create new API, new solution."
-name: "Generate Solution"
+name: "generate-solution"
 argument-hint: "<schema-path> <SolutionName>  — e.g.: sample-schemas/ Birthday.Wishlist"
 agent: "agent"
 tools: [read, edit, search]
