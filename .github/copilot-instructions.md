@@ -206,6 +206,11 @@ Given schema with title "Product":
 - Use the singular entity name for collection/list endpoints following the `/{entityname}` pattern (e.g., `/product`), and keep `/status` singular to match the existing Status endpoints
 - Match file names to class names exactly
 
+## Project Generated Folder
+The new system will be generated in a folder named after the solution (e.g., `Birthday.Wishlist`) with the same structure as the template, and inside an output folder named `_output/` at the root of the repository.
+
+E.g: `_output/Birthday.Wishlist/`
+
 ## Important Notes
 
 - Always inherit Model entities from `EntityModel`
