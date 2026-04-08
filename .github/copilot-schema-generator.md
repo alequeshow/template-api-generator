@@ -25,16 +25,17 @@ When asked to generate a new solution from a JSON schema file:
 ```
 {SolutionName}/
   {SolutionName}.sln
-  {SolutionName}.Api/
-  {SolutionName}.Application/
-  {SolutionName}.Contract/
-  {SolutionName}.DatabaseFactory/
-  {SolutionName}.Model/
-  {SolutionName}.Repository/
-  {SolutionName}.Infrastructure/     (COPY FROM Template.Infrastructure)
-  {SolutionName}.Security/           (COPY FROM Template.Security)
-  {SolutionName}.Frontend/           (COPY FROM Template.Frontend)
-  {SolutionName}.Frontend.Client/    (COPY FROM Template.Frontend.Client)
+  src/
+    {SolutionName}.Api/
+    {SolutionName}.Application/
+    {SolutionName}.Contract/
+    {SolutionName}.DatabaseFactory/
+    {SolutionName}.Infrastructure/   (COPY FROM Template.Infrastructure)
+    {SolutionName}.Model/
+    {SolutionName}.Repository/
+    {SolutionName}.Security/         (COPY FROM Template.Security)
+    {SolutionName}.Frontend/         (COPY FROM Template.Frontend)
+    {SolutionName}.Frontend.Client/  (COPY FROM Template.Frontend.Client)
   .vscode/                    (COPY FROM TEMPLATE)
   mongo-init/                 (COPY FROM TEMPLATE)
   .dockerignore              (COPY FROM TEMPLATE)
@@ -42,6 +43,8 @@ When asked to generate a new solution from a JSON schema file:
   .gitignore                 (COPY FROM TEMPLATE)
   docker-compose.yml         (COPY FROM TEMPLATE, UPDATE PROJECT NAMES)
 ```
+
+**All `{SolutionName}.*` project folders are placed under `src/`. The `.sln`, `.vscode/`, `mongo-init/`, and root dev files stay at the solution root.**
 
 ### Step 3: Copy Local Development Files (DO THIS FIRST)
 
@@ -72,7 +75,8 @@ image: template-api
   # to:
 image: birthday-wishlist-api
 
-# Update paths from Template.Api to {SolutionName}.Api
+# Update Dockerfile build context and path from Template.Api to src/{SolutionName}.Api
+# e.g.: context: ./src/Birthday.Wishlist.Api
 
 # Update MongoDB database name from:
 #   TemplateDb
@@ -83,13 +87,14 @@ image: birthday-wishlist-api
 **.vscode/launch.json:**
 ```json
 // Update all occurrences of "Template.Api" to "{SolutionName}.Api"
-"program": "${workspaceFolder}/Birthday.Wishlist.Api/bin/Debug/net9.0/Birthday.Wishlist.Api.dll"
+// Note: project folders are under src/
+"program": "${workspaceFolder}/src/Birthday.Wishlist.Api/bin/Debug/net9.0/Birthday.Wishlist.Api.dll"
 ```
 
 **.vscode/tasks.json:**
 ```json
-// Update project path in all tasks
-"${workspaceFolder}/Birthday.Wishlist.Api/Birthday.Wishlist.Api.csproj"
+// Update project path in all tasks — note src/ prefix
+"${workspaceFolder}/src/Birthday.Wishlist.Api/Birthday.Wishlist.Api.csproj"
 ```
 
 **mongo-init/01-init.js:**
@@ -108,7 +113,8 @@ ConnectionStrings__DefaultConnection=mongodb://root:example@localhost:27017/Birt
 
 ### Step 4: Copy Template Files
 
-For each project, copy these files from Template.* and replace namespaces:
+For each project, copy these files from Template.* and replace namespaces.
+**All destination project folders are created under `src/` inside the solution root** (e.g., files for `.Api` go to `src/{SolutionName}.Api/`).
 
 **{SolutionName}.Api:**
 - `Template.Api/Program.cs`
@@ -217,8 +223,10 @@ For each project, copy these files from Template.* and replace namespaces:
 
 ### Step 5: Add generated projects to `{SolutionName}.sln`
 
-- Ensure the generated `.csproj` files from previous step is added to the solution file `{SolutionName}.sln`
-- Review project references in each `.csproj`file matches the name of the existing projects
+- Ensure the generated `.csproj` files from previous step are added to the solution file `{SolutionName}.sln` at the solution root
+- Solution file paths must use the `src/` prefix (e.g., `src/{SolutionName}.Api/{SolutionName}.Api.csproj`)
+- Ensure the projects are placed within a 'solution folder' '/src'
+- Review project references in each `.csproj` file — since all projects are siblings under `src/`, inter-project references use `../` (e.g., `../Birthday.Wishlist.Model/Birthday.Wishlist.Model.csproj`)
 
 ### Step 6: Generate Entity-Specific Code
 

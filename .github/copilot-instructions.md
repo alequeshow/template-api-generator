@@ -184,18 +184,20 @@ For nested objects in JSON schema:
 
 ## Example Generation Flow
 
+All project folders are placed under `src/` inside the solution root (e.g., `Birthday.Wishlist/src/Birthday.Wishlist.Model/`).
+
 Given schema with title "Product":
-1. Create `Product.cs` in Birthday.Wishlist.Model
-2. Create `Product.cs` in Birthday.Wishlist.Contract
-3. Add `AddMongoRepository<Product>()` in Repository extensions
-4. Create `ProductQueryHandler.cs` in Application/Handlers
-5. Create `ProductCommandHandler.cs` in Application/Handlers
+1. Create `Product.cs` in `src/Birthday.Wishlist.Model`
+2. Create `Product.cs` in `src/Birthday.Wishlist.Contract`
+3. Add `AddMongoRepository<Product>()` in `src/Birthday.Wishlist.Repository` extensions
+4. Create `ProductQueryHandler.cs` in `src/Birthday.Wishlist.Application/Handlers`
+5. Create `ProductCommandHandler.cs` in `src/Birthday.Wishlist.Application/Handlers`
 6. Register handlers in Application extensions
-7. Create `ProductMapper.cs` in Api/Extensions/EndpointMappers
+7. Create `ProductMapper.cs` in `src/Birthday.Wishlist.Api/Extensions/EndpointMappers`
 8. Register mapper in Api extensions
-9. Create `IProductApiClient.cs` in Frontend/Services/Interfaces/ApiClients
+9. Create `IProductApiClient.cs` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Services/Interfaces/ApiClients`
 10. Register `IProductApiClient` in Frontend ServiceCollectionExtensions
-11. Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in Frontend/Components/Pages/Product
+11. Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Components/Pages/Product`
 
 ## File Naming Conventions
 
@@ -203,6 +205,11 @@ Given schema with title "Product":
 - Use lowercase for endpoint routes
 - Use the singular entity name for collection/list endpoints following the `/{entityname}` pattern (e.g., `/product`), and keep `/status` singular to match the existing Status endpoints
 - Match file names to class names exactly
+
+## Project Generated Folder
+The new system will be generated in a folder named after the solution (e.g., `Birthday.Wishlist`) with the same structure as the template, and inside an output folder named `_output/` at the root of the repository.
+
+E.g: `_output/Birthday.Wishlist/`
 
 ## Important Notes
 

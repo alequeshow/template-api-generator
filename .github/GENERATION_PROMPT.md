@@ -37,74 +37,75 @@ The prompt file at [.github/prompts/generate-solution.prompt.md](./prompts/gener
 Birthday.Wishlist/
 ├── Birthday.Wishlist.sln
 ├── .vscode/                                      (ALWAYS INCLUDE)
-│   ├── launch.json                               (update project paths)
-│   ├── tasks.json                                (update project paths)
+│   ├── launch.json                               (update src/ project paths)
+│   ├── tasks.json                                (update src/ project paths)
 │   └── extensions.json
 ├── mongo-init/                                   (ALWAYS INCLUDE)
 │   └── 01-init.js                                (update database name)
 ├── .dockerignore                                 (ALWAYS INCLUDE)
 ├── .env_template                                 (ALWAYS INCLUDE, update db name)
 ├── .gitignore                                    (ALWAYS INCLUDE)
-├── docker-compose.yml                            (ALWAYS INCLUDE, update service names)
-├── Birthday.Wishlist.Api/
-│   └── Extensions/EndpointMappers/
-│       ├── AuthenticationMapper.cs               (ALWAYS INCLUDE)
-│       ├── UserMapper.cs                         (ALWAYS INCLUDE)
-│       └── WishlistMapper.cs
-├── Birthday.Wishlist.Application/
-│   ├── Handlers/
-│   │   ├── UserQueryHandler.cs                   (ALWAYS INCLUDE)
-│   │   ├── UserCommandHandler.cs                 (ALWAYS INCLUDE)
-│   │   ├── WishlistQueryHandler.cs
-│   │   └── WishlistCommandHandler.cs
-│   └── Interfaces/Security/
-│       ├── IAuthenticationService.cs             (ALWAYS INCLUDE)
-│       └── IUserRegistrationService.cs           (ALWAYS INCLUDE)
-├── Birthday.Wishlist.Contract/
-│   ├── User.cs                                   (ALWAYS INCLUDE)
-│   ├── Wishlist.cs
-│   └── Authentication/                           (ALWAYS INCLUDE all files)
-├── Birthday.Wishlist.Model/
-│   ├── User.cs                                   (ALWAYS INCLUDE)
-│   ├── UserAccessInfo.cs                         (ALWAYS INCLUDE)
-│   ├── Wishlist.cs
-│   └── ValueObjects/                             (ALWAYS INCLUDE all files)
-│       ├── PersonName.cs
-│       ├── Email.cs
-│       ├── UserIdentifier.cs
-│       └── ActiveInfo.cs
-├── Birthday.Wishlist.Repository/
-├── Birthday.Wishlist.DatabaseFactory/
-├── Birthday.Wishlist.Infrastructure/
-├── Birthday.Wishlist.Security/                   (ALWAYS INCLUDE — copy from Template.Security)
-│   ├── PasswordHasher.cs
-│   ├── TokenService.cs
-│   ├── TokenResult.cs
-│   ├── Interfaces/
-│   │   ├── IPasswordHasher.cs
-│   │   └── ITokenService.cs
-│   └── Extensions/ServiceCollectionExtensions.cs
-├── Birthday.Wishlist.Frontend/                   (ALWAYS INCLUDE — copy from Template.Frontend)
-│   ├── Components/
-│   │   ├── Layout/                               (ALWAYS INCLUDE)
-│   │   ├── Account/                              (ALWAYS INCLUDE)
-│   │   ├── Shared/AlertMessage.razor             (ALWAYS INCLUDE)
-│   │   └── Pages/
-│   │       ├── Home.razor
-│   │       └── Wishlist/                         (generated — replaces Status/)
-│   │           ├── WishlistList.razor
-│   │           ├── WishlistCreate.razor
-│   │           ├── WishlistEdit.razor
-│   │           └── WishlistDelete.razor
-│   ├── Services/
-│   │   ├── Authentication/                       (ALWAYS INCLUDE all files)
-│   │   └── Interfaces/ApiClients/
-│   │       ├── IAuthenticationApiClient.cs       (ALWAYS INCLUDE)
-│   │       └── IWishlistApiClient.cs             (generated — replaces IStatusApiClient)
-│   └── Extensions/ServiceCollectionExtensions.cs
-└── Birthday.Wishlist.Frontend.Client/            (ALWAYS INCLUDE — copy from Template.Frontend.Client)
-    ├── RedirectToLogin.razor
-    └── Pages/Auth.razor
+├── docker-compose.yml                            (ALWAYS INCLUDE, update service names + src/ path)
+└── src/
+    ├── Birthday.Wishlist.Api/
+    │   └── Extensions/EndpointMappers/
+    │       ├── AuthenticationMapper.cs            (ALWAYS INCLUDE)
+    │       ├── UserMapper.cs                      (ALWAYS INCLUDE)
+    │       └── WishlistMapper.cs
+    ├── Birthday.Wishlist.Application/
+    │   ├── Handlers/
+    │   │   ├── UserQueryHandler.cs                (ALWAYS INCLUDE)
+    │   │   ├── UserCommandHandler.cs              (ALWAYS INCLUDE)
+    │   │   ├── WishlistQueryHandler.cs
+    │   │   └── WishlistCommandHandler.cs
+    │   └── Interfaces/Security/
+    │       ├── IAuthenticationService.cs          (ALWAYS INCLUDE)
+    │       └── IUserRegistrationService.cs        (ALWAYS INCLUDE)
+    ├── Birthday.Wishlist.Contract/
+    │   ├── User.cs                                (ALWAYS INCLUDE)
+    │   ├── Wishlist.cs
+    │   └── Authentication/                        (ALWAYS INCLUDE all files)
+    ├── Birthday.Wishlist.Model/
+    │   ├── User.cs                                (ALWAYS INCLUDE)
+    │   ├── UserAccessInfo.cs                      (ALWAYS INCLUDE)
+    │   ├── Wishlist.cs
+    │   └── ValueObjects/                          (ALWAYS INCLUDE all files)
+    │       ├── PersonName.cs
+    │       ├── Email.cs
+    │       ├── UserIdentifier.cs
+    │       └── ActiveInfo.cs
+    ├── Birthday.Wishlist.Repository/
+    ├── Birthday.Wishlist.DatabaseFactory/
+    ├── Birthday.Wishlist.Infrastructure/
+    ├── Birthday.Wishlist.Security/                (ALWAYS INCLUDE — copy from Template.Security)
+    │   ├── PasswordHasher.cs
+    │   ├── TokenService.cs
+    │   ├── TokenResult.cs
+    │   ├── Interfaces/
+    │   │   ├── IPasswordHasher.cs
+    │   │   └── ITokenService.cs
+    │   └── Extensions/ServiceCollectionExtensions.cs
+    ├── Birthday.Wishlist.Frontend/                (ALWAYS INCLUDE — copy from Template.Frontend)
+    │   ├── Components/
+    │   │   ├── Layout/                            (ALWAYS INCLUDE)
+    │   │   ├── Account/                           (ALWAYS INCLUDE)
+    │   │   ├── Shared/AlertMessage.razor          (ALWAYS INCLUDE)
+    │   │   └── Pages/
+    │   │       ├── Home.razor
+    │   │       └── Wishlist/                      (generated — replaces Status/)
+    │   │           ├── WishlistList.razor
+    │   │           ├── WishlistCreate.razor
+    │   │           ├── WishlistEdit.razor
+    │   │           └── WishlistDelete.razor
+    │   ├── Services/
+    │   │   ├── Authentication/                    (ALWAYS INCLUDE all files)
+    │   │   └── Interfaces/ApiClients/
+    │   │       ├── IAuthenticationApiClient.cs    (ALWAYS INCLUDE)
+    │   │       └── IWishlistApiClient.cs          (generated — replaces IStatusApiClient)
+    │   └── Extensions/ServiceCollectionExtensions.cs
+    └── Birthday.Wishlist.Frontend.Client/         (ALWAYS INCLUDE — copy from Template.Frontend.Client)
+        ├── RedirectToLogin.razor
+        └── Pages/Auth.razor
 ```
 
 ## Common Issues
