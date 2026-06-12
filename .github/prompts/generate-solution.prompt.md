@@ -58,7 +58,7 @@ For each entity from the schema, in order:
 - *(only when `includeFrontend = true`)* `.Frontend`: register all Refit API clients + update NavMenu links
 
 **Step 7 — Validate**
-Confirm checklist from Step 9 of copilot-schema-generator.md before finishing. When `includeFrontend = false`, skip all frontend checklist items.
+Confirm checklist from Step 10 of copilot-schema-generator.md before finishing. When `includeFrontend = false`, skip all frontend checklist items.
 
 ## Output
 After all files are created, summarize:

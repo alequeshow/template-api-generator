@@ -148,7 +148,7 @@ For each project, copy these files from Template.* and replace namespaces:
 - `Template.Security/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY)
 - `Template.Security/Template.Security.csproj` → `{SolutionName}.Security/{SolutionName}.Security.csproj`
 
-**{SolutionName}.Frontend:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+**{SolutionName}.Frontend:** *(skip entirely when `--no-frontend`)* (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Frontend/Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
 - `Template.Frontend/Template.Frontend/appsettings.json` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend/appsettings.Development.json` (ALWAYS COPY)
@@ -168,7 +168,7 @@ For each project, copy these files from Template.* and replace namespaces:
 - **DO NOT COPY** `Components/Pages/Status/` — replace with entity-specific pages
 - **DO NOT COPY** `Services/Interfaces/ApiClients/IStatusApiClient.cs` — replace with entity-specific clients
 
-**{SolutionName}.Frontend.Client:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+**{SolutionName}.Frontend.Client:** *(skip entirely when `--no-frontend`)* (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Frontend/Template.Frontend.Client/Program.cs` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend.Client/_Imports.razor` (ALWAYS COPY, update namespace)
 - `Template.Frontend/Template.Frontend.Client/RedirectToLogin.razor` (ALWAYS COPY)

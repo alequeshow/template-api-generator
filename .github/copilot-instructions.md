@@ -58,9 +58,9 @@ The template includes development and infrastructure files that must be copied t
 
 ## Frontend Layer (Template.Frontend)
 
-The template includes a complete Blazor Server+WASM hybrid frontend that must be copied to every generated solution:
+The template includes a complete Blazor Server+WASM hybrid frontend that is copied to every generated solution **unless `--no-frontend` was passed**, in which case all frontend projects and files are skipped entirely.
 
-### Frontend Core Components (COPY ALWAYS)
+### Frontend Core Components (COPY ALWAYS — unless `--no-frontend`)
 - **Template.Frontend**: Server-side Blazor host with Identity, auth state serialization, Layout, Account pages (Login, Register, Manage)
 - **Template.Frontend.Client**: WASM client project with `RedirectToLogin.razor` and `Auth.razor`
 - **Authentication services**: `ApiSignInManager`, `ApiUserStore`, `ApplicationUser`, `AuthTokenForwardingHandler`, `AuthTokenValidationService`, `IdentityPasswordHasherAdapter`
