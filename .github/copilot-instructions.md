@@ -106,9 +106,9 @@ When generating code from JSON schemas:
 8. **ALWAYS COPY** Value Objects when they exist in the template
 9. **ALWAYS COPY** local development files (.vscode, mongo-init, docker-compose.yml, etc.)
 10. **ALWAYS COPY** Template.Security project (PasswordHasher, TokenService, interfaces)
-11. **ALWAYS COPY** Template.Frontend and Template.Frontend.Client projects
-12. **REPLACE** Status pages with entity-specific pages for each schema entity
-13. **CREATE** entity-specific Refit API client interfaces replacing IStatusApiClient
+11. **ALWAYS COPY** Template.Frontend and Template.Frontend.Client projects — **unless `--no-frontend` was passed**, in which case skip all Frontend and Frontend.Client files, projects, and registrations entirely
+12. **REPLACE** Status pages with entity-specific pages for each schema entity (skipped when `--no-frontend`)
+13. **CREATE** entity-specific Refit API client interfaces replacing IStatusApiClient (skipped when `--no-frontend`)
 
 ## CRITICAL: Code Generation Behavior
 
@@ -193,9 +193,9 @@ Given schema with title "Product":
 6. Register handlers in Application extensions
 7. Create `ProductMapper.cs` in Api/Extensions/EndpointMappers
 8. Register mapper in Api extensions
-9. Create `IProductApiClient.cs` in Frontend/Services/Interfaces/ApiClients
-10. Register `IProductApiClient` in Frontend ServiceCollectionExtensions
-11. Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in Frontend/Components/Pages/Product
+9. *(skip when `--no-frontend`)* Create `IProductApiClient.cs` in Frontend/Services/Interfaces/ApiClients
+10. *(skip when `--no-frontend`)* Register `IProductApiClient` in Frontend ServiceCollectionExtensions
+11. *(skip when `--no-frontend`)* Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in Frontend/Components/Pages/Product
 
 ## File Naming Conventions
 

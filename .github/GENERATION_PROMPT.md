@@ -10,6 +10,11 @@ Type `/generate-solution` in Copilot Chat, then provide arguments:
 /generate-solution sample-schemas/wishlist.json Birthday.Wishlist
 ```
 
+To generate a solution **without the Blazor frontend** (API-only), add `--no-frontend`:
+```
+/generate-solution sample-schemas/wishlist.json Birthday.Wishlist --no-frontend
+```
+
 **Chat with explicit prompt reference**
 ```
 /generate-solution schemas/my-schema.json MyProject.Name
@@ -22,16 +27,25 @@ Type `/generate-solution` in Copilot Chat, then provide arguments:
 
 The prompt file at [.github/prompts/generate-solution.prompt.md](./prompts/generate-solution.prompt.md) contains all generation rules. It references [copilot-instructions.md](./copilot-instructions.md) and [copilot-schema-generator.md](./copilot-schema-generator.md) at runtime.
 
+## Options
+
+| Option | Description |
+|--------|-------------|
+| *(none)* | Full solution: backend API + Blazor frontend |
+| `--no-frontend` | API-only solution: omits `.Frontend` and `.Frontend.Client` projects, all Razor pages, and Refit API client interfaces |
+
 ## Workflow
 
 1. Place your JSON schema in `sample-schemas/`
-2. Run `/generate-solution <schema-path> <SolutionName>` in Copilot Chat
+2. Run `/generate-solution <schema-path> <SolutionName> [--no-frontend]` in Copilot Chat
 3. Wait — the agent creates all files silently, then summarizes
 4. Review the summary checklist output
 5. Run `docker-compose up` to start MongoDB and the API
 6. Press F5 in VS Code to start debugging
 
 ## Expected Output Structure
+
+### Full solution (default)
 
 ```
 Birthday.Wishlist/
@@ -84,7 +98,7 @@ Birthday.Wishlist/
 │   │   ├── IPasswordHasher.cs
 │   │   └── ITokenService.cs
 │   └── Extensions/ServiceCollectionExtensions.cs
-├── Birthday.Wishlist.Frontend/                   (ALWAYS INCLUDE — copy from Template.Frontend)
+├── Birthday.Wishlist.Frontend/                   (omitted with --no-frontend)
 │   ├── Components/
 │   │   ├── Layout/                               (ALWAYS INCLUDE)
 │   │   ├── Account/                              (ALWAYS INCLUDE)
@@ -102,10 +116,14 @@ Birthday.Wishlist/
 │   │       ├── IAuthenticationApiClient.cs       (ALWAYS INCLUDE)
 │   │       └── IWishlistApiClient.cs             (generated — replaces IStatusApiClient)
 │   └── Extensions/ServiceCollectionExtensions.cs
-└── Birthday.Wishlist.Frontend.Client/            (ALWAYS INCLUDE — copy from Template.Frontend.Client)
+└── Birthday.Wishlist.Frontend.Client/            (omitted with --no-frontend)
     ├── RedirectToLogin.razor
     └── Pages/Auth.razor
 ```
+
+### API-only solution (`--no-frontend`)
+
+Same as above but **without** `Birthday.Wishlist.Frontend/` and `Birthday.Wishlist.Frontend.Client/`. The `.sln` will also omit those two projects.
 
 ## Common Issues
 
@@ -117,3 +135,4 @@ Birthday.Wishlist/
 | Missing registrations | Check all `ServiceCollectionExtensions.cs` files include User, UserAccessInfo, and all entity handlers |
 | Status pages not replaced | Confirm `Components/Pages/Status/` was not copied — entity pages go in `Components/Pages/{Entity}/` |
 | IStatusApiClient not replaced | Confirm `IStatusApiClient.cs` was not copied — each entity gets its own `I{Entity}ApiClient.cs` |
+| Frontend generated despite `--no-frontend` | Ensure the flag appears verbatim in `$ARGS`; re-run with "Do not generate Frontend or Frontend.Client projects." prepended |
