@@ -25,6 +25,7 @@ When asked to generate a new solution from a JSON schema file:
 ```
 {SolutionName}/
   {SolutionName}.sln
+<<<<<<< HEAD
   src/
     {SolutionName}.Api/
     {SolutionName}.Application/
@@ -36,6 +37,18 @@ When asked to generate a new solution from a JSON schema file:
     {SolutionName}.Security/         (COPY FROM Template.Security)
     {SolutionName}.Frontend/         (COPY FROM Template.Frontend)
     {SolutionName}.Frontend.Client/  (COPY FROM Template.Frontend.Client)
+=======
+  {SolutionName}.Api/
+  {SolutionName}.Application/
+  {SolutionName}.Contract/
+  {SolutionName}.DatabaseFactory/
+  {SolutionName}.Model/
+  {SolutionName}.Repository/
+  {SolutionName}.Infrastructure/     (COPY FROM Template.Infrastructure)
+  {SolutionName}.Security/           (COPY FROM Template.Security)
+  {SolutionName}.Frontend/           (COPY FROM Template.Frontend — SKIP when --no-frontend)
+  {SolutionName}.Frontend.Client/    (COPY FROM Template.Frontend.Client — SKIP when --no-frontend)
+>>>>>>> origin/main
   .vscode/                    (COPY FROM TEMPLATE)
   mongo-init/                 (COPY FROM TEMPLATE)
   .dockerignore              (COPY FROM TEMPLATE)
@@ -154,7 +167,7 @@ For each project, copy these files from Template.* and replace namespaces.
 - `Template.Security/Extensions/ServiceCollectionExtensions.cs` (ALWAYS COPY)
 - `Template.Security/Template.Security.csproj` → `{SolutionName}.Security/{SolutionName}.Security.csproj`
 
-**{SolutionName}.Frontend:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+**{SolutionName}.Frontend:** *(skip entirely when `--no-frontend`)* (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Frontend/Template.Frontend/Program.cs` (ALWAYS COPY, update assembly/namespace)
 - `Template.Frontend/Template.Frontend/appsettings.json` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend/appsettings.Development.json` (ALWAYS COPY)
@@ -174,7 +187,7 @@ For each project, copy these files from Template.* and replace namespaces.
 - **DO NOT COPY** `Components/Pages/Status/` — replace with entity-specific pages
 - **DO NOT COPY** `Services/Interfaces/ApiClients/IStatusApiClient.cs` — replace with entity-specific clients
 
-**{SolutionName}.Frontend.Client:** (COPY ENTIRE PROJECT - rename Template → {SolutionName})
+**{SolutionName}.Frontend.Client:** *(skip entirely when `--no-frontend`)* (COPY ENTIRE PROJECT - rename Template → {SolutionName})
 - `Template.Frontend/Template.Frontend.Client/Program.cs` (ALWAYS COPY)
 - `Template.Frontend/Template.Frontend.Client/_Imports.razor` (ALWAYS COPY, update namespace)
 - `Template.Frontend/Template.Frontend.Client/RedirectToLogin.razor` (ALWAYS COPY)
@@ -237,8 +250,8 @@ For each schema in the input file:
 3. **Generate Query Handler** (use exact pattern from StatusQueryHandler.cs)
 4. **Generate Command Handler** (use exact pattern from StatusCommandHandler.cs)
 5. **Generate API Mapper** (use exact pattern from StatusMapper.cs)
-6. **Generate Frontend API Client** (use exact pattern from IStatusApiClient.cs) - Refer to "Entity API Client Pattern" section
-7. **Generate Frontend Pages** (use exact pattern from Components/Pages/Status/) - Refer to "Entity Frontend Page Pattern" section
+6. *(skip when `--no-frontend`)* **Generate Frontend API Client** (use exact pattern from IStatusApiClient.cs) - Refer to "Entity API Client Pattern" section
+7. *(skip when `--no-frontend`)* **Generate Frontend Pages** (use exact pattern from Components/Pages/Status/) - Refer to "Entity Frontend Page Pattern" section
 
 #### Entity API Client Pattern
 
@@ -376,6 +389,7 @@ app
 ```
 
 **{SolutionName}.Frontend/{SolutionName}.Frontend/Extensions/ServiceCollectionExtensions.cs:**
+*(skip entire block when `--no-frontend`)*
 ```csharp
 // In ConfigureBackendClients, register each entity API client:
 services.AddScopedApiClient<IAuthenticationApiClient>(); // ALWAYS INCLUDE
@@ -416,7 +430,7 @@ After generation, ensure:
 - [ ] All entities are registered in DI
 - [ ] All endpoints follow the same pattern as Status
 - [ ] Project references are correct in .csproj files
-- [ ] Solution file includes all projects (including Security, Frontend, Frontend.Client)
+- [ ] Solution file includes all projects (including Security; and Frontend, Frontend.Client when `--no-frontend` was NOT used)
 - [ ] Authentication system is complete (User, UserAccessInfo, all Security services)
 - [ ] Value Objects are copied (PersonName, Email, UserIdentifier, ActiveInfo)
 - [ ] Authentication and User endpoints are registered
@@ -424,12 +438,12 @@ After generation, ensure:
 - [ ] Project names updated in docker-compose.yml and .vscode files
 - [ ] Database name updated in mongo-init/01-init.js and .env_template
 - [ ] Template.Security copied as {SolutionName}.Security with updated namespaces
-- [ ] Template.Frontend copied as {SolutionName}.Frontend with updated namespaces
-- [ ] Template.Frontend.Client copied as {SolutionName}.Frontend.Client with updated namespaces
-- [ ] Status pages replaced by entity-specific pages (List/Create/Edit/Delete per entity)
-- [ ] IStatusApiClient replaced by entity-specific Refit API clients
-- [ ] All entity API clients registered in Frontend ServiceCollectionExtensions
-- [ ] NavMenu updated to include links to all generated entity pages
+- [ ] *(skip when `--no-frontend`)* Template.Frontend copied as {SolutionName}.Frontend with updated namespaces
+- [ ] *(skip when `--no-frontend`)* Template.Frontend.Client copied as {SolutionName}.Frontend.Client with updated namespaces
+- [ ] *(skip when `--no-frontend`)* Status pages replaced by entity-specific pages (List/Create/Edit/Delete per entity)
+- [ ] *(skip when `--no-frontend`)* IStatusApiClient replaced by entity-specific Refit API clients
+- [ ] *(skip when `--no-frontend`)* All entity API clients registered in Frontend ServiceCollectionExtensions
+- [ ] *(skip when `--no-frontend`)* NavMenu updated to include links to all generated entity pages
 
 ## Type Mapping Examples
 

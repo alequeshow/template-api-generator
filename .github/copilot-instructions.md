@@ -58,9 +58,9 @@ The template includes development and infrastructure files that must be copied t
 
 ## Frontend Layer (Template.Frontend)
 
-The template includes a complete Blazor Server+WASM hybrid frontend that must be copied to every generated solution:
+The template includes a complete Blazor Server+WASM hybrid frontend that is copied to every generated solution **unless `--no-frontend` was passed**, in which case all frontend projects and files are skipped entirely.
 
-### Frontend Core Components (COPY ALWAYS)
+### Frontend Core Components (COPY ALWAYS — unless `--no-frontend`)
 - **Template.Frontend**: Server-side Blazor host with Identity, auth state serialization, Layout, Account pages (Login, Register, Manage)
 - **Template.Frontend.Client**: WASM client project with `RedirectToLogin.razor` and `Auth.razor`
 - **Authentication services**: `ApiSignInManager`, `ApiUserStore`, `ApplicationUser`, `AuthTokenForwardingHandler`, `AuthTokenValidationService`, `IdentityPasswordHasherAdapter`
@@ -106,9 +106,9 @@ When generating code from JSON schemas:
 8. **ALWAYS COPY** Value Objects when they exist in the template
 9. **ALWAYS COPY** local development files (.vscode, mongo-init, docker-compose.yml, etc.)
 10. **ALWAYS COPY** Template.Security project (PasswordHasher, TokenService, interfaces)
-11. **ALWAYS COPY** Template.Frontend and Template.Frontend.Client projects
-12. **REPLACE** Status pages with entity-specific pages for each schema entity
-13. **CREATE** entity-specific Refit API client interfaces replacing IStatusApiClient
+11. **ALWAYS COPY** Template.Frontend and Template.Frontend.Client projects — **unless `--no-frontend` was passed**, in which case skip all Frontend and Frontend.Client files, projects, and registrations entirely
+12. **REPLACE** Status pages with entity-specific pages for each schema entity (skipped when `--no-frontend`)
+13. **CREATE** entity-specific Refit API client interfaces replacing IStatusApiClient (skipped when `--no-frontend`)
 
 ## CRITICAL: Code Generation Behavior
 
@@ -195,9 +195,15 @@ Given schema with title "Product":
 6. Register handlers in Application extensions
 7. Create `ProductMapper.cs` in `src/Birthday.Wishlist.Api/Extensions/EndpointMappers`
 8. Register mapper in Api extensions
+<<<<<<< HEAD
 9. Create `IProductApiClient.cs` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Services/Interfaces/ApiClients`
 10. Register `IProductApiClient` in Frontend ServiceCollectionExtensions
 11. Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Components/Pages/Product`
+=======
+9. *(skip when `--no-frontend`)* Create `IProductApiClient.cs` in Frontend/Services/Interfaces/ApiClients
+10. *(skip when `--no-frontend`)* Register `IProductApiClient` in Frontend ServiceCollectionExtensions
+11. *(skip when `--no-frontend`)* Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in Frontend/Components/Pages/Product
+>>>>>>> origin/main
 
 ## File Naming Conventions
 
