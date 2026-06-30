@@ -1,10 +1,10 @@
-# Template.Frontend.React Specification
+# Temple.Frontend.React Specification
 
 ## 1. Objective
 
 Create a new frontend application under:
 
-- `/home/runner/work/template-api-generator/template-api-generator/src/Template.Frontend/Temple.Frontend.React`
+- `src/Template.Frontend/Temple.Frontend.React`
 
 This frontend will use React with Next.js (TypeScript), integrate with SmartAdmin, keep the current backend API contracts unchanged, and establish a reusable UI/BFF architecture that is adaptable to React Native.
 
@@ -223,4 +223,3 @@ Notes:
   - cookie persistence approach.
   - reusable UI/UX + BFF design for React Native adaptation.
   - CI testing strategy.
-
