@@ -1,8 +1,6 @@
-const requiredKeys = ["NEXT_PUBLIC_API_BASE_URL"] as const;
+const requiredClientKey = "NEXT_PUBLIC_API_BASE_URL" as const;
 
-type RequiredKey = (typeof requiredKeys)[number];
-
-function readEnv(key: RequiredKey): string {
+function readEnv(key: typeof requiredClientKey): string {
   const value = process.env[key];
 
   if (!value || value.trim().length === 0) {
@@ -14,6 +12,6 @@ function readEnv(key: RequiredKey): string {
 
 export function getClientEnv() {
   return {
-    apiBaseUrl: readEnv("NEXT_PUBLIC_API_BASE_URL"),
+    apiBaseUrl: readEnv(requiredClientKey),
   };
 }

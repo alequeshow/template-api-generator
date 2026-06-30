@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
-import { Providers } from "@/app/providers";
+import { Providers } from "./providers";
 
-import "@/app/globals.css";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Temple Frontend React",
