@@ -25,7 +25,6 @@ When asked to generate a new solution from a JSON schema file:
 ```
 {SolutionName}/
   {SolutionName}.sln
-<<<<<<< HEAD
   src/
     {SolutionName}.Api/
     {SolutionName}.Application/
@@ -35,20 +34,8 @@ When asked to generate a new solution from a JSON schema file:
     {SolutionName}.Model/
     {SolutionName}.Repository/
     {SolutionName}.Security/         (COPY FROM Template.Security)
-    {SolutionName}.Frontend/         (COPY FROM Template.Frontend)
-    {SolutionName}.Frontend.Client/  (COPY FROM Template.Frontend.Client)
-=======
-  {SolutionName}.Api/
-  {SolutionName}.Application/
-  {SolutionName}.Contract/
-  {SolutionName}.DatabaseFactory/
-  {SolutionName}.Model/
-  {SolutionName}.Repository/
-  {SolutionName}.Infrastructure/     (COPY FROM Template.Infrastructure)
-  {SolutionName}.Security/           (COPY FROM Template.Security)
-  {SolutionName}.Frontend/           (COPY FROM Template.Frontend — SKIP when --no-frontend)
-  {SolutionName}.Frontend.Client/    (COPY FROM Template.Frontend.Client — SKIP when --no-frontend)
->>>>>>> origin/main
+    {SolutionName}.Frontend/         (COPY FROM Template.Frontend — SKIP when --no-frontend)
+    {SolutionName}.Frontend.Client/  (COPY FROM Template.Frontend.Client — SKIP when --no-frontend)
   .vscode/                    (COPY FROM TEMPLATE)
   mongo-init/                 (COPY FROM TEMPLATE)
   .dockerignore              (COPY FROM TEMPLATE)

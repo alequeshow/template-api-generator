@@ -1,25 +1,16 @@
 ---
 description: "Generate a complete .NET solution from a JSON schema using Template.* patterns. Use when: scaffold new project, generate solution from schema, create new API, new solution."
-<<<<<<< HEAD
-name: "generate-solution"
-argument-hint: "<schema-path> <SolutionName>  — e.g.: sample-schemas/ Birthday.Wishlist"
-=======
 name: "Generate Solution"
 argument-hint: "<schema-path> <SolutionName> [--no-frontend]  — e.g.: sample-schemas/wishlist.json Birthday.Wishlist  or  sample-schemas/wishlist.json Birthday.Wishlist --no-frontend"
->>>>>>> origin/main
 agent: "agent"
 tools: [read, edit, search]
 ---
 
 Generate a complete .NET solution from a JSON schema file.
 
-<<<<<<< HEAD
-**Input**: `$ARGS` — format: `<path-to-schema-files> <SolutionName>`
-=======
-**Input**: `$ARGS` — format: `<path-to-schema-file> <SolutionName> [--no-frontend]`
+**Input**: `$ARGS` — format: `<path-to-schema-files> <SolutionName> [--no-frontend]`
 
 - `--no-frontend` is an optional flag. When present, skip all frontend projects (`.Frontend`, `.Frontend.Client`) and all frontend-related files, registrations, and solution references.
->>>>>>> origin/main
 
 ## Rules
 - DO NOT output code to chat before creating files
@@ -36,24 +27,16 @@ Read these before generating — they define all rules and patterns:
 ## Execution Steps
 
 **Step 1 — Parse inputs**
-<<<<<<< HEAD
-Extract `schemaPath` and `solutionName` from `$ARGS`. Read all the schema files in the specified path. Identify all entity titles. The schemas can either be a single file with multiple entities or multiple files with one entity each. Validate that the schema(s) are well-formed and contain the necessary information to generate the solution.
+Extract `schemaPath`, `solutionName`, and the optional `--no-frontend` flag from `$ARGS`. Set `includeFrontend = true` unless `--no-frontend` is present. Read all the schema files in the specified path. Identify all entity titles. The schemas can either be a single file with multiple entities or multiple files with one entity each. Validate that the schema(s) are well-formed and contain the necessary information to generate the solution.
 
 `solutionName` should be a valid C# namespace and project name (e.g., no spaces, special characters, or leading numbers). If the name is invalid, report an error and stop execution.
-
-**Step 2 — Scaffold projects** (create .csproj + .sln)
-Projects to create: `.Api`, `.Application`, `.Contract`, `.DatabaseFactory`, `.Infrastructure`, `.Model`, `.Repository`, `.Security`, `.Frontend`, `.Frontend.Client`
-All project folders are placed under a `src/` subfolder inside the solution root (e.g., `{SolutionName}/src/{SolutionName}.Api/`). The `.sln`, `.vscode/`, `mongo-init/`, and root dev files stay at the solution root.
-For each of these projects, including `.Infrastructure`, scaffold it by copying the corresponding `Template.*` project. For backend and supporting projects, copy from root-level projects (e.g., copy `Template.Infrastructure` to `src/{SolutionName}.Infrastructure/`, update the .csproj and namespaces, and add the project to the solution file with the `src/` prefix path). For frontend projects, copy `Template.Frontend/Template.Frontend` to `src/{SolutionName}.Frontend/` and `Template.Frontend/Template.Frontend.Client` to `src/{SolutionName}.Frontend.Client/`.
-=======
-Extract `schemaPath`, `solutionName`, and the optional `--no-frontend` flag from `$ARGS`. Set `includeFrontend = true` unless `--no-frontend` is present. Read the schema file. Identify all entity titles.
 
 **Step 2 — Scaffold projects** (create .csproj + .sln)
 - Always create: `.Api`, `.Application`, `.Contract`, `.DatabaseFactory`, `.Infrastructure`, `.Model`, `.Repository`, `.Security`
 - Only when `includeFrontend = true`: also create `.Frontend` and `.Frontend.Client`
 
-For each of these projects, including `.Infrastructure`, scaffold it by copying the corresponding `Template.*` project. For backend and supporting projects, copy from root-level projects (e.g., copy `Template.Infrastructure` to `{SolutionName}.Infrastructure`, update the .csproj and namespaces, and add the project to the solution file). When `includeFrontend = true`, copy `Template.Frontend/Template.Frontend` to `{SolutionName}.Frontend` and `Template.Frontend/Template.Frontend.Client` to `{SolutionName}.Frontend.Client`, preserving the nested directory structure.
->>>>>>> origin/main
+For each of these projects, including `.Infrastructure`, scaffold it by copying the corresponding `Template.*` project. For backend and supporting projects, copy from root-level projects (e.g., copy `Template.Infrastructure` to `src/{SolutionName}.Infrastructure/`, update the .csproj and namespaces, and add the project to the solution file with the `src/` prefix path). When `includeFrontend = true`, copy `Template.Frontend/Template.Frontend` to `src/{SolutionName}.Frontend/` and `Template.Frontend/Template.Frontend.Client` to `src/{SolutionName}.Frontend.Client/`, preserving the nested directory structure.
+All project folders are placed under a `src/` subfolder inside the solution root (e.g., `{SolutionName}/src/{SolutionName}.Api/`). The `.sln`, `.vscode/`, `mongo-init/`, and root dev files stay at the solution root.
 
 **Step 3 — Copy dev environment files** (update names/paths)
 `.vscode/launch.json`, `.vscode/tasks.json`, `.vscode/extensions.json`, `mongo-init/01-init.js`, `.dockerignore`, `.env_template`, `.gitignore`, `docker-compose.yml`

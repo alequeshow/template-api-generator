@@ -59,7 +59,6 @@ Birthday.Wishlist/
 ├── .dockerignore                                 (ALWAYS INCLUDE)
 ├── .env_template                                 (ALWAYS INCLUDE, update db name)
 ├── .gitignore                                    (ALWAYS INCLUDE)
-<<<<<<< HEAD
 ├── docker-compose.yml                            (ALWAYS INCLUDE, update service names + src/ path)
 └── src/
     ├── Birthday.Wishlist.Api/
@@ -100,7 +99,7 @@ Birthday.Wishlist/
     │   │   ├── IPasswordHasher.cs
     │   │   └── ITokenService.cs
     │   └── Extensions/ServiceCollectionExtensions.cs
-    ├── Birthday.Wishlist.Frontend/                (ALWAYS INCLUDE — copy from Template.Frontend)
+    ├── Birthday.Wishlist.Frontend/                (omitted with --no-frontend)
     │   ├── Components/
     │   │   ├── Layout/                            (ALWAYS INCLUDE)
     │   │   ├── Account/                           (ALWAYS INCLUDE)
@@ -118,71 +117,9 @@ Birthday.Wishlist/
     │   │       ├── IAuthenticationApiClient.cs    (ALWAYS INCLUDE)
     │   │       └── IWishlistApiClient.cs          (generated — replaces IStatusApiClient)
     │   └── Extensions/ServiceCollectionExtensions.cs
-    └── Birthday.Wishlist.Frontend.Client/         (ALWAYS INCLUDE — copy from Template.Frontend.Client)
+    └── Birthday.Wishlist.Frontend.Client/         (omitted with --no-frontend)
         ├── RedirectToLogin.razor
         └── Pages/Auth.razor
-=======
-├── docker-compose.yml                            (ALWAYS INCLUDE, update service names)
-├── Birthday.Wishlist.Api/
-│   └── Extensions/EndpointMappers/
-│       ├── AuthenticationMapper.cs               (ALWAYS INCLUDE)
-│       ├── UserMapper.cs                         (ALWAYS INCLUDE)
-│       └── WishlistMapper.cs
-├── Birthday.Wishlist.Application/
-│   ├── Handlers/
-│   │   ├── UserQueryHandler.cs                   (ALWAYS INCLUDE)
-│   │   ├── UserCommandHandler.cs                 (ALWAYS INCLUDE)
-│   │   ├── WishlistQueryHandler.cs
-│   │   └── WishlistCommandHandler.cs
-│   └── Interfaces/Security/
-│       ├── IAuthenticationService.cs             (ALWAYS INCLUDE)
-│       └── IUserRegistrationService.cs           (ALWAYS INCLUDE)
-├── Birthday.Wishlist.Contract/
-│   ├── User.cs                                   (ALWAYS INCLUDE)
-│   ├── Wishlist.cs
-│   └── Authentication/                           (ALWAYS INCLUDE all files)
-├── Birthday.Wishlist.Model/
-│   ├── User.cs                                   (ALWAYS INCLUDE)
-│   ├── UserAccessInfo.cs                         (ALWAYS INCLUDE)
-│   ├── Wishlist.cs
-│   └── ValueObjects/                             (ALWAYS INCLUDE all files)
-│       ├── PersonName.cs
-│       ├── Email.cs
-│       ├── UserIdentifier.cs
-│       └── ActiveInfo.cs
-├── Birthday.Wishlist.Repository/
-├── Birthday.Wishlist.DatabaseFactory/
-├── Birthday.Wishlist.Infrastructure/
-├── Birthday.Wishlist.Security/                   (ALWAYS INCLUDE — copy from Template.Security)
-│   ├── PasswordHasher.cs
-│   ├── TokenService.cs
-│   ├── TokenResult.cs
-│   ├── Interfaces/
-│   │   ├── IPasswordHasher.cs
-│   │   └── ITokenService.cs
-│   └── Extensions/ServiceCollectionExtensions.cs
-├── Birthday.Wishlist.Frontend/                   (omitted with --no-frontend)
-│   ├── Components/
-│   │   ├── Layout/                               (ALWAYS INCLUDE)
-│   │   ├── Account/                              (ALWAYS INCLUDE)
-│   │   ├── Shared/AlertMessage.razor             (ALWAYS INCLUDE)
-│   │   └── Pages/
-│   │       ├── Home.razor
-│   │       └── Wishlist/                         (generated — replaces Status/)
-│   │           ├── WishlistList.razor
-│   │           ├── WishlistCreate.razor
-│   │           ├── WishlistEdit.razor
-│   │           └── WishlistDelete.razor
-│   ├── Services/
-│   │   ├── Authentication/                       (ALWAYS INCLUDE all files)
-│   │   └── Interfaces/ApiClients/
-│   │       ├── IAuthenticationApiClient.cs       (ALWAYS INCLUDE)
-│   │       └── IWishlistApiClient.cs             (generated — replaces IStatusApiClient)
-│   └── Extensions/ServiceCollectionExtensions.cs
-└── Birthday.Wishlist.Frontend.Client/            (omitted with --no-frontend)
-    ├── RedirectToLogin.razor
-    └── Pages/Auth.razor
->>>>>>> origin/main
 ```
 
 ### API-only solution (`--no-frontend`)

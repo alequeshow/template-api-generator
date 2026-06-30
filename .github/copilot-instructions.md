@@ -195,15 +195,9 @@ Given schema with title "Product":
 6. Register handlers in Application extensions
 7. Create `ProductMapper.cs` in `src/Birthday.Wishlist.Api/Extensions/EndpointMappers`
 8. Register mapper in Api extensions
-<<<<<<< HEAD
-9. Create `IProductApiClient.cs` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Services/Interfaces/ApiClients`
-10. Register `IProductApiClient` in Frontend ServiceCollectionExtensions
-11. Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Components/Pages/Product`
-=======
-9. *(skip when `--no-frontend`)* Create `IProductApiClient.cs` in Frontend/Services/Interfaces/ApiClients
+9. *(skip when `--no-frontend`)* Create `IProductApiClient.cs` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Services/Interfaces/ApiClients`
 10. *(skip when `--no-frontend`)* Register `IProductApiClient` in Frontend ServiceCollectionExtensions
-11. *(skip when `--no-frontend`)* Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in Frontend/Components/Pages/Product
->>>>>>> origin/main
+11. *(skip when `--no-frontend`)* Create `ProductList.razor`, `ProductCreate.razor`, `ProductEdit.razor`, `ProductDelete.razor` in `src/Birthday.Wishlist.Frontend/Birthday.Wishlist.Frontend/Components/Pages/Product`
 
 ## File Naming Conventions
 
