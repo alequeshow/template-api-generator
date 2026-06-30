@@ -1,10 +1,10 @@
-# Temple.Frontend.React Specification
+# Template.Frontend.React Specification
 
 ## 1. Objective
 
 Create a new frontend application under:
 
-- `src/Template.Frontend/Temple.Frontend.React`
+- `src/Template.Frontend/Template.Frontend.React`
 
 This frontend will use React with Next.js (TypeScript), integrate with SmartAdmin, keep the current backend API contracts unchanged, and establish a reusable UI/BFF architecture that is adaptable to React Native.
 
@@ -12,7 +12,7 @@ This frontend will use React with Next.js (TypeScript), integrate with SmartAdmi
 
 ### In scope
 
-- Scaffold a new React application (Next.js + TypeScript) in `Temple.Frontend.React`.
+- Scaffold a new React application (Next.js + TypeScript) in `Template.Frontend.React`.
 - Integrate SmartAdmin visual system (layout, navigation, tokens, components).
 - Replace jQuery-dependent template behaviors with React-friendly modern libraries.
 - Integrate authentication against existing backend endpoints without backend API changes.
@@ -43,7 +43,7 @@ This frontend will use React with Next.js (TypeScript), integrate with SmartAdmi
 Create initial structure:
 
 ```text
-src/Template.Frontend/Temple.Frontend.React/
+src/Template.Frontend/Template.Frontend.React/
   docs/
     specs.md
   app/
@@ -207,14 +207,14 @@ Notes:
 
 ## 10. Deliverables
 
-- New folder and project skeleton in `Temple.Frontend.React`.
+- New folder and project skeleton in `Template.Frontend.React`.
 - This specification document in `docs/specs.md`.
 - Architecture decisions documented for SmartAdmin integration, auth/BFF, and React Native readiness.
 - CI test strategy and quality gates defined.
 
 ## 11. Acceptance Criteria
 
-- `Temple.Frontend.React` exists under `src/Template.Frontend`.
+- `Template.Frontend.React` exists under `src/Template.Frontend`.
 - `docs/specs.md` exists and covers:
   - React project creation approach.
   - SmartAdmin integration strategy.

@@ -1,4 +1,4 @@
-@Template.Api_HostAddress = https://localhost:7241
+F@Template.Api_HostAddress = https://localhost:7241
 
 ### Get All Status
 GET {{Template.Api_HostAddress}}/status/
