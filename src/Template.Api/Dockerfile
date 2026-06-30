@@ -8,11 +8,11 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Template.Api/Template.Api.csproj", "Template.Api/"]
-RUN dotnet restore "./Template.Api/Template.Api.csproj"
+WORKDIR /repo
+COPY ["src/Template.Api/Template.Api.csproj", "src/Template.Api/"]
+RUN dotnet restore "./src/Template.Api/Template.Api.csproj"
 COPY . .
-WORKDIR "/src/Template.Api"
+WORKDIR "/repo/src/Template.Api"
 RUN dotnet build "./Template.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
