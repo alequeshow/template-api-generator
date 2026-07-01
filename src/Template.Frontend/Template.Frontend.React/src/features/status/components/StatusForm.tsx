@@ -14,11 +14,7 @@ type StatusFormProps = {
 };
 
 function toDateTimeLocalValue(value?: string) {
-  if (!value) {
-    return new Date().toISOString().slice(0, 16);
-  }
-
-  const date = new Date(value);
+  const date = value ? new Date(value) : new Date();
   const offset = date.getTimezoneOffset();
   // datetime-local inputs expect local time (without timezone), so we subtract the timezone offset to convert UTC values to local clock time.
   const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);

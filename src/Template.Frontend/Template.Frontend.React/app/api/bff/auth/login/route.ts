@@ -30,7 +30,16 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  if (!userInfoResponse.ok) {
+    const body = await userInfoResponse.text();
+    return new NextResponse(body, { status: userInfoResponse.status });
+  }
+
   const userInfo = await readJsonSafe<UserInfo>(userInfoResponse);
+
+  if (!userInfo) {
+    return NextResponse.json({ message: "Invalid user info response" }, { status: 502 });
+  }
 
   const response = NextResponse.json({ user: userInfo }, { status: 200 });
   applyTokenCookies(response, tokenResult);

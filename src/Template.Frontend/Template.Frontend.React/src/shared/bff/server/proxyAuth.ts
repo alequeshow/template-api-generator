@@ -73,13 +73,18 @@ export async function toProxyResponse(
   backendResponse: Response,
   updatedTokens?: TokenAuthenticationResult,
 ): Promise<NextResponse> {
-  const body = await backendResponse.text();
+  const isNoContentStatus = backendResponse.status === 204 || backendResponse.status === 205;
+  const body = isNoContentStatus ? null : await backendResponse.text();
+  const contentType = backendResponse.headers.get("content-type");
+  const headers = new Headers();
+
+  if (body !== null && contentType) {
+    headers.set("content-type", contentType);
+  }
 
   const response = new NextResponse(body, {
     status: backendResponse.status,
-    headers: {
-      "content-type": backendResponse.headers.get("content-type") ?? "application/json",
-    },
+    headers,
   });
 
   if (updatedTokens) {

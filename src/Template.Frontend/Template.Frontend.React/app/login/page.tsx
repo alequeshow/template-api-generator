@@ -1,11 +1,11 @@
 import { LoginForm } from "@/features/auth/components/LoginForm";
 
-export default async function LoginPage({
+export default function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ returnTo?: string }>;
+  searchParams: { returnTo?: string };
 }) {
-  const { returnTo } = await searchParams;
+  const { returnTo } = searchParams;
 
   return (
     <main className="sa-login-page">
