@@ -20,6 +20,10 @@ const hopByHopHeaders = new Set([
 ]);
 
 function buildProxyHeaders(backendResponse: Response, hasBody: boolean) {
+  /**
+   * Forwards backend response headers while removing hop-by-hop headers that must not be proxied.
+   * For no-body responses (204/205), it also removes content headers to keep HTTP semantics valid.
+   */
   const headers = new Headers();
 
   backendResponse.headers.forEach((value, key) => {

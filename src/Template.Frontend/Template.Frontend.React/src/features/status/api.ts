@@ -3,7 +3,11 @@ import { readCsrfTokenFromDocument } from "@/shared/utils/csrf";
 
 import type { StatusItem } from "@/features/status/types";
 
-async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+type ResponseMode = "json" | "text";
+
+async function apiRequest<T>(path: string, mode: "json", init?: RequestInit): Promise<T>;
+async function apiRequest(path: string, mode: "text", init?: RequestInit): Promise<string>;
+async function apiRequest<T>(path: string, mode: ResponseMode, init?: RequestInit): Promise<T | string> {
   const response = await fetch(path, {
     ...init,
     credentials: "include",
@@ -20,35 +24,33 @@ async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (response.status === 204) {
-    return undefined as T;
+    return undefined as T | string;
   }
 
-  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
-
-  if (contentType.includes("application/json")) {
-    return response.json() as Promise<T>;
+  if (mode === "text") {
+    return response.text();
   }
 
-  return (await response.text()) as T;
+  return response.json() as Promise<T>;
 }
 
 export function getStatusList() {
-  return apiRequest<StatusItem[]>(bffEndpoints.status, { method: "GET" });
+  return apiRequest<StatusItem[]>(bffEndpoints.status, "json", { method: "GET" });
 }
 
 export function getStatusById(id: string) {
-  return apiRequest<StatusItem>(`${bffEndpoints.status}/${id}`, { method: "GET" });
+  return apiRequest<StatusItem>(`${bffEndpoints.status}/${id}`, "json", { method: "GET" });
 }
 
 export function createStatus(payload: StatusItem) {
-  return apiRequest<string>(bffEndpoints.status, {
+  return apiRequest(bffEndpoints.status, "text", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
 export function updateStatus(id: string, payload: StatusItem) {
-  return apiRequest<void>(`${bffEndpoints.status}/${id}`, {
+  return apiRequest<void>(`${bffEndpoints.status}/${id}`, "json", {
     method: "PUT",
     body: JSON.stringify({
       ...payload,
@@ -58,7 +60,7 @@ export function updateStatus(id: string, payload: StatusItem) {
 }
 
 export function deleteStatus(id: string) {
-  return apiRequest<void>(`${bffEndpoints.status}/${id}`, {
+  return apiRequest<void>(`${bffEndpoints.status}/${id}`, "json", {
     method: "DELETE",
   });
 }

@@ -12,6 +12,8 @@ import { AlertMessage } from "@/shared/ui/AlertMessage";
 type LoginFormProps = {
   returnTo?: string;
 };
+// Allow app-internal absolute paths (e.g. "/status"), but reject protocol-relative values like "//evil.example".
+const safeReturnPathPattern = /^\/(?!\/)/;
 
 export function LoginForm({ returnTo }: LoginFormProps) {
   const router = useRouter();
@@ -19,7 +21,7 @@ export function LoginForm({ returnTo }: LoginFormProps) {
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const safeReturnPath = useMemo(() => {
-    if (!returnTo || !/^\/(?!\/)/.test(returnTo)) {
+    if (!returnTo || !safeReturnPathPattern.test(returnTo)) {
       return "/";
     }
 
