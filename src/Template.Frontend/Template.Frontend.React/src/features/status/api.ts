@@ -3,7 +3,7 @@ import { readCsrfTokenFromDocument } from "@/shared/utils/csrf";
 
 import type { StatusItem } from "@/features/status/types";
 
-async function performApiRequest(path: string, init?: RequestInit) {
+async function performApiRequest(path: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(path, {
     ...init,
     credentials: "include",
@@ -25,7 +25,7 @@ async function performApiRequest(path: string, init?: RequestInit) {
 async function apiRequestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await performApiRequest(path, init);
   if (response.status === 204) {
-    throw new Error("Expected JSON response but received no content");
+    throw new Error(`Expected JSON response from ${path} but received no content`);
   }
   return response.json() as Promise<T>;
 }
