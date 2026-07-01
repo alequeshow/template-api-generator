@@ -4,6 +4,7 @@
   --sa-surface-alt: #0f172a;
   --sa-primary: #3b82f6;
   --sa-primary-hover: #2563eb;
+  --sa-danger: #b91c1c;
   --sa-border: #dbe4ee;
   --sa-text: #0f172a;
   --sa-text-muted: #64748b;
@@ -121,6 +122,114 @@
   margin: 0 auto;
   padding-block: 1rem 1.5rem;
   color: var(--sa-text-muted);
+}
+
+.sa-button {
+  border: 0;
+  background: var(--sa-primary);
+  color: white;
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--sa-radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.sa-button:hover {
+  background: var(--sa-primary-hover);
+}
+
+.sa-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.sa-button-ghost {
+  background: transparent;
+  border: 1px solid var(--sa-border);
+  color: var(--sa-text);
+}
+
+.sa-button-danger {
+  background: var(--sa-danger);
+}
+
+.sa-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 480px;
+}
+
+.sa-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sa-field input {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--sa-border);
+  border-radius: var(--sa-radius-md);
+}
+
+.sa-field-error {
+  color: var(--sa-danger);
+}
+
+.sa-alert {
+  border-radius: var(--sa-radius-md);
+  border: 1px solid transparent;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.sa-alert[data-type="success"] {
+  background: color-mix(in srgb, var(--sa-success) 15%, white);
+  border-color: var(--sa-success);
+}
+
+.sa-alert[data-type="warning"] {
+  background: color-mix(in srgb, var(--sa-warning) 15%, white);
+  border-color: var(--sa-warning);
+}
+
+.sa-alert[data-type="error"] {
+  background: color-mix(in srgb, var(--sa-danger) 15%, white);
+  border-color: var(--sa-danger);
+}
+
+.sa-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sa-table th,
+.sa-table td {
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--sa-border);
+  text-align: left;
+}
+
+.sa-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sa-login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--sa-background);
+}
+
+.sa-login-card {
+  background: var(--sa-surface);
+  border: 1px solid var(--sa-border);
+  border-radius: var(--sa-radius-lg);
+  box-shadow: var(--sa-shadow-card);
+  padding: 2rem;
+  width: min(440px, calc(100% - 2rem));
 }
 
 @media (max-width: 900px) {
