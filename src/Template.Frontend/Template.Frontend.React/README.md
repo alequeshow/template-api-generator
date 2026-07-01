@@ -18,3 +18,4 @@ Copy `.env.example` to `.env.local` and set values:
 
 - `NEXT_PUBLIC_API_BASE_URL`: backend API base URL.
 - `NEXT_PUBLIC_APP_ENV`: environment name.
+- `ALLOW_SELF_SIGNED_CERTS` (optional): set to `true` to accept self-signed HTTPS certificates for backend calls from BFF routes in local development.
