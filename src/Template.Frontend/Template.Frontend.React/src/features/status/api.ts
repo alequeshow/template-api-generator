@@ -23,7 +23,13 @@ async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
     return undefined as T;
   }
 
-  return response.json() as Promise<T>;
+  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+
+  if (contentType.includes("application/json")) {
+    return response.json() as Promise<T>;
+  }
+
+  return (await response.text()) as T;
 }
 
 export function getStatusList() {
@@ -44,7 +50,10 @@ export function createStatus(payload: StatusItem) {
 export function updateStatus(id: string, payload: StatusItem) {
   return apiRequest<void>(`${bffEndpoints.status}/${id}`, {
     method: "PUT",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      ...payload,
+      id,
+    }),
   });
 }
 

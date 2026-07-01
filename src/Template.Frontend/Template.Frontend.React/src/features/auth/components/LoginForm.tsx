@@ -19,7 +19,7 @@ export function LoginForm({ returnTo }: LoginFormProps) {
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const safeReturnPath = useMemo(() => {
-    if (!returnTo || !returnTo.startsWith("/")) {
+    if (!returnTo || !/^\/(?!\/)/.test(returnTo)) {
       return "/";
     }
 

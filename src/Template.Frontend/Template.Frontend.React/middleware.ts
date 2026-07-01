@@ -5,6 +5,7 @@ import { authCookieNames } from "@/shared/bff/cookies";
 const protectedPrefixes = ["/auth", "/status"];
 const ignoredPrefixes = ["/_next", "/favicon"];
 const publicApiRoutes = ["/api/bff/auth/login"];
+const csrfCookieMaxAgeSeconds = 60 * 60 * 24;
 
 function isPublicPath(pathname: string) {
   return pathname === "/login";
@@ -42,6 +43,7 @@ export function middleware(request: NextRequest) {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
+        maxAge: csrfCookieMaxAgeSeconds,
       });
     }
 
@@ -60,6 +62,7 @@ export function middleware(request: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: csrfCookieMaxAgeSeconds,
     });
   }
 

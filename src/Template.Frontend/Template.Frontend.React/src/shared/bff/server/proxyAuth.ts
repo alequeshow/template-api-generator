@@ -8,6 +8,36 @@ type AuthProxyResult = {
   response: Response;
   updatedTokens?: TokenAuthenticationResult;
 };
+const hopByHopHeaders = new Set([
+  "connection",
+  "keep-alive",
+  "proxy-authenticate",
+  "proxy-authorization",
+  "te",
+  "trailer",
+  "transfer-encoding",
+  "upgrade",
+]);
+
+function buildProxyHeaders(backendResponse: Response, hasBody: boolean) {
+  const headers = new Headers();
+
+  backendResponse.headers.forEach((value, key) => {
+    const normalized = key.toLowerCase();
+
+    if (hopByHopHeaders.has(normalized)) {
+      return;
+    }
+
+    if (!hasBody && (normalized === "content-type" || normalized === "content-length")) {
+      return;
+    }
+
+    headers.append(key, value);
+  });
+
+  return headers;
+}
 
 async function refreshTokens(request: NextRequest): Promise<TokenAuthenticationResult | null> {
   const { token, refreshToken } = getTokenCookies(request);
@@ -75,12 +105,7 @@ export async function toProxyResponse(
 ): Promise<NextResponse> {
   const isNoContentStatus = backendResponse.status === 204 || backendResponse.status === 205;
   const body = isNoContentStatus ? null : await backendResponse.text();
-  const contentType = backendResponse.headers.get("content-type");
-  const headers = new Headers();
-
-  if (body !== null && contentType) {
-    headers.set("content-type", contentType);
-  }
+  const headers = buildProxyHeaders(backendResponse, body !== null);
 
   const response = new NextResponse(body, {
     status: backendResponse.status,

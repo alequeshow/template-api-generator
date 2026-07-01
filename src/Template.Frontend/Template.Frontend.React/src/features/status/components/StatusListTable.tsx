@@ -41,12 +41,18 @@ export function StatusListTable() {
               <td>{item.description}</td>
               <td>{new Date(item.timeStamp).toLocaleString()}</td>
               <td className="sa-actions">
-                <Link href={`/status/edit/${item.id}`} className="sa-button sa-button-ghost">
-                  Edit
-                </Link>
-                <Link href={`/status/delete/${item.id}`} className="sa-button sa-button-danger">
-                  Delete
-                </Link>
+                {item.id ? (
+                  <>
+                    <Link href={`/status/edit/${item.id}`} className="sa-button sa-button-ghost">
+                      Edit
+                    </Link>
+                    <Link href={`/status/delete/${item.id}`} className="sa-button sa-button-danger">
+                      Delete
+                    </Link>
+                  </>
+                ) : (
+                  <span>Unavailable</span>
+                )}
               </td>
             </tr>
           ))}
