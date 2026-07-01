@@ -12,6 +12,7 @@ const hopByHopHeaders = new Set([
   "connection",
   "keep-alive",
   "proxy-authenticate",
+  "proxy-connection",
   "proxy-authorization",
   "te",
   "trailer",
