@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
+import { REDIRECT_DELAY_MS } from "@/features/status/constants";
 import { StatusForm } from "@/features/status/components/StatusForm";
 import { useStatusByIdQuery, useUpdateStatusMutation } from "@/features/status/hooks/useStatus";
 
@@ -32,7 +33,7 @@ export function StatusEditCard({ id }: StatusEditCardProps) {
         setTimeout(() => {
           router.push("/status");
           router.refresh();
-        }, 700);
+        }, REDIRECT_DELAY_MS);
       }}
     />
   );

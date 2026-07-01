@@ -11,7 +11,7 @@ export async function callBackend(pathname: string, init?: RequestInit): Promise
       "content-type": "application/json",
       ...(init?.headers ?? {}),
     },
-    cache: "no-store",
+    cache: init?.cache ?? "no-store",
   });
 }
 

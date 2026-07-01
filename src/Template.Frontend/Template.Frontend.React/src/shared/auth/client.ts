@@ -1,19 +1,7 @@
 import { bffEndpoints } from "@/shared/bff/endpoints";
 import type { SessionInfo } from "@/shared/auth/session";
 import type { UserCredentialsRequest } from "@/shared/auth/contracts";
-
-function readCsrfTokenFromDocument() {
-  if (typeof document === "undefined") {
-    return "";
-  }
-
-  const csrfCookie = document.cookie
-    .split(";")
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith("tg_csrf_token="));
-
-  return csrfCookie?.split("=")[1] ?? "";
-}
+import { readCsrfTokenFromDocument } from "@/shared/utils/csrf";
 
 async function fetchBff(path: string, init?: RequestInit) {
   const response = await fetch(path, {
@@ -27,7 +15,7 @@ async function fetchBff(path: string, init?: RequestInit) {
   });
 
   if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
+    throw new Error(`Request to ${path} failed with status ${response.status}`);
   }
 
   if (response.status === 204) {

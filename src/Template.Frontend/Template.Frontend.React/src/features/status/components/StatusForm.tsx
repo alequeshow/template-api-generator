@@ -20,8 +20,25 @@ function toDateTimeLocalValue(value?: string) {
 
   const date = new Date(value);
   const offset = date.getTimezoneOffset();
+  // datetime-local inputs expect local time (without timezone), so we subtract the timezone offset to convert UTC values to local clock time.
   const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
   return adjustedDate.toISOString().slice(0, 16);
+}
+
+/**
+ * Parses submitted datetime-local field values into an ISO timestamp.
+ * Invalid or missing values fall back to the current UTC timestamp.
+ */
+function parseFormTimestamp(rawValue: FormDataEntryValue | null) {
+  const fallback = new Date().toISOString();
+  const parsedValue = typeof rawValue === "string" ? rawValue : fallback;
+  const parsedDate = new Date(parsedValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return fallback;
+  }
+
+  return parsedDate.toISOString();
 }
 
 export function StatusForm({ title, submitLabel, initialValue, readOnly = false, onSubmit }: StatusFormProps) {
@@ -60,7 +77,7 @@ export function StatusForm({ title, submitLabel, initialValue, readOnly = false,
           id: String(formData.get("id") ?? "") || undefined,
           value,
           description: String(formData.get("description") ?? "") || undefined,
-          timeStamp: new Date(String(formData.get("timeStamp") ?? new Date().toISOString())).toISOString(),
+          timeStamp: parseFormTimestamp(formData.get("timeStamp")),
         };
 
         try {

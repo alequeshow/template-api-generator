@@ -2,7 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { authCookieNames } from "@/shared/bff/cookies";
 
-const protectedPrefixes = ["/", "/auth", "/status"];
+const protectedPrefixes = ["/auth", "/status"];
+const ignoredPrefixes = ["/_next", "/favicon"];
+const publicApiRoutes = ["/api/bff/auth/login"];
 
 function isPublicPath(pathname: string) {
   return pathname === "/login";
@@ -13,13 +15,16 @@ function isProtectedPath(pathname: string) {
     return true;
   }
 
-  return protectedPrefixes.some((prefix) => prefix !== "/" && pathname.startsWith(prefix));
+  return protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
 }
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname.startsWith("/_next") || pathname.startsWith("/favicon") || pathname.startsWith("/api/bff/auth/login")) {
+  if (
+    ignoredPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
+    publicApiRoutes.some((route) => pathname.startsWith(route))
+  ) {
     return NextResponse.next();
   }
 

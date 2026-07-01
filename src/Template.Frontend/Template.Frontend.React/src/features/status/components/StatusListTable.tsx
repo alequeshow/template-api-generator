@@ -36,7 +36,7 @@ export function StatusListTable() {
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id ?? `${item.value}-${item.timeStamp}`}>
+            <tr key={item.id ?? `${item.value}-${item.description ?? ""}-${item.timeStamp}`}>
               <td>{item.value}</td>
               <td>{item.description}</td>
               <td>{new Date(item.timeStamp).toLocaleString()}</td>

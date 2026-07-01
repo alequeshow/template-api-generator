@@ -1,19 +1,7 @@
 import { bffEndpoints } from "@/shared/bff/endpoints";
+import { readCsrfTokenFromDocument } from "@/shared/utils/csrf";
 
 import type { StatusItem } from "@/features/status/types";
-
-function readCsrfTokenFromDocument() {
-  if (typeof document === "undefined") {
-    return "";
-  }
-
-  const csrfCookie = document.cookie
-    .split(";")
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith("tg_csrf_token="));
-
-  return csrfCookie?.split("=")[1] ?? "";
-}
 
 async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, {

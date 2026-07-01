@@ -14,8 +14,17 @@ function toMaxAge(expiresAt?: string) {
     return oneDayInSeconds;
   }
 
-  const seconds = Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000);
-  return seconds > 0 ? seconds : oneDayInSeconds;
+  const expiresAtMs = new Date(expiresAt).getTime();
+  if (Number.isNaN(expiresAtMs)) {
+    return oneDayInSeconds;
+  }
+
+  const seconds = Math.floor((expiresAtMs - Date.now()) / 1000);
+  if (seconds <= 0) {
+    return 0;
+  }
+
+  return seconds;
 }
 
 export function ensureCsrfCookie(response: NextResponse) {
