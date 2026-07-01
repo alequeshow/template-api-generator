@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { AuthActions } from "@/features/auth/components/AuthActions";
 import { Navigation } from "@/modules/smartadmin/components/Navigation";
 
 type AppShellProps = {
@@ -12,7 +13,7 @@ export function AppShell({ children }: AppShellProps) {
       <header className="sa-header">
         <div className="sa-header-content">
           <span className="sa-brand">Temple SmartAdmin</span>
-          <span>Phase 2 shell</span>
+          <AuthActions />
         </div>
       </header>
       <div className="sa-body">
