@@ -1,7 +1,8 @@
 import { getBackendApiBaseUrl } from "@/shared/bff/server/env";
+import type { Dispatcher } from "undici";
 
 const allowSelfSignedCertificatesKey = "ALLOW_SELF_SIGNED_CERTS" as const;
-let insecureTlsDispatcher: unknown;
+let insecureTlsDispatcher: Dispatcher | undefined;
 
 function buildBackendUrl(pathname: string) {
   return new URL(pathname, getBackendApiBaseUrl()).toString();
@@ -21,10 +22,15 @@ function shouldAllowSelfSignedCertificates(target: URL) {
     return false;
   }
 
-  return isEnabled(process.env[allowSelfSignedCertificatesKey]);
+  const explicitSetting = process.env[allowSelfSignedCertificatesKey];
+  if (explicitSetting === undefined) {
+    return false;
+  }
+
+  return isEnabled(explicitSetting);
 }
 
-async function getBackendDispatcher(target: URL): Promise<unknown | undefined> {
+async function getBackendDispatcher(target: URL): Promise<Dispatcher | undefined> {
   if (!shouldAllowSelfSignedCertificates(target)) {
     return undefined;
   }
@@ -44,7 +50,7 @@ async function getBackendDispatcher(target: URL): Promise<unknown | undefined> {
 export async function callBackend(pathname: string, init?: RequestInit): Promise<Response> {
   const backendUrl = buildBackendUrl(pathname);
   const dispatcher = await getBackendDispatcher(new URL(backendUrl));
-  const fetchInit: RequestInit & { dispatcher?: unknown } = {
+  const fetchInit: RequestInit & { dispatcher?: Dispatcher } = {
     ...init,
     headers: {
       "content-type": "application/json",
