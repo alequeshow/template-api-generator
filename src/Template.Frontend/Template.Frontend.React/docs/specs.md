@@ -97,6 +97,43 @@ Notes:
 - Existing jQuery-dependent features are mapped to modern React-compatible libraries.
 - Track each replaced widget in a migration checklist.
 
+### 5.4 SmartAdmin look-and-feel parity plan (horizontal template)
+
+Reference baseline:
+- `https://vidafinanceira-test.azurewebsites.net/template/horizontal/index.html`
+- Reference capture date: `2026-07-04`
+- Add a local screenshot/catalog snapshot in repository docs as fallback reference to avoid dependence on a temporary environment URL.
+
+Objective:
+- Preserve the SmartAdmin visual identity and interaction style from the purchased template while implementing it with the current React stack.
+
+Planned work:
+
+1. Layout parity
+   - Recreate the horizontal layout structure (top header, horizontal menu, content container, footer).
+   - Match spacing, sizing, card density, and page rhythm from the reference page.
+   - Keep responsive behavior aligned with desktop/tablet/mobile breakpoints visible in the template.
+
+2. Color system and theme support
+   - Extract and document the template palette (base, semantic, accent, background, text, border).
+   - Implement theme presets that mirror the template variants (including dark/light behavior where present).
+   - Add runtime theme switching with consistent propagation across shell, navigation, and feature components.
+
+3. Core jQuery-era component modernization
+   - Identify components in the template that depend on jQuery for behavior and list one React-native replacement path per component.
+   - Preserve visual styling and interaction intent while removing imperative DOM dependency.
+   - Prioritize components with high layout impact and shared usage first.
+
+4. Menu-driven component parity (explicit scope)
+   - **UI Elements**: deliver React equivalents for panels/cards, alerts, badges, tabs/accordions, modals, progress indicators, and notifications used in template demos.
+   - **Forms**: deliver styled inputs, validation states, grouped controls, select/checkbox/radio/toggle patterns, and form layout variants shown in the template.
+   - **Tables**: deliver template-matched table styles with sorting, filtering, pagination, responsive behavior, and action patterns.
+
+5. Validation and acceptance for this phase
+   - Build a parity checklist that maps each implemented item to the corresponding template example.
+   - Capture visual comparison evidence for layout, theme variants, and representative components from UI Elements, Forms, and Tables.
+   - Approve this phase when look-and-feel is aligned and key interactions are preserved without jQuery.
+
 ## 6. Authentication and Cookie Persistence
 
 ### 6.1 Non-negotiable constraints
