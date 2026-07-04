@@ -9,21 +9,22 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="sa-navigation">
+    <ul className="sa-navigation" role="list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
       {navigationItems.map((item) => {
         const isActive = pathname === item.href;
 
         return (
-          <Link
-            key={item.href}
-            className="sa-navigation-link"
-            data-active={isActive}
-            href={item.href}
-          >
-            {item.label}
-          </Link>
+          <li key={item.href} style={{ display: "flex" }}>
+            <Link
+              className="sa-navigation-link"
+              data-active={isActive}
+              href={item.href}
+            >
+              {item.label}
+            </Link>
+          </li>
         );
       })}
-    </nav>
+    </ul>
   );
 }

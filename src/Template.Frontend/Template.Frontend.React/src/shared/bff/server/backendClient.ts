@@ -17,17 +17,22 @@ function isEnabled(value: string | undefined) {
   return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
 }
 
+function isLoopbackHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+}
+
 function shouldAllowSelfSignedCertificates(target: URL) {
   if (process.env.NODE_ENV === "production" || target.protocol !== "https:") {
     return false;
   }
 
   const explicitSetting = process.env[allowSelfSignedCertificatesKey];
-  if (explicitSetting === undefined) {
-    return false;
+  if (explicitSetting !== undefined) {
+    return isEnabled(explicitSetting);
   }
 
-  return isEnabled(explicitSetting);
+  // Auto-allow for localhost/127.0.0.1/::1 in development
+  return isLoopbackHost(target.hostname);
 }
 
 async function getBackendDispatcher(target: URL): Promise<Dispatcher | undefined> {

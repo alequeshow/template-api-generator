@@ -25,7 +25,7 @@ describe("AppShell", () => {
     );
 
     expect(screen.getByText("Temple SmartAdmin")).toBeInTheDocument();
-    expect(screen.getByLabelText("Primary navigation")).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Primary navigation" })).toBeInTheDocument();
     expect(screen.getByText("Dashboard content")).toBeInTheDocument();
   });
 });

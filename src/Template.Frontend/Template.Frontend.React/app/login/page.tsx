@@ -10,8 +10,10 @@ export default function LoginPage({
   return (
     <main className="sa-login-page">
       <section className="sa-login-card">
-        <h1>Sign in</h1>
-        <p>Use your existing backend credentials to continue.</p>
+        <div className="sa-login-brand">
+          <h1>Temple SmartAdmin</h1>
+          <p>Sign in with your account credentials to continue.</p>
+        </div>
         <LoginForm returnTo={returnTo} />
       </section>
     </main>
