@@ -10,6 +10,25 @@ const PAGE_SIZE = 10;
 type SortKey = "value" | "description" | "timeStamp";
 type SortDir = "asc" | "desc";
 
+type PageItem = { kind: "page"; page: number } | { kind: "ellipsis"; key: string };
+
+function buildPageItems(totalPages: number, currentPage: number): PageItem[] {
+  const pages: PageItem[] = [];
+  let prev: number | null = null;
+
+  for (let p = 1; p <= totalPages; p++) {
+    if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+      if (prev !== null && p - prev > 1) {
+        pages.push({ kind: "ellipsis", key: `ellipsis-${prev}-${p}` });
+      }
+      pages.push({ kind: "page", page: p });
+      prev = p;
+    }
+  }
+
+  return pages;
+}
+
 function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
   const active = column === sortKey;
   return (
@@ -183,29 +202,26 @@ export function StatusListTable() {
             >
               ‹
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-              .reduce<(number | "…")[]>((acc, p, i, arr) => {
-                if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push("…");
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((p, i) =>
-                p === "…" ? (
-                  <span key={`ellipsis-${i}`} className="sa-pagination-btn" style={{ cursor: "default", border: "none", background: "transparent" }}>
+            {buildPageItems(totalPages, currentPage).map((item) =>
+                item.kind === "ellipsis" ? (
+                  <span
+                    key={item.key}
+                    className="sa-pagination-btn"
+                    style={{ cursor: "default", border: "none", background: "transparent" }}
+                  >
                     …
                   </span>
                 ) : (
                   <button
-                    key={p}
+                    key={item.page}
                     type="button"
                     className="sa-pagination-btn"
-                    data-active={p === currentPage}
-                    onClick={() => setPage(p as number)}
-                    aria-label={`Page ${p}`}
-                    aria-current={p === currentPage ? "page" : undefined}
+                    data-active={item.page === currentPage}
+                    onClick={() => setPage(item.page)}
+                    aria-label={`Page ${item.page}`}
+                    aria-current={item.page === currentPage ? "page" : undefined}
                   >
-                    {p}
+                    {item.page}
                   </button>
                 ),
               )}

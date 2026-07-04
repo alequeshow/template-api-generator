@@ -28,7 +28,7 @@ export function PageContainer({
           {breadcrumbs && breadcrumbs.length > 0 ? (
             <ol className="sa-breadcrumb" aria-label="Breadcrumb">
               {breadcrumbs.map((crumb, i) => (
-                <li key={i} className="sa-breadcrumb-item">
+                <li key={crumb.href ?? `${crumb.label}-${i}`} className="sa-breadcrumb-item">
                   {crumb.href ? (
                     <Link href={crumb.href}>{crumb.label}</Link>
                   ) : (
