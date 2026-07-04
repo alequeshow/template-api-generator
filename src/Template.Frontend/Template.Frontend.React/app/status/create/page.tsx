@@ -5,7 +5,11 @@ import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
 export default function StatusCreatePage() {
   return (
     <AppShell>
-      <PageContainer title="Create Status" subtitle="Create a new status entry">
+      <PageContainer
+        title="Create Status"
+        subtitle="Create a new status entry"
+        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Status", href: "/status" }, { label: "Create" }]}
+      >
         <StatusCreateCard />
       </PageContainer>
     </AppShell>

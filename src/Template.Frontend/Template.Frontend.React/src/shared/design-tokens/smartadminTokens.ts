@@ -1,16 +1,27 @@
 export const smartAdminTokens = {
   color: {
-    background: "#f1f5f9",
+    // Backgrounds
+    headerBg: "#1c2a40",
+    navBg: "#152032",
+    background: "#f0f2f5",
     surface: "#ffffff",
-    surfaceAlt: "#0f172a",
-    primary: "#3b82f6",
-    primaryHover: "#2563eb",
-    border: "#dbe4ee",
-    text: "#0f172a",
-    textMuted: "#64748b",
-    textInverted: "#e2e8f0",
-    success: "#16a34a",
-    warning: "#d97706",
+    surfaceAlt: "#f8f9fa",
+    // Brand
+    primary: "#0f6cbd",
+    primaryHover: "#0a5099",
+    primaryLight: "rgba(15, 108, 189, 0.1)",
+    danger: "#dc3545",
+    dangerHover: "#c82333",
+    success: "#28a745",
+    warning: "#ffc107",
+    info: "#17a2b8",
+    // Text
+    text: "#212529",
+    textMuted: "#6c757d",
+    textInverted: "#ffffff",
+    // Borders
+    border: "#dee2e6",
+    borderSubtle: "rgba(0, 0, 0, 0.06)",
   },
   spacing: {
     xs: "0.25rem",
@@ -20,11 +31,19 @@ export const smartAdminTokens = {
     xl: "2rem",
   },
   radius: {
-    sm: "0.375rem",
-    md: "0.5rem",
-    lg: "0.75rem",
+    sm: "0.25rem",
+    md: "0.375rem",
+    lg: "0.5rem",
+    xl: "0.75rem",
   },
   shadow: {
-    card: "0 8px 24px rgba(15, 23, 42, 0.08)",
+    sm: "0 1px 3px rgba(0, 0, 0, 0.08)",
+    card: "0 2px 8px rgba(0, 0, 0, 0.07)",
+    dropdown: "0 4px 16px rgba(0, 0, 0, 0.12)",
+    modal: "0 8px 32px rgba(0, 0, 0, 0.16)",
+  },
+  sizing: {
+    headerHeight: "65px",
+    navHeight: "50px",
   },
 } as const;

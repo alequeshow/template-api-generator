@@ -5,7 +5,11 @@ import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
 export default function StatusPage() {
   return (
     <AppShell>
-      <PageContainer title="Status" subtitle="Manage status entries migrated from Blazor pages">
+      <PageContainer
+        title="Status"
+        subtitle="Manage status entries migrated from Blazor pages"
+        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Status" }]}
+      >
         <StatusListTable />
       </PageContainer>
     </AppShell>

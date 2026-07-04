@@ -11,7 +11,11 @@ export default function StatusDeletePage({
 
   return (
     <AppShell>
-      <PageContainer title="Delete Status" subtitle="Delete a status entry">
+      <PageContainer
+        title="Delete Status"
+        subtitle="Delete a status entry"
+        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Status", href: "/status" }, { label: "Delete" }]}
+      >
         <StatusDeleteCard id={id} />
       </PageContainer>
     </AppShell>

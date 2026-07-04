@@ -11,7 +11,11 @@ export default function StatusEditPage({
 
   return (
     <AppShell>
-      <PageContainer title="Edit Status" subtitle="Update an existing status entry">
+      <PageContainer
+        title="Edit Status"
+        subtitle="Update an existing status entry"
+        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Status", href: "/status" }, { label: "Edit" }]}
+      >
         <StatusEditCard id={id} />
       </PageContainer>
     </AppShell>

@@ -8,6 +8,7 @@ export default function Home() {
       <PageContainer
         title="Dashboard"
         subtitle="SmartAdmin shell foundation with reusable cards and navigation"
+        breadcrumbs={[{ label: "Dashboard" }]}
       >
         <DashboardOverview />
       </PageContainer>
