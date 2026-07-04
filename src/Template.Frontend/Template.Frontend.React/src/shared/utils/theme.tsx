@@ -17,12 +17,14 @@ const ThemeContext = createContext<ThemeContextValue>({
 const THEME_KEY = "sa-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem(THEME_KEY) as Theme | null) ?? "light";
+  const [theme, setTheme] = useState<Theme>("light");
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem(THEME_KEY);
+    if (storedTheme === "light" || storedTheme === "dark") {
+      setTheme(storedTheme);
     }
-    return "light";
-  });
+  }, []);
 
   useEffect(() => {
     if (theme === "dark") {

@@ -2,12 +2,12 @@ import { StatusDeleteCard } from "@/features/status/components/StatusDeleteCard"
 import { AppShell } from "@/modules/smartadmin/components/AppShell";
 import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
 
-export default function StatusDeletePage({
+export default async function StatusDeletePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   return (
     <AppShell>

@@ -14,11 +14,13 @@ export function useStatusListQuery() {
   });
 }
 
-export function useStatusByIdQuery(id: string) {
+export function useStatusByIdQuery(id?: string) {
+  const normalizedId = id ?? "";
+
   return useQuery({
-    queryKey: ["status", "item", id],
-    queryFn: () => getStatusById(id),
-    enabled: id.length > 0,
+    queryKey: ["status", "item", normalizedId],
+    queryFn: () => getStatusById(normalizedId),
+    enabled: normalizedId.length > 0,
   });
 }
 

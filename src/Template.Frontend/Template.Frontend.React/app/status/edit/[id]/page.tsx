@@ -2,12 +2,12 @@ import { StatusEditCard } from "@/features/status/components/StatusEditCard";
 import { AppShell } from "@/modules/smartadmin/components/AppShell";
 import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
 
-export default function StatusEditPage({
+export default async function StatusEditPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   return (
     <AppShell>
