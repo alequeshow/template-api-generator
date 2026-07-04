@@ -97,10 +97,11 @@ Notes:
 - Existing jQuery-dependent features are mapped to modern React-compatible libraries.
 - Track each replaced widget in a migration checklist.
 
-### 5.4 SmartAdmin 2018 look-and-feel parity plan (horizontal template)
+### 5.4 SmartAdmin look-and-feel parity plan (horizontal template)
 
 Reference baseline:
 - `https://vidafinanceira-test.azurewebsites.net/template/horizontal/index.html`
+- Add a local screenshot/catalog snapshot in repository docs as fallback reference to avoid dependence on a temporary environment URL.
 
 Objective:
 - Preserve the SmartAdmin visual identity and interaction style from the purchased template while implementing it with the current React stack.
