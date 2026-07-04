@@ -101,6 +101,7 @@ Notes:
 
 Reference baseline:
 - `https://vidafinanceira-test.azurewebsites.net/template/horizontal/index.html`
+- Reference capture date: `2026-07-04`
 - Add a local screenshot/catalog snapshot in repository docs as fallback reference to avoid dependence on a temporary environment URL.
 
 Objective:
