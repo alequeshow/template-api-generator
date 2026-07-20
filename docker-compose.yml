@@ -12,6 +12,34 @@ services:
       MONGO_LOCAL_PASSWORD: ${MONGO_LOCAL_PASSWORD}
     volumes:
       - mongodb_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d    
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --username admin --password $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval \"db.adminCommand('ping').ok\""
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Template.Api/Dockerfile
+    container_name: template_api
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      AllowedOrigins: http://localhost:3000
+      MongoConfiguration__ConnectionString: mongodb://appuser:${MONGO_LOCAL_PASSWORD}@mongodb:27017/template_api_db?authSource=template_api_db
+      Authorization__JwtSettings__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env before starting the services}
+    ports:
+      - "5203:8080"
+
 volumes:
   mongodb_data:
