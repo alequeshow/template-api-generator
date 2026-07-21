@@ -7,7 +7,7 @@ export default function StatusPage() {
     <AppShell>
       <PageContainer
         title="Status"
-        subtitle="Manage status entries migrated from Blazor pages"
+        subtitle="Manage status entries"
         breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Status" }]}
       >
         <StatusListTable />

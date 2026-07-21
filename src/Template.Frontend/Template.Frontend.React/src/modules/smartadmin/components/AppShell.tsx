@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 
-import { AuthActions } from "@/features/auth/components/AuthActions";
+import { AuthAccountMenu } from "@/features/auth/components/AuthAccountMenu";
 import { Navigation } from "@/modules/smartadmin/components/Navigation";
-import { ThemeSwitcher } from "@/modules/smartadmin/components/ThemeSwitcher";
 
 type AppShellProps = {
   children: ReactNode;
@@ -14,11 +13,10 @@ export function AppShell({ children }: AppShellProps) {
       <header className="sa-header">
         <div className="sa-header-inner">
           <div className="sa-header-start">
-            <span className="sa-brand">Temple SmartAdmin</span>
+            <span className="sa-brand">Template.Frontend.React</span>
           </div>
           <div className="sa-header-end">
-            <ThemeSwitcher />
-            <AuthActions />
+            <AuthAccountMenu />
           </div>
         </div>
       </header>
@@ -30,7 +28,7 @@ export function AppShell({ children }: AppShellProps) {
       <div className="sa-content-wrapper">
         <main>{children}</main>
       </div>
-      <footer className="sa-footer">© 2024 SmartAdmin React — Template API Generator</footer>
+      <footer className="sa-footer">MonsterAdmin.React — Template App Generator</footer>
     </div>
   );
 }

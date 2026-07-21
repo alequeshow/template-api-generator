@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @import "../src/modules/smartadmin/smartadmin.css";
+@import "../src/modules/smartadmin/account-menu.css";
 
 * {
   box-sizing: border-box;
