@@ -1,0 +1,146 @@
+:root {
+  --ma-account-menu-surface: var(--sa-surface);
+  --ma-account-menu-border: var(--sa-border);
+  --ma-account-menu-text: var(--sa-text);
+  --ma-account-menu-muted: var(--sa-text-muted);
+  --ma-account-menu-hover: var(--sa-primary-light);
+  --ma-account-menu-focus: var(--sa-primary);
+}
+
+.ma-account-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ma-account-menu-trigger {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  place-items: center;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ma-account-menu-trigger:focus-visible,
+.ma-account-menu-item:focus-visible {
+  outline: 2px solid var(--ma-account-menu-focus);
+  outline-offset: 2px;
+}
+
+.ma-account-menu-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ma-account-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.625rem);
+  right: 0;
+  z-index: 110;
+  width: min(19rem, calc(100vw - 2rem));
+  overflow: hidden;
+  border: 1px solid var(--ma-account-menu-border);
+  border-radius: 0.125rem;
+  background: var(--ma-account-menu-surface);
+  box-shadow: var(--sa-shadow-dropdown);
+  animation: ma-account-menu-enter 0.2s ease-out;
+}
+
+.ma-account-menu-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+}
+
+.ma-account-menu-summary-avatar {
+  width: 4.125rem;
+  height: 4.125rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ma-account-menu-name,
+.ma-account-menu-email {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ma-account-menu-name {
+  color: var(--ma-account-menu-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.ma-account-menu-email {
+  margin-top: 0.2rem;
+  color: var(--ma-account-menu-muted);
+  font-size: 0.8125rem;
+}
+
+.ma-account-menu-divider {
+  height: 1px;
+  margin: 0.25rem 0;
+  background: var(--ma-account-menu-border);
+}
+
+.ma-account-menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--ma-account-menu-text);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ma-account-menu-item:hover:not(:disabled) {
+  background: var(--ma-account-menu-hover);
+}
+
+.ma-account-menu-item:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.ma-account-menu-item svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+@keyframes ma-account-menu-enter {
+  from {
+    transform: translateY(-0.375rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .ma-account-menu-panel {
+    right: -0.25rem;
+  }
+
+  .ma-account-menu-summary {
+    padding: 0.875rem;
+  }
+}

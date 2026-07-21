@@ -11,7 +11,7 @@ export default async function LoginPage({
     <main className="sa-login-page">
       <section className="sa-login-card">
         <div className="sa-login-brand">
-          <h1>Temple SmartAdmin</h1>
+          <h1>Template.Frontend.React</h1>
           <p>Sign in with your account credentials to continue.</p>
         </div>
         <LoginForm returnTo={returnTo} />
