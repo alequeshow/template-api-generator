@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { useStatusListQuery } from "@/features/status/hooks/useStatus";
+import { useDeleteStatusMutation, useStatusListQuery } from "@/features/status/hooks/useStatus";
+import type { StatusItem } from "@/features/status/types";
+import { Modal } from "@/shared/ui/Modal";
 
 const PAGE_SIZE = 10;
 
@@ -40,11 +42,14 @@ function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: Sort
 
 export function StatusListTable() {
   const statusListQuery = useStatusListQuery();
+  const deleteMutation = useDeleteStatusMutation();
 
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("timeStamp");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
+  const [statusToDelete, setStatusToDelete] = useState<StatusItem>();
+  const [showDeleteErrorModal, setShowDeleteErrorModal] = useState(false);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
@@ -165,9 +170,13 @@ export function StatusListTable() {
                           <Link href={`/status/edit/${item.id}`} className="sa-button sa-button-ghost sa-button-sm">
                             Edit
                           </Link>
-                          <Link href={`/status/delete/${item.id}`} className="sa-button sa-button-danger sa-button-sm">
+                          <button
+                            type="button"
+                            className="sa-button sa-button-danger sa-button-sm"
+                            onClick={() => setStatusToDelete(item)}
+                          >
                             Delete
-                          </Link>
+                          </button>
                         </>
                       ) : (
                         <span style={{ color: "var(--sa-text-muted)", fontSize: "0.8125rem" }}>N/A</span>
@@ -246,6 +255,35 @@ export function StatusListTable() {
           </nav>
         </div>
       ) : null}
+      <Modal
+        open={Boolean(statusToDelete)}
+        variant="confirmation"
+        title="Are you sure?"
+        description={`Delete "${statusToDelete?.value ?? ""}"? This action cannot be undone.`}
+        confirmLabel="Yes, delete it!"
+        cancelLabel="Cancel"
+        closePolicy={{ allowBackdropDismiss: true, allowEscapeDismiss: true }}
+        onConfirm={async () => {
+          if (!statusToDelete?.id) return;
+
+          try {
+            await deleteMutation.mutateAsync(statusToDelete.id);
+            setStatusToDelete(undefined);
+          } catch {
+            setStatusToDelete(undefined);
+            setShowDeleteErrorModal(true);
+          }
+        }}
+        onCancel={() => setStatusToDelete(undefined)}
+        onDismiss={() => setStatusToDelete(undefined)}
+      />
+      <Modal
+        open={showDeleteErrorModal}
+        variant="error"
+        title="Could not delete status"
+        description="The status entry could not be deleted. Please try again."
+        onClose={() => setShowDeleteErrorModal(false)}
+      />
     </div>
   );
 }

@@ -1,1 +1,1 @@
-export const REDIRECT_DELAY_MS = 700;
+export const STATUS_MODAL_TIMEOUT_MS = 3_000;

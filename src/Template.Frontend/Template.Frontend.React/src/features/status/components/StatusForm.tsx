@@ -6,11 +6,12 @@ import { AlertMessage } from "@/shared/ui/AlertMessage";
 import type { StatusItem } from "@/features/status/types";
 
 type StatusFormProps = {
-  title: string;
   submitLabel: string;
   initialValue?: StatusItem;
   readOnly?: boolean;
-  onSubmit: (value: StatusItem) => Promise<void>;
+  onSubmit: (value: StatusItem) => Promise<unknown>;
+  onSuccess?: () => void;
+  onError?: () => void;
 };
 
 function toDateTimeLocalValue(value?: string) {
@@ -37,9 +38,8 @@ function parseFormTimestamp(rawValue: FormDataEntryValue | null) {
   return parsedDate.toISOString();
 }
 
-export function StatusForm({ title, submitLabel, initialValue, readOnly = false, onSubmit }: StatusFormProps) {
-  const [message, setMessage] = useState<string>();
-  const [messageType, setMessageType] = useState<"success" | "warning" | "error">("warning");
+export function StatusForm({ submitLabel, initialValue, readOnly = false, onSubmit, onSuccess, onError }: StatusFormProps) {
+  const [validationMessage, setValidationMessage] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const defaultValue = useMemo(
@@ -62,11 +62,11 @@ export function StatusForm({ title, submitLabel, initialValue, readOnly = false,
         const value = String(formData.get("value") ?? "").trim();
 
         if (!value) {
-          setMessage("Value is required");
-          setMessageType("warning");
+          setValidationMessage("Value is required");
           return;
         }
 
+        setValidationMessage(undefined);
         setIsSubmitting(true);
 
         const payload: StatusItem = {
@@ -78,17 +78,15 @@ export function StatusForm({ title, submitLabel, initialValue, readOnly = false,
 
         try {
           await onSubmit(payload);
-          setMessageType("success");
-          setMessage(`${title} completed successfully.`);
+          onSuccess?.();
         } catch {
-          setMessageType("error");
-          setMessage(`Could not complete ${title.toLowerCase()}.`);
+          onError?.();
         } finally {
           setIsSubmitting(false);
         }
       }}
     >
-      <AlertMessage message={message} type={messageType} />
+      <AlertMessage message={validationMessage} type="warning" />
 
       <input type="hidden" name="id" defaultValue={defaultValue.id ?? ""} />
 
