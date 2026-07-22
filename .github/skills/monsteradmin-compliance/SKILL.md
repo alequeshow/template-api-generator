@@ -40,6 +40,7 @@ If a source page, its relevant assets, or an approved local visual baseline is u
 
 - Keep domain hooks, API contracts, and state logic independent of browser-only UI where practical.
 - Place reusable presentation primitives in the shared UI/module boundary rather than inside a feature such as `status`.
+- Keep unit and component test files outside production source paths: place them under `src\Template.Frontend\Template.Frontend.React\tests\` (for example, `tests\unit\shared\ui\`). Configure test discovery for that test tree rather than placing `*.test.ts(x)` files under `src\`.
 - Extend the `smartadmin` namespace and module token for MonsterAdmin work
 - Use typed public props and callback contracts. Avoid `any`, untyped configuration objects, or stringly typed event protocols.
 - Preserve semantic HTML, keyboard operation, visible focus treatment, and appropriate ARIA state. Visual similarity never overrides accessibility.
