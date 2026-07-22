@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { useDeleteStatusMutation, useStatusListQuery } from "@/features/status/hooks/useStatus";
 import type { StatusItem } from "@/features/status/types";
 import { Modal } from "@/shared/ui/Modal";
+import { useToast } from "@/shared/ui/Toast";
 
 const PAGE_SIZE = 10;
 
@@ -43,13 +44,13 @@ function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: Sort
 export function StatusListTable() {
   const statusListQuery = useStatusListQuery();
   const deleteMutation = useDeleteStatusMutation();
+  const { addToast } = useToast();
 
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("timeStamp");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
   const [statusToDelete, setStatusToDelete] = useState<StatusItem>();
-  const [showDeleteErrorModal, setShowDeleteErrorModal] = useState(false);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
@@ -269,20 +270,22 @@ export function StatusListTable() {
           try {
             await deleteMutation.mutateAsync(statusToDelete.id);
             setStatusToDelete(undefined);
+            addToast({
+              severity: "success",
+              title: "Deleted",
+              message: `Status "${statusToDelete.value}" was deleted successfully.`,
+            });
           } catch {
             setStatusToDelete(undefined);
-            setShowDeleteErrorModal(true);
+            addToast({
+              severity: "danger",
+              title: "Could not delete status",
+              message: "The status entry could not be deleted. Please try again.",
+            });
           }
         }}
         onCancel={() => setStatusToDelete(undefined)}
         onDismiss={() => setStatusToDelete(undefined)}
-      />
-      <Modal
-        open={showDeleteErrorModal}
-        variant="error"
-        title="Could not delete status"
-        description="The status entry could not be deleted. Please try again."
-        onClose={() => setShowDeleteErrorModal(false)}
       />
     </div>
   );

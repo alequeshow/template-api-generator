@@ -1,0 +1,24 @@
+{
+  "reference": {
+    "page": "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\ui-notification.html",
+    "scripts": [
+      "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\js\\toastr.js"
+    ],
+    "styles": [
+      "src\\Template.Frontend\\Template.MonsterAdmin\\template\\assets\\plugins\\toast-master\\css\\jquery.toast.css"
+    ]
+  },
+  "dynamicMasks": [],
+  "states": [
+    "success notification after confirmed Status deletion",
+    "danger notification after failed confirmed Status deletion",
+    "keyboard-operable close action",
+    "auto-dismiss progress",
+    "six-item stack overflow"
+  ],
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 900 },
+    { "name": "tablet", "width": 1024, "height": 768 },
+    { "name": "mobile", "width": 390, "height": 844 }
+  ]
+}

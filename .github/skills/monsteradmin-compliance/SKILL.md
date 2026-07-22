@@ -40,7 +40,7 @@ If a source page, its relevant assets, or an approved local visual baseline is u
 
 - Keep domain hooks, API contracts, and state logic independent of browser-only UI where practical.
 - Place reusable presentation primitives in the shared UI/module boundary rather than inside a feature such as `status`.
-- Use a MonsterAdmin-named module and token namespace for new or migrated source. Do not extend the `smartadmin` namespace for MonsterAdmin work.
+- Extend the `smartadmin` namespace and module token for MonsterAdmin work
 - Use typed public props and callback contracts. Avoid `any`, untyped configuration objects, or stringly typed event protocols.
 - Preserve semantic HTML, keyboard operation, visible focus treatment, and appropriate ARIA state. Visual similarity never overrides accessibility.
 - Do not use inline styles where a shared token or component class is required for consistent theming and screenshot parity.
