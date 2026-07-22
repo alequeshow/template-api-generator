@@ -82,3 +82,60 @@ test("opens the account menu, links to the profile page, and signs out", async (
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
 });
+
+test("confirms Status deletion before issuing the delete request", async ({ context, page }) => {
+  await context.addCookies([
+    {
+      name: "tg_access_token",
+      value: "fake-token",
+      domain: "127.0.0.1",
+      path: "/",
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    },
+    {
+      name: "tg_csrf_token",
+      value: "csrf-token",
+      domain: "127.0.0.1",
+      path: "/",
+      httpOnly: false,
+      secure: false,
+      sameSite: "Lax",
+    },
+  ]);
+
+  await context.route(/\/api\/bff\/status$/, async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: "status-1",
+            value: "Active",
+            description: "Current status",
+            timeStamp: "2026-01-01T00:00:00.000Z",
+          },
+        ]),
+      });
+      return;
+    }
+
+    await route.fulfill({ status: 405 });
+  });
+
+  let deleteRequested = false;
+  await context.route(/\/api\/bff\/status\/status-1$/, async (route) => {
+    deleteRequested = route.request().method() === "DELETE";
+    await route.fulfill({ status: 204 });
+  });
+
+  await page.goto("/status");
+  await page.getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByRole("dialog", { name: "Are you sure?" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Yes, delete it!" })).toBeVisible();
+  expect(deleteRequested).toBe(false);
+
+  await page.getByRole("button", { name: "Yes, delete it!" }).click();
+  await expect.poll(() => deleteRequested).toBe(true);
+});
