@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { StatusListTable } from "@/features/status/components/StatusListTable";
+import { ToastProvider } from "@/shared/ui/Toast";
 
 const mutateAsync = vi.fn();
 
@@ -25,7 +26,11 @@ describe("StatusListTable", () => {
     const user = userEvent.setup();
     mutateAsync.mockResolvedValue(undefined);
 
-    render(<StatusListTable />);
+    render(
+      <ToastProvider>
+        <StatusListTable />
+      </ToastProvider>,
+    );
 
     await user.click(screen.getByRole("button", { name: "Delete" }));
     expect(screen.getByRole("dialog", { name: "Are you sure?" })).toBeInTheDocument();
@@ -33,5 +38,27 @@ describe("StatusListTable", () => {
 
     await user.click(screen.getByRole("button", { name: "Yes, delete it!" }));
     expect(mutateAsync).toHaveBeenCalledWith("status-1");
+    await waitFor(() => {
+      expect(screen.getByText('Status "Active" was deleted successfully.')).toBeVisible();
+    });
+  });
+
+  it("shows a danger notification when a confirmed deletion fails", async () => {
+    const user = userEvent.setup();
+    mutateAsync.mockRejectedValueOnce(new Error("Delete failed"));
+
+    render(
+      <ToastProvider>
+        <StatusListTable />
+      </ToastProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "Yes, delete it!" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Could not delete status")).toBeVisible();
+    });
+    expect(screen.queryByRole("dialog", { name: "Could not delete status" })).not.toBeInTheDocument();
   });
 });
