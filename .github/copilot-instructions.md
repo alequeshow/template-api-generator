@@ -218,3 +218,12 @@ E.g: `_output/Birthday.Wishlist/`
 - Always use `ApiHandler.HandleEndpointAsync` for endpoints
 - Keep the same error handling pattern from Template.Api
 - Maintain the same DI registration patterns
+
+## Pull Request Descriptions
+
+When generating a pull request description:
+
+- Do not include `diffhunk://`, patch, generated source, or similar diff references.
+- Start directly with concise bullets; do not use generic opening prose such as "This pull request introduces".
+- Keep every bullet to one sentence and describe only the primary changed behavior, component, or contract.
+- Omit exhaustive implementation detail, repeated test explanations, and unrelated file changes.
