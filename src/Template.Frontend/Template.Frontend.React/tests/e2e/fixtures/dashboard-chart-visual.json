@@ -1,0 +1,29 @@
+{
+  "component": "SmartAdmin dashboard chart showcase",
+  "references": [
+    "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\chart-echart.html",
+    "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\chart-morris.html",
+    "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\chart-flot.html",
+    "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\chart-sparkline.html",
+    "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\chart-extra-chart.html",
+    "src\\Template.Frontend\\Template.MonsterAdmin\\template\\horizontal\\index.html"
+  ],
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 900 },
+    { "name": "tablet", "width": 1024, "height": 768 },
+    { "name": "mobile", "width": 390, "height": 844 }
+  ],
+  "dynamicMasks": [
+    {
+      "selector": ".sa-realtime-chart",
+      "reason": "The local moving-line demonstration deliberately updates its mock data."
+    }
+  ],
+  "interactionStates": [
+    "default",
+    "linear interpolation with named point markers",
+    "real-time updates paused",
+    "keyboard focus on pause/resume control"
+  ],
+  "maxDiffPixelRatio": 0.02
+}

@@ -18,16 +18,14 @@ export function ProgressBar({
   const percent = Math.min(100, Math.max(0, (value / max) * 100));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+    <div className="sa-progress-wrapper">
       {label || showValue ? (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div className="sa-progress-meta">
           {label ? (
-            <span style={{ fontSize: "0.875rem", color: "var(--sa-text-muted)" }}>{label}</span>
+            <span className="sa-progress-label">{label}</span>
           ) : null}
           {showValue ? (
-            <span style={{ fontSize: "0.8125rem", color: "var(--sa-text-muted)" }}>
-              {Math.round(percent)}%
-            </span>
+            <span className="sa-progress-value">{Math.round(percent)}%</span>
           ) : null}
         </div>
       ) : null}

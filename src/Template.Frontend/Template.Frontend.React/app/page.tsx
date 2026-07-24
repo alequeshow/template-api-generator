@@ -7,7 +7,6 @@ export default function Home() {
     <AppShell>
       <PageContainer
         title="Dashboard"
-        subtitle="SmartAdmin shell foundation with reusable cards and navigation"
         breadcrumbs={[{ label: "Dashboard" }]}
       >
         <DashboardOverview />
