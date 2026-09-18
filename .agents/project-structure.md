@@ -2,10 +2,10 @@
 
 ## Overview & Purpose
 
-The **Template API Generator** is a production-ready reference template for building microservices and Web APIs in .NET 9. It is designed around clean/layered architecture principles, utilizing MongoDB as the document store, CQRS (Command Query Responsibility Segregation) for application operations, and a built-in authentication and security subsystem (PBKDF2 password hashing and JWT bearer tokens).
+The **Template API Generator** is a production-ready reference template for building microservices and Web APIs in .NET 9 paired with a modern React frontend. It is designed around clean/layered architecture principles, utilizing MongoDB as the document store, CQRS (Command Query Responsibility Segregation) for application operations, a built-in authentication and security subsystem (PBKDF2 password hashing and JWT bearer tokens), and a Next.js 16 / React 19 frontend utilizing a Backend-for-Frontend (BFF) architecture.
 
 This repository serves as:
-1. A reference implementation of a complete layered .NET application.
+1. A reference implementation of a complete layered .NET application with a modern React frontend.
 2. A template source used by automated agents to scaffold new domain-specific solutions based on JSON schema specifications.
 
 ---
@@ -18,9 +18,9 @@ The template enforces a strict separation of concerns across projects:
 ┌────────────────────────────────────────────────────────────────────────┐
 │                          Presentation Layer                            │
 │  - Template.Api: ASP.NET Core Minimal API endpoints & Swagger          │
-│  - Template.Frontend: Blazor Server Host (Identity & UI)               │
-│  - Template.Frontend.Client: Blazor WebAssembly Client                 │
-│  - Template.Frontend.React: React/Next.js UI (MonsterAdmin styling)    │
+│  - Template.Frontend.React: Next.js 16 / React 19 BFF Frontend        │
+│    (Tailwind CSS v4, MonsterAdmin theme, TanStack Query)               │
+│  - Template.MonsterAdmin: Reference horizontal theme template assets   │
 └────────────────────────────────────┬───────────────────────────────────┘
                                      │
                                      ▼
@@ -62,10 +62,9 @@ flowchart TD
     REP["Template.Repository\n(Data Access Abstractions)"]
     DBF["Template.DatabaseFactory\n(MongoDB Implementation)"]
     INF["Template.Infrastructure\n(JwtSettings, Exceptions)"]
-    FRO["Template.Frontend\n(Blazor Server Host)"]
-    CLI["Template.Frontend.Client\n(Blazor WASM)"]
-    REA["Template.Frontend.React\n(React BFF UI)"]
+    REA["Template.Frontend.React\n(Next.js 16 + React 19 BFF UI)"]
 
+    REA -- "BFF API Routes (HTTP-Only Cookies & CSRF)" --> API
     API --> APP
     API --> CON
     API --> INF
@@ -79,9 +78,6 @@ flowchart TD
 
     REP --> MOD
     REP --> DBF
-
-    FRO --> CLI
-    FRO --> CON
 ```
 
 ---
@@ -152,18 +148,18 @@ All core backend source code and libraries reside under the `src/` directory.
   - `TokenResult`: Encapsulates access token and expiration.
   - `ServiceCollectionExtensions.AddSecurityServices()`: One-line registration for security components.
 
-### 9. `Template.Frontend` & `Template.Frontend.Client`
-- **Role**: Blazor hybrid web application.
+### 9. `Template.Frontend.React` & `Template.MonsterAdmin`
+- **Role**: Modern React 19 / Next.js 16 Web Application with MonsterAdmin theme styling.
 - **Key Concepts**:
-  - `Template.Frontend`: Server-side host, layout, ASP.NET Core Identity integration with the API, and Refit API clients (`IAuthenticationApiClient`).
-  - `Template.Frontend.Client`: WebAssembly client components supporting client-side interactivity (`RedirectToLogin.razor`, `Auth.razor`).
-  - Built-in account management pages: Login, Register, Profile, Manage.
-
-### 10. `Template.Frontend.React` & `Template.MonsterAdmin`
-- **Role**: Alternative Next.js / React frontend option.
-- **Key Concepts**:
-  - React 19 + Next.js 16 frontend with Backend-For-Frontend (BFF) architecture.
-  - Theme styling and components aligned with the MonsterAdmin horizontal HTML template assets in `src/Template.Frontend/Template.MonsterAdmin`.
+  - **Next.js App Router**: Pages in `app/{entity}/page.tsx`, `app/{entity}/create/page.tsx`, `app/{entity}/edit/[id]/page.tsx`.
+  - **Backend-for-Frontend (BFF) Architecture**:
+    - Route handlers in `app/api/bff/*` manage authentication tokens in secure, HTTP-only cookies (`callBackendAuthorized`).
+    - The browser never handles raw JWT tokens; calls are authenticated via session cookies and protected by CSRF validation (`assertCsrfToken`).
+    - Automatic transparent token refresh on 401 responses.
+  - **State & Data Access**: TanStack Query hooks in `src/features/{feature}/hooks/` managing caching, queries, and optimistic mutations.
+  - **Feature Modules**: Organized under `src/features/{feature}/` containing `types.ts`, `api.ts`, `hooks/`, and UI `components/`.
+  - **Theme & Presentation**: Components styled in accordance with the MonsterAdmin horizontal HTML template assets in `src/Template.Frontend/Template.MonsterAdmin`.
+  - **Shared UI Primitives**: `AppShell`, `PageContainer`, `Modal`, `AlertMessage`, `ThemeSwitcher`, and `navigation.ts`.
 
 ---
 
@@ -199,3 +195,4 @@ The template provides complete orchestration for local development:
 - **`docker-compose.yml`**: Spins up MongoDB (port 27017) and the Web API service with proper network configuration.
 - **`.env_template`**: Template for environment variables (connection strings, JWT secrets).
 - **`.dockerignore` & `.gitignore`**: Standardized ignores for container builds and source control.
+- **Frontend Development**: React application in `src/Template.Frontend/Template.Frontend.React` configured with `.env.example` targeting `http://localhost:5000`.

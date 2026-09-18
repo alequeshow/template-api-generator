@@ -1,11 +1,11 @@
 ---
 name: schema-mapper
-description: Maps JSON schema definitions into strongly-typed C# domain models, DTO contracts, CQRS handlers, API endpoint mappers, and frontend clients/pages across solution layers.
+description: Maps JSON schema definitions into strongly-typed C# domain models, DTO contracts, CQRS handlers, API endpoint mappers, and React components/BFF routes across solution layers.
 ---
 
 # Schema Mapper Skill
 
-Use this skill to convert JSON schema definitions into clean, strongly-typed C# code across all architectural layers of the solution.
+Use this skill to convert JSON schema definitions into clean, strongly-typed code across both the .NET backend layers and the Next.js/React frontend.
 
 ## Schema Input Structure
 
@@ -19,18 +19,18 @@ A JSON schema definition typically contains:
 
 ## Type Mapping Reference
 
-| JSON Schema Type / Format | C# Type | Nullability & Keywords | Default Assignment |
-|---|---|---|---|
-| `string` | `string` | `required string` (if required) / `string?` (optional) | None |
-| `string` (format: `email`) | `string` | `required string` (if required) / `string?` (optional) | None |
-| `string` (format: `date-time`) | `DateTime` | `DateTime` (if required) / `DateTime?` (optional) | None |
-| `string` (format: `date`) | `DateTime` | `DateTime` (if required) / `DateTime?` (optional) | None |
-| `number` | `decimal` | `decimal` (if required) / `decimal?` (optional) | None |
-| `integer` | `int` | `int` (if required) / `int?` (optional) | None |
-| `boolean` | `bool` | `bool` (if required) / `bool?` (optional) | None |
-| `array` (of primitives) | `List<T>` | `List<T>` | `= [];` |
-| `array` (of objects) | `List<NestedClass>` | `List<NestedClass>` | `= [];` |
-| `object` (nested) | `NestedClass` | `required NestedClass` (if required) / `NestedClass?` | None |
+| JSON Schema Type / Format | C# Type | TypeScript Type | HTML Input Type | Nullability (C# / TS) | Default Assignment |
+|---|---|---|---|---|---|
+| `string` | `string` | `string` | `text` | `required string` / `string` (or `string?` / `string?`) | None |
+| `string` (format: `email`) | `string` | `string` | `email` | `required string` / `string` (or `string?` / `string?`) | None |
+| `string` (format: `date-time`) | `DateTime` | `string` | `datetime-local` | `DateTime` / `string` (or `DateTime?` / `string?`) | None |
+| `string` (format: `date`) | `DateTime` | `string` | `date` | `DateTime` / `string` (or `DateTime?` / `string?`) | None |
+| `number` | `decimal` | `number` | `number` (step `0.01`) | `decimal` / `number` (or `decimal?` / `number?`) | None |
+| `integer` | `int` | `number` | `number` (step `1`) | `int` / `number` (or `int?` / `number?`) | None |
+| `boolean` | `bool` | `boolean` | `checkbox` | `bool` / `boolean` | None |
+| `array` (of primitives) | `List<T>` | `T[]` | dynamic list / tags | Non-null | `= [];` |
+| `array` (of objects) | `List<NestedClass>` | `NestedType[]` | sub-form list | Non-null | `= [];` |
+| `object` (nested) | `NestedClass` | `NestedType` | fieldset | `required NestedClass` (or `NestedClass?`) | None |
 
 ---
 
@@ -105,7 +105,7 @@ public class WishlistItem
 
 ### 3. Repository Layer (`{SolutionName}.Repository`)
 
-Entities are stored via the generic repository pattern backed by MongoDB. No dedicated repository class is needed; simply register the entity in `{SolutionName}.Repository/Extensions/ServiceCollectionExtensions.cs`:
+Entities are stored via the generic repository pattern backed by MongoDB. Simply register the entity in `{SolutionName}.Repository/Extensions/ServiceCollectionExtensions.cs`:
 
 ```csharp
 services
@@ -246,52 +246,351 @@ app.Map{EntityName}Endpoint();
 
 ---
 
-### 6. Frontend Layer (When Frontend is Enabled)
+### 6. Frontend Layer (`Template.Frontend.React`)
 
-#### Refit API Client: `I{EntityName}ApiClient.cs`
-Placed in `{SolutionName}.Frontend/Services/Interfaces/ApiClients/`:
+When frontend generation is enabled, generate the following components inside `src/{SolutionName}.Frontend.React`:
 
-```csharp
-using Refit;
-using {SolutionName}.Contract;
+#### Part A: BFF Server Route Handlers
 
-namespace {SolutionName}.Frontend.Services.Interfaces.ApiClients;
+1. **`app/api/bff/{entityname}/route.ts`**:
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+import { assertCsrfToken } from "@/shared/bff/server/cookies";
+import { callBackendAuthorized, toProxyResponse } from "@/shared/bff/server/proxyAuth";
 
-public interface I{EntityName}ApiClient
-{
-    [Get("/{entityname}")]
-    Task<IReadOnlyCollection<{EntityName}>> Get{EntityName}Async();
+export async function GET(request: NextRequest) {
+  const { response, updatedTokens } = await callBackendAuthorized(request, "/{entityname}", {
+    method: "GET",
+  });
+  return toProxyResponse(response, updatedTokens);
+}
 
-    [Get("/{entityname}/{id}")]
-    Task<{EntityName}> Get{EntityName}Async(string id);
+export async function POST(request: NextRequest) {
+  const csrfError = assertCsrfToken(request);
+  if (csrfError) {
+    return NextResponse.json({ message: csrfError }, { status: 403 });
+  }
 
-    [Post("/{entityname}")]
-    Task<string> Add{EntityName}Async([Body] {EntityName} body);
-
-    [Put("/{entityname}/{id}")]
-    Task Update{EntityName}Async(string id, [Body] {EntityName} body);
-
-    [Delete("/{entityname}/{id}")]
-    Task Delete{EntityName}Async(string id);
+  const payload = await request.text();
+  const { response, updatedTokens } = await callBackendAuthorized(request, "/{entityname}", {
+    method: "POST",
+    body: payload,
+  });
+  return toProxyResponse(response, updatedTokens);
 }
 ```
 
-Register in `{SolutionName}.Frontend/Extensions/ServiceCollectionExtensions.cs`:
-```csharp
-services.AddScopedApiClient<I{EntityName}ApiClient>();
+2. **`app/api/bff/{entityname}/[id]/route.ts`**:
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+import { assertCsrfToken } from "@/shared/bff/server/cookies";
+import { callBackendAuthorized, toProxyResponse } from "@/shared/bff/server/proxyAuth";
+
+type Params = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(request: NextRequest, { params }: Params) {
+  const { id } = await params;
+  const { response, updatedTokens } = await callBackendAuthorized(request, `/{entityname}/${id}`, {
+    method: "GET",
+  });
+  return toProxyResponse(response, updatedTokens);
+}
+
+export async function PUT(request: NextRequest, { params }: Params) {
+  const csrfError = assertCsrfToken(request);
+  if (csrfError) {
+    return NextResponse.json({ message: csrfError }, { status: 403 });
+  }
+
+  const payload = await request.text();
+  const { id } = await params;
+  const { response, updatedTokens } = await callBackendAuthorized(request, `/{entityname}/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+  return toProxyResponse(response, updatedTokens);
+}
+
+export async function DELETE(request: NextRequest, { params }: Params) {
+  const csrfError = assertCsrfToken(request);
+  if (csrfError) {
+    return NextResponse.json({ message: csrfError }, { status: 403 });
+  }
+
+  const { id } = await params;
+  const { response, updatedTokens } = await callBackendAuthorized(request, `/{entityname}/${id}`, {
+    method: "DELETE",
+  });
+  return toProxyResponse(response, updatedTokens);
+}
 ```
 
-#### Blazor Razor Pages
-Create a folder under `{SolutionName}.Frontend/Components/Pages/{EntityName}/` containing 4 CRUD pages modeled after the Status pages:
-- `{EntityName}List.razor`: Route `/{entityname}`, static SSR or interactive list with links to create/edit/delete.
-- `{EntityName}Create.razor`: Route `/{entityname}/create`, `InteractiveServer`, form submission via `Add{EntityName}Async`.
-- `{EntityName}Edit.razor`: Route `/{entityname}/edit/{id}`, `InteractiveServer`, loads existing entity and calls `Update{EntityName}Async`.
-- `{EntityName}Delete.razor`: Route `/{entityname}/delete/{id}`, `InteractiveServer`, confirmation dialog and call to `Delete{EntityName}Async`.
+3. **Register in `src/shared/bff/endpoints.ts`**:
+```typescript
+export const bffEndpoints = {
+  // ... existing endpoints
+  {entityname}: "/api/bff/{entityname}",
+} as const;
+```
 
-All pages follow standard security and feedback conventions:
-- `@attribute [Authorize]`
-- Use `AlertMessage` shared component for feedback
-- Call `RedirectAfterDelayAsync` after successful operations
+---
+
+#### Part B: Feature Module (`src/features/{entityname}/`)
+
+1. **`src/features/{entityname}/types.ts`**:
+```typescript
+export type {EntityName}Item = {
+  id?: string;
+  // properties mapped from JSON schema
+  title: string;
+  description?: string;
+  createdAt: string;
+};
+```
+
+2. **`src/features/{entityname}/api.ts`**:
+```typescript
+import { bffEndpoints } from "@/shared/bff/endpoints";
+import { readCsrfTokenFromDocument } from "@/shared/utils/csrf";
+import type { {EntityName}Item } from "@/features/{entityname}/types";
+
+async function performApiRequest(path: string, init?: RequestInit): Promise<Response> {
+  const response = await fetch(path, {
+    ...init,
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+      ...(init?.method && init.method !== "GET" ? { "x-csrf-token": readCsrfTokenFromDocument() } : {}),
+      ...(init?.headers ?? {}),
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response;
+}
+
+async function apiRequestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await performApiRequest(path, init);
+  return response.json() as Promise<T>;
+}
+
+async function apiRequestText(path: string, init?: RequestInit): Promise<string> {
+  const response = await performApiRequest(path, init);
+  return response.text();
+}
+
+async function apiRequestNoContent(path: string, init?: RequestInit): Promise<void> {
+  await performApiRequest(path, init);
+}
+
+export function get{EntityName}List() {
+  return apiRequestJson<{EntityName}Item[]>(bffEndpoints.{entityname}, { method: "GET" });
+}
+
+export function get{EntityName}ById(id: string) {
+  return apiRequestJson<{EntityName}Item>(`${bffEndpoints.{entityname}}/${id}`, { method: "GET" });
+}
+
+export function create{EntityName}(payload: {EntityName}Item) {
+  return apiRequestText(bffEndpoints.{entityname}, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function update{EntityName}(id: string, payload: {EntityName}Item) {
+  return apiRequestNoContent(`${bffEndpoints.{entityname}}/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ ...payload, id }),
+  });
+}
+
+export function delete{EntityName}(id: string) {
+  return apiRequestNoContent(`${bffEndpoints.{entityname}}/${id}`, {
+    method: "DELETE",
+  });
+}
+```
+
+3. **`src/features/{entityname}/constants.ts`**:
+```typescript
+export const {ENTITY_NAME}_MODAL_TIMEOUT_MS = 2500;
+```
+
+4. **`src/features/{entityname}/hooks/use{EntityName}.ts`**:
+```typescript
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  create{EntityName},
+  delete{EntityName},
+  get{EntityName}ById,
+  get{EntityName}List,
+  update{EntityName},
+} from "@/features/{entityname}/api";
+import type { {EntityName}Item } from "@/features/{entityname}/types";
+
+const {entityname}ListQueryKey = ["{entityname}", "list"] as const;
+
+export function use{EntityName}ListQuery() {
+  return useQuery({
+    queryKey: {entityname}ListQueryKey,
+    queryFn: get{EntityName}List,
+  });
+}
+
+export function use{EntityName}ByIdQuery(id?: string) {
+  const normalizedId = id ?? "";
+  return useQuery({
+    queryKey: ["{entityname}", "item", normalizedId],
+    queryFn: () => get{EntityName}ById(normalizedId),
+    enabled: normalizedId.length > 0,
+  });
+}
+
+export function useCreate{EntityName}Mutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: {EntityName}Item) => create{EntityName}(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: {entityname}ListQueryKey });
+    },
+  });
+}
+
+export function useUpdate{EntityName}Mutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: {EntityName}Item }) => update{EntityName}(id, payload),
+    onSuccess: async (_, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: {entityname}ListQueryKey }),
+        queryClient.invalidateQueries({ queryKey: ["{entityname}", "item", variables.id] }),
+      ]);
+    },
+  });
+}
+
+export function useDelete{EntityName}Mutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => delete{EntityName}(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: {entityname}ListQueryKey });
+    },
+  });
+}
+```
+
+5. **`src/features/{entityname}/components/`**:
+- **`{EntityName}Form.tsx`**: Controlled form with field inputs corresponding to schema properties, error state, and submit callback.
+- **`{EntityName}CreateCard.tsx`**: Renders `{EntityName}Form`, calls `useCreate{EntityName}Mutation()`, displays `Modal` for success/error feedback, and navigates back to `/{entityname}` on success.
+- **`{EntityName}EditCard.tsx`**: Loads item with `use{EntityName}ByIdQuery(id)`, renders `{EntityName}Form` populated with initial values, calls `useUpdate{EntityName}Mutation()`, and displays feedback modals.
+- **`{EntityName}ListTable.tsx`**: Displays a responsive, paginated table using `use{EntityName}ListQuery()` with search filter, sort, delete action modal, and action links to `/{entityname}/create` and `/{entityname}/edit/{id}`.
+
+---
+
+#### Part C: Next.js App Router Pages (`app/{entityname}/`)
+
+1. **`app/{entityname}/page.tsx`**:
+```tsx
+import { {EntityName}ListTable } from "@/features/{entityname}/components/{EntityName}ListTable";
+import { AppShell } from "@/modules/smartadmin/components/AppShell";
+import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
+
+export default function {EntityName}Page() {
+  return (
+    <AppShell>
+      <PageContainer
+        title="{EntityName}"
+        subtitle="Manage {entityname} entries"
+        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "{EntityName}" }]}
+      >
+        <{EntityName}ListTable />
+      </PageContainer>
+    </AppShell>
+  );
+}
+```
+
+2. **`app/{entityname}/create/page.tsx`**:
+```tsx
+import { {EntityName}CreateCard } from "@/features/{entityname}/components/{EntityName}CreateCard";
+import { AppShell } from "@/modules/smartadmin/components/AppShell";
+import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
+
+export default function {EntityName}CreatePage() {
+  return (
+    <AppShell>
+      <PageContainer
+        title="Create {EntityName}"
+        subtitle="Create a new {entityname} entry"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/" },
+          { label: "{EntityName}", href: "/{entityname}" },
+          { label: "Create" },
+        ]}
+      >
+        <{EntityName}CreateCard />
+      </PageContainer>
+    </AppShell>
+  );
+}
+```
+
+3. **`app/{entityname}/edit/[id]/page.tsx`**:
+```tsx
+import { {EntityName}EditCard } from "@/features/{entityname}/components/{EntityName}EditCard";
+import { AppShell } from "@/modules/smartadmin/components/AppShell";
+import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
+
+export default async function {EntityName}EditPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <AppShell>
+      <PageContainer
+        title="Edit {EntityName}"
+        subtitle="Update an existing {entityname} entry"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/" },
+          { label: "{EntityName}", href: "/{entityname}" },
+          { label: "Edit" },
+        ]}
+      >
+        <{EntityName}EditCard id={id} />
+      </PageContainer>
+    </AppShell>
+  );
+}
+```
+
+---
+
+#### Part D: Navigation & Security Registration
+
+1. **`src/modules/smartadmin/navigation.ts`**:
+   Add a link to the navigation bar:
+   ```typescript
+   { label: "{EntityName}", href: "/{entityname}" },
+   ```
+
+2. **`proxy.ts`**:
+   Add the path to `protectedPrefixes` to guard it with authentication:
+   ```typescript
+   const protectedPrefixes = ["/auth", "/{entityname}"];
+   ```
 
 ---
 

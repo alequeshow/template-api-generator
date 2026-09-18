@@ -10,7 +10,7 @@ Welcome to the `.agents` knowledge and capabilities center for the **Template AP
 |---|---|---|
 | **Project Structure & Architecture** | [`project-structure.md`](./project-structure.md) | Comprehensive overview of the repository's purpose, clean/layered architecture, and detailed breakdown of each application/library in `src/`. |
 | **Project Generation Skill** | [`skills/generate-project/SKILL.md`](./skills/generate-project/SKILL.md) | Skill for scaffolding a new domain solution based on the template, handling local development files, solution files, namespace substitutions, and solution orchestration. |
-| **Schema Mapper Skill** | [`skills/schema-mapper/SKILL.md`](./skills/schema-mapper/SKILL.md) | Skill defining the exact layer-by-layer translation rules and code templates for turning a JSON schema into Model, Contract, Handlers, API endpoints, and UI components. |
+| **Schema Mapper Skill** | [`skills/schema-mapper/SKILL.md`](./skills/schema-mapper/SKILL.md) | Skill defining the exact layer-by-layer translation rules and code templates for turning a JSON schema into Model, Contract, Handlers, API endpoints, and React components/BFF routes. |
 | **MonsterAdmin Compliance Skill** | [`skills/monsteradmin-compliance/SKILL.md`](./skills/monsteradmin-compliance/SKILL.md) | Skill for implementing and reviewing UI components in `Template.Frontend.React` to ensure visual and behavioral parity with MonsterAdmin templates. |
 
 ---
