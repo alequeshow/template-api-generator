@@ -54,6 +54,11 @@
   /* Sizing */
   --sa-header-height: 65px;
   --sa-nav-height: 50px;
+
+  /* Opaque rail/arrow color for the Timeline component (see dark theme
+     override below for why this needs to stay opaque rather than reuse
+     the translucent --sa-border in dark mode). */
+  --sa-timeline-rail: var(--sa-border);
 }
 
 /* === DESIGN TOKENS: Dark theme === */
@@ -66,6 +71,11 @@
   --sa-text: #e2e8f0;
   --sa-text-muted: #94a3b8;
   --sa-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+  /* Opaque rail/arrow color for the Timeline component: --sa-border is
+     translucent in dark mode, which produces a visible color mismatch
+     wherever the rail line, rail-end dots, or panel arrows overlap other
+     opaque elements (e.g. badges). Use a solid color instead. */
+  --sa-timeline-rail: #30363d;
 }
 
 /* ================================================================
@@ -1830,12 +1840,16 @@
    TIMELINE
    ================================================================ */
 
+.sa-timeline-wrapper {
+  position: relative;
+  max-width: 1200px;
+}
+
 .sa-timeline {
   position: relative;
   list-style: none;
   margin: 0;
   padding: 1.25rem 0;
-  max-width: 1200px;
 }
 
 .sa-timeline-alternate::before,
@@ -1846,22 +1860,54 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background-color: var(--sa-border);
+  background-color: var(--sa-timeline-rail);
 }
 
 .sa-timeline-alternate::before {
   left: 50%;
-  margin-left: -1.5px;
+  transform: translateX(-50%);
 }
 
 .sa-timeline-left::before {
   left: 25px;
-  margin-left: -1.5px;
+  transform: translateX(-50%);
 }
 
 .sa-timeline-right::before {
   left: 25px;
-  margin-left: -1.5px;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-rail-start,
+.sa-timeline-rail-end {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--sa-timeline-rail);
+  z-index: 1;
+}
+
+.sa-timeline-rail-start {
+  top: -5px;
+}
+
+.sa-timeline-rail-end {
+  bottom: -5px;
+}
+
+.sa-timeline-alternate .sa-timeline-rail-start,
+.sa-timeline-alternate .sa-timeline-rail-end {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-left .sa-timeline-rail-start,
+.sa-timeline-left .sa-timeline-rail-end,
+.sa-timeline-right .sa-timeline-rail-start,
+.sa-timeline-right .sa-timeline-rail-end {
+  left: 25px;
+  transform: translateX(-50%);
 }
 
 .sa-timeline-item {
@@ -1908,7 +1954,7 @@
 .sa-timeline-panel::before {
   top: 20px;
   right: -8px;
-  border-left: 8px solid var(--sa-border);
+  border-left: 8px solid var(--sa-timeline-rail);
 }
 
 .sa-timeline-panel::after {
@@ -1923,7 +1969,7 @@
   right: auto;
   left: -8px;
   border-left-width: 0;
-  border-right: 8px solid var(--sa-border);
+  border-right: 8px solid var(--sa-timeline-rail);
 }
 
 .sa-timeline-item-right .sa-timeline-panel::after,
@@ -1940,6 +1986,7 @@
   position: absolute;
   top: 8px;
   left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1951,7 +1998,7 @@
 
 .sa-timeline-left .sa-timeline-badge,
 .sa-timeline-right .sa-timeline-badge {
-  left: 0;
+  left: 25px;
 }
 
 .sa-timeline-badge img {
@@ -1963,30 +2010,18 @@
 .sa-timeline-badge-sm {
   width: 32px;
   height: 32px;
-  margin-left: -16px;
   font-size: 0.9rem;
 }
 
 .sa-timeline-badge-md {
   width: 50px;
   height: 50px;
-  margin-left: -25px;
 }
 
 .sa-timeline-badge-lg {
   width: 68px;
   height: 68px;
-  margin-left: -34px;
   font-size: 1.4rem;
-}
-
-.sa-timeline-left .sa-timeline-badge-sm,
-.sa-timeline-right .sa-timeline-badge-sm,
-.sa-timeline-left .sa-timeline-badge-md,
-.sa-timeline-right .sa-timeline-badge-md,
-.sa-timeline-left .sa-timeline-badge-lg,
-.sa-timeline-right .sa-timeline-badge-lg {
-  margin-left: 0;
 }
 
 .sa-timeline-badge-primary { background-color: var(--sa-primary); }
@@ -2096,14 +2131,18 @@
     left: 25px;
   }
 
+  .sa-timeline-alternate .sa-timeline-rail-start,
+  .sa-timeline-alternate .sa-timeline-rail-end {
+    left: 25px;
+  }
+
   .sa-timeline-alternate .sa-timeline-panel {
     float: right;
     width: calc(100% - 75px);
   }
 
   .sa-timeline-alternate .sa-timeline-badge {
-    left: 0;
-    margin-left: 0;
+    left: 25px;
   }
 
   .sa-timeline-alternate .sa-timeline-panel::before,
@@ -2111,7 +2150,7 @@
     right: auto;
     left: -8px;
     border-left-width: 0;
-    border-right: 8px solid var(--sa-border);
+    border-right: 8px solid var(--sa-timeline-rail);
   }
 
   .sa-timeline-alternate .sa-timeline-panel::after {

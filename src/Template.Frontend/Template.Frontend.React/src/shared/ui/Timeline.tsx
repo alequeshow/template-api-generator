@@ -160,12 +160,14 @@ function TimelineEntry({
 
 export function Timeline({ items, layout = "alternate", className }: TimelineProps) {
   return (
-    <ol
-      className={["sa-timeline", `sa-timeline-${layout}`, className].filter(Boolean).join(" ")}
-    >
-      {items.map((item, index) => (
-        <TimelineEntry key={item.id} item={item} side={resolveSide(layout, index, item.side)} />
-      ))}
-    </ol>
+    <div className={["sa-timeline-wrapper", `sa-timeline-${layout}`].join(" ")}>
+      <span className="sa-timeline-rail-start" aria-hidden="true" />
+      <ol className={["sa-timeline", className].filter(Boolean).join(" ")}>
+        {items.map((item, index) => (
+          <TimelineEntry key={item.id} item={item} side={resolveSide(layout, index, item.side)} />
+        ))}
+      </ol>
+      <span className="sa-timeline-rail-end" aria-hidden="true" />
+    </div>
   );
 }

@@ -72,6 +72,16 @@ describe("Timeline", () => {
     listItems.forEach((item) => expect(item).not.toHaveClass("sa-timeline-item-right"));
   });
 
+  it.each(["alternate", "left", "right"] as const)(
+    "renders grey rail-start and rail-end dot markers for layout '%s'",
+    (layout) => {
+      const { container } = render(<Timeline items={baseItems} layout={layout} />);
+
+      expect(container.querySelector(".sa-timeline-rail-start")).toBeInTheDocument();
+      expect(container.querySelector(".sa-timeline-rail-end")).toBeInTheDocument();
+    },
+  );
+
   it("honors a per-item side override regardless of layout", () => {
     const items: TimelineItemData[] = [
       { id: "one", title: "Forced right", description: "Body", side: "right" },
