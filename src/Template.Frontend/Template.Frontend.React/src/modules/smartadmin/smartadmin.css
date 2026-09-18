@@ -54,6 +54,11 @@
   /* Sizing */
   --sa-header-height: 65px;
   --sa-nav-height: 50px;
+
+  /* Opaque rail/arrow color for the Timeline component (see dark theme
+     override below for why this needs to stay opaque rather than reuse
+     the translucent --sa-border in dark mode). */
+  --sa-timeline-rail: var(--sa-border);
 }
 
 /* === DESIGN TOKENS: Dark theme === */
@@ -66,6 +71,11 @@
   --sa-text: #e2e8f0;
   --sa-text-muted: #94a3b8;
   --sa-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+  /* Opaque rail/arrow color for the Timeline component: --sa-border is
+     translucent in dark mode, which produces a visible color mismatch
+     wherever the rail line, rail-end dots, or panel arrows overlap other
+     opaque elements (e.g. badges). Use a solid color instead. */
+  --sa-timeline-rail: #30363d;
 }
 
 /* ================================================================
@@ -1827,6 +1837,265 @@
 }
 
 /* ================================================================
+   TIMELINE
+   ================================================================ */
+
+.sa-timeline-wrapper {
+  position: relative;
+  max-width: 1200px;
+}
+
+.sa-timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 1.25rem 0;
+}
+
+.sa-timeline-alternate::before,
+.sa-timeline-left::before,
+.sa-timeline-right::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--sa-timeline-rail);
+}
+
+.sa-timeline-alternate::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-left::before {
+  left: 25px;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-right::before {
+  left: 25px;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-rail-start,
+.sa-timeline-rail-end {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--sa-timeline-rail);
+  z-index: 1;
+}
+
+.sa-timeline-rail-start {
+  top: -5px;
+}
+
+.sa-timeline-rail-end {
+  bottom: -5px;
+}
+
+.sa-timeline-alternate .sa-timeline-rail-start,
+.sa-timeline-alternate .sa-timeline-rail-end {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-left .sa-timeline-rail-start,
+.sa-timeline-left .sa-timeline-rail-end,
+.sa-timeline-right .sa-timeline-rail-start,
+.sa-timeline-right .sa-timeline-rail-end {
+  left: 25px;
+  transform: translateX(-50%);
+}
+
+.sa-timeline-item {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.sa-timeline-item::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.sa-timeline-panel {
+  position: relative;
+  float: left;
+  width: 46%;
+  padding: 1.25rem;
+  background: var(--sa-surface);
+  border: 1px solid var(--sa-border);
+  border-radius: var(--sa-radius-md);
+  box-shadow: var(--sa-shadow-sm);
+}
+
+.sa-timeline-left .sa-timeline-panel,
+.sa-timeline-right .sa-timeline-panel {
+  float: right;
+  width: calc(100% - 75px);
+}
+
+.sa-timeline-item-right .sa-timeline-panel {
+  float: right;
+}
+
+.sa-timeline-panel::before,
+.sa-timeline-panel::after {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+.sa-timeline-panel::before {
+  top: 20px;
+  right: -8px;
+  border-left: 8px solid var(--sa-timeline-rail);
+}
+
+.sa-timeline-panel::after {
+  top: 21px;
+  right: -7px;
+  border-left: 7px solid var(--sa-surface);
+}
+
+.sa-timeline-item-right .sa-timeline-panel::before,
+.sa-timeline-left .sa-timeline-panel::before,
+.sa-timeline-right .sa-timeline-panel::before {
+  right: auto;
+  left: -8px;
+  border-left-width: 0;
+  border-right: 8px solid var(--sa-timeline-rail);
+}
+
+.sa-timeline-item-right .sa-timeline-panel::after,
+.sa-timeline-left .sa-timeline-panel::after,
+.sa-timeline-right .sa-timeline-panel::after {
+  right: auto;
+  left: -7px;
+  border-left-width: 0;
+  border-right: 7px solid var(--sa-surface);
+}
+
+.sa-timeline-badge {
+  z-index: 1;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  color: var(--sa-text-inverted);
+  font-size: 1.1rem;
+}
+
+.sa-timeline-left .sa-timeline-badge,
+.sa-timeline-right .sa-timeline-badge {
+  left: 25px;
+}
+
+.sa-timeline-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sa-timeline-badge-sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+}
+
+.sa-timeline-badge-md {
+  width: 50px;
+  height: 50px;
+}
+
+.sa-timeline-badge-lg {
+  width: 68px;
+  height: 68px;
+  font-size: 1.4rem;
+}
+
+.sa-timeline-badge-primary { background-color: var(--sa-primary); }
+.sa-timeline-badge-success { background-color: var(--sa-success); }
+.sa-timeline-badge-warning { background-color: var(--sa-warning-dark); }
+.sa-timeline-badge-danger { background-color: var(--sa-danger); }
+.sa-timeline-badge-info { background-color: var(--sa-info); }
+
+.sa-timeline-heading {
+  margin-bottom: 0.5rem;
+}
+
+.sa-timeline-title {
+  margin: 0 0 0.15rem;
+  color: var(--sa-text);
+  font-weight: 500;
+}
+
+.sa-timeline-subtitle {
+  color: var(--sa-text);
+  font-size: 0.9rem;
+}
+
+.sa-timeline-meta {
+  color: var(--sa-text-muted);
+  font-size: 0.8125rem;
+  margin-top: 0.15rem;
+}
+
+.sa-timeline-body {
+  color: var(--sa-text);
+  font-size: 0.9rem;
+}
+
+.sa-timeline-description-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sa-timeline-toggle {
+  margin-top: 0.4rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--sa-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sa-timeline-toggle:hover {
+  color: var(--sa-primary-hover);
+  text-decoration: underline;
+}
+
+.sa-timeline-footer {
+  margin-top: 0.75rem;
+}
+
+.sa-dashboard-timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.sa-timeline-showcase-heading {
+  margin: 0 0 0.5rem;
+  color: var(--sa-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ================================================================
    RESPONSIVE
    ================================================================ */
 
@@ -1856,6 +2125,37 @@
   .sa-table-search input {
     min-width: 100%;
     width: 100%;
+  }
+
+  .sa-timeline-alternate::before {
+    left: 25px;
+  }
+
+  .sa-timeline-alternate .sa-timeline-rail-start,
+  .sa-timeline-alternate .sa-timeline-rail-end {
+    left: 25px;
+  }
+
+  .sa-timeline-alternate .sa-timeline-panel {
+    float: right;
+    width: calc(100% - 75px);
+  }
+
+  .sa-timeline-alternate .sa-timeline-badge {
+    left: 25px;
+  }
+
+  .sa-timeline-alternate .sa-timeline-panel::before,
+  .sa-timeline-alternate .sa-timeline-panel::after {
+    right: auto;
+    left: -8px;
+    border-left-width: 0;
+    border-right: 8px solid var(--sa-timeline-rail);
+  }
+
+  .sa-timeline-alternate .sa-timeline-panel::after {
+    left: -7px;
+    border-right: 7px solid var(--sa-surface);
   }
 }
 

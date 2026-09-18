@@ -3,6 +3,7 @@
 import { Panel } from "@/shared/ui/Panel";
 import { ProgressBar } from "@/shared/ui/ProgressBar";
 import { RoundProgressBar } from "@/shared/ui/RoundProgressBar";
+import { ActivityTimeline } from "@/features/dashboard/components/ActivityTimeline";
 import {
   AreaChart,
   BarChart,
@@ -138,6 +139,9 @@ export function DashboardOverview() {
             image={{ src: "/users/default-avatar.jpg", alt: "Sample account avatar" }}
           />
         </div>
+      </Panel>
+      <Panel title="Timeline">
+        <ActivityTimeline />
       </Panel>
     </div>
   );
