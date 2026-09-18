@@ -13,4 +13,13 @@ describe("DashboardOverview", () => {
     expect(screen.queryByText("Session state")).not.toBeInTheDocument();
     expect(screen.queryByText("Status entries")).not.toBeInTheDocument();
   });
+
+  it("renders the Timeline showcase with experience and activity samples", () => {
+    render(<DashboardOverview />);
+
+    expect(screen.getByText("Timeline")).toBeInTheDocument();
+    expect(screen.getByText("Experience")).toBeInTheDocument();
+    expect(screen.getByText("Recent activity")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Senior Software Engineer" })).toBeInTheDocument();
+  });
 });
