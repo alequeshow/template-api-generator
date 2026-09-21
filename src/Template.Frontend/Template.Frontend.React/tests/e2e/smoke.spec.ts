@@ -1,9 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-test("redirects unauthenticated users to login", async ({ page }) => {
+test("home page is publicly accessible without authentication", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Platform Overview", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute(
+    "href",
+    "/login",
+  );
+  await expect(page.getByRole("heading", { name: "Senior Software Engineer" })).toBeVisible();
+});
+
+test("redirects unauthenticated users from /dashboard to login", async ({ page }) => {
+  await page.goto("/dashboard");
+
+  await expect(page).toHaveURL(/\/login/);
 });
 
 test("allows dashboard access with auth cookie", async ({ context, page }) => {
@@ -19,7 +32,7 @@ test("allows dashboard access with auth cookie", async ({ context, page }) => {
     },
   ]);
 
-  await page.goto("/");
+  await page.goto("/dashboard");
 
   await expect(page.getByText("Template.Frontend.React")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
@@ -80,7 +93,9 @@ test("opens the account menu, links to the profile page, and signs out", async (
   await page.getByRole("button", { name: "Open user account menu" }).click();
   await page.getByRole("menuitem", { name: "Logout" }).click();
   await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Template.Frontend.React", exact: true }),
+  ).toBeVisible();
 });
 
 test("confirms Status deletion before issuing the delete request", async ({ context, page }) => {

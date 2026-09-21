@@ -177,7 +177,14 @@ export function BarChart(props: CartesianChartProps) {
         <CartesianAxes showGrid={props.showGrid ?? true} />
         <ChartLegend showLegend={props.showLegend ?? true} />
         {props.series.map((entry, index) => (
-          <Bar key={entry.key} dataKey={entry.key} name={entry.label} fill={colorFor(entry, index)} radius={[3, 3, 0, 0]} />
+          <Bar
+            key={entry.key}
+            dataKey={entry.key}
+            name={entry.label}
+            fill={colorFor(entry, index)}
+            radius={[3, 3, 0, 0]}
+            isAnimationActive={false}
+          />
         ))}
       </RechartsBarChart>
     </CartesianFrame>
@@ -213,7 +220,17 @@ export function LineChart(props: LineChartProps) {
         <CartesianAxes showGrid={props.showGrid ?? true} />
         <ChartLegend showLegend={props.showLegend ?? true} />
         {props.series.map((entry, index) => (
-          <Line key={entry.key} type={interpolation} dataKey={entry.key} name={entry.label} stroke={colorFor(entry, index)} strokeWidth={2.5} dot={false} activeDot={{ r: 4 }} />
+          <Line
+            key={entry.key}
+            type={interpolation}
+            dataKey={entry.key}
+            name={entry.label}
+            stroke={colorFor(entry, index)}
+            strokeWidth={2.5}
+            dot={false}
+            activeDot={{ r: 4 }}
+            isAnimationActive={false}
+          />
         ))}
         {props.highlights?.flatMap((highlight, index) => {
           const value = highlightedValue(props.data, highlight);
@@ -264,7 +281,16 @@ export function AreaChart(props: CartesianChartProps) {
         <CartesianAxes showGrid={props.showGrid ?? true} />
         <ChartLegend showLegend={props.showLegend ?? true} />
         {props.series.map((entry, index) => (
-          <Area key={entry.key} type="monotone" dataKey={entry.key} name={entry.label} stroke={colorFor(entry, index)} fill={`url(#area-${entry.key})`} strokeWidth={2.5} />
+          <Area
+            key={entry.key}
+            type="monotone"
+            dataKey={entry.key}
+            name={entry.label}
+            stroke={colorFor(entry, index)}
+            fill={`url(#area-${entry.key})`}
+            strokeWidth={2.5}
+            isAnimationActive={false}
+          />
         ))}
       </RechartsAreaChart>
     </CartesianFrame>
@@ -282,7 +308,17 @@ function PieFamilyChart({ data, ariaLabel, height = 280, showLegend = true, inne
         <RechartsPieChart>
           <Tooltip contentStyle={{ background: "var(--sa-surface)", border: "1px solid var(--sa-border)", borderRadius: "var(--sa-radius-sm)" }} />
           {showLegend ? <Legend wrapperStyle={{ fontSize: "0.8125rem" }} /> : null}
-          <Pie data={data} dataKey="value" nameKey="label" cx="50%" cy="46%" outerRadius="72%" innerRadius={`${innerRadius}%`} paddingAngle={2}>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="label"
+            cx="50%"
+            cy="46%"
+            outerRadius="72%"
+            innerRadius={`${innerRadius}%`}
+            paddingAngle={2}
+            isAnimationActive={false}
+          >
             {data.map((slice, index) => (
               <Cell key={slice.label} fill={colorFor(slice, index)} />
             ))}

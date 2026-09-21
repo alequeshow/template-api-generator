@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -13,8 +14,19 @@ export function AuthAccountMenu() {
 
   if (sessionQuery.data?.state !== "authenticated" || !sessionQuery.data.user) {
     return (
-      <Link className="sa-button sa-button-ghost" href="/login">
-        Sign in
+      <Link
+        href="/login"
+        className="ma-account-menu-trigger"
+        aria-label="Sign in"
+        title="Sign in"
+      >
+        <Image
+          src="/users/default-avatar.jpg"
+          alt=""
+          className="ma-account-menu-avatar"
+          width={36}
+          height={36}
+        />
       </Link>
     );
   }

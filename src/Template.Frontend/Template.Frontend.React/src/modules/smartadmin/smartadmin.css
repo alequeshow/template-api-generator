@@ -2168,3 +2168,118 @@
     border-radius: var(--sa-radius-lg);
   }
 }
+
+/* ================================================================
+   HOME PAGE (public landing)
+   ================================================================ */
+
+.sa-home-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* --- Section headings --- */
+.sa-section-heading {
+  margin: 0 0 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--sa-text);
+}
+
+/* --- Hero --- */
+.sa-home-hero {
+  padding: 2.5rem 2rem;
+  background: var(--sa-surface);
+  border: 1px solid var(--sa-border);
+  border-radius: var(--sa-radius-lg);
+  box-shadow: var(--sa-shadow-card);
+  text-align: center;
+}
+
+.sa-home-hero-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--sa-text);
+  line-height: 1.25;
+}
+
+.sa-home-hero-subtitle {
+  margin: 0 auto 1.75rem;
+  max-width: 680px;
+  font-size: 1rem;
+  color: var(--sa-text-muted);
+  line-height: 1.6;
+}
+
+.sa-home-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* --- Feature grid --- */
+.sa-home-features {
+  display: flex;
+  flex-direction: column;
+}
+
+.sa-home-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.sa-home-feature-card {
+  padding: 1.5rem;
+  background: var(--sa-surface);
+  border: 1px solid var(--sa-border);
+  border-radius: var(--sa-radius-lg);
+  box-shadow: var(--sa-shadow-card);
+}
+
+.sa-home-feature-icon {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.sa-home-feature-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sa-text);
+}
+
+.sa-home-feature-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--sa-text-muted);
+  line-height: 1.55;
+}
+
+/* --- Experience Timeline section --- */
+.sa-home-timeline-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sa-home-timeline-description {
+  margin: 0 0 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--sa-text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .sa-home-hero {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .sa-home-hero-title {
+    font-size: 1.375rem;
+  }
+}

@@ -22,7 +22,7 @@ export function LoginForm({ returnTo }: LoginFormProps) {
 
   const safeReturnPath = useMemo(() => {
     if (!returnTo || !safeReturnPathPattern.test(returnTo)) {
-      return "/";
+      return "/dashboard";
     }
 
     return returnTo;

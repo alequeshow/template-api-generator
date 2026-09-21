@@ -16,7 +16,7 @@ async function authenticate(context: BrowserContext) {
 
 test("shows the reusable chart dashboard and supports pausing live updates", async ({ context, page }) => {
   await authenticate(context);
-  await page.goto("/");
+  await page.goto("/dashboard");
 
   await expect(page.getByText("Monthly report")).toBeVisible();
   await expect(page.getByText("Round progress")).toBeVisible();
@@ -41,7 +41,7 @@ for (const viewport of [
   test(`matches the dashboard chart visual contract at ${viewport.name}`, async ({ context, page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await authenticate(context);
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     const dashboard = page.locator(".sa-dashboard-chart-grid");
     await expect(dashboard).toBeVisible();

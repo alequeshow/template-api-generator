@@ -72,6 +72,7 @@ for (const viewport of [
   test(`matches the success notification visual contract at ${viewport.name}`, async ({ context, page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.clock.install({ time: new Date("2026-01-01T00:00:00.000Z") });
+    await page.clock.setFixedTime(new Date("2026-01-01T00:00:00.000Z"));
     await authenticateAndMockStatus(context);
     await context.route(/\/api\/bff\/status\/status-1$/, async (route) => {
       await route.fulfill({ status: 204 });

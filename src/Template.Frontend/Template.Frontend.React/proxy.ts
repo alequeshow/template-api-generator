@@ -2,20 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { authCookieNames } from "@/shared/bff/cookies";
 
-const protectedPrefixes = ["/auth", "/status"];
+const protectedPrefixes = ["/auth", "/status", "/dashboard"];
 const ignoredPrefixes = ["/_next", "/favicon"];
 const publicApiRoutes = ["/api/bff/auth/login"];
 const csrfCookieMaxAgeSeconds = 60 * 60 * 24;
 
-function isPublicPath(pathname: string) {
-  return pathname === "/login";
-}
-
 function isProtectedPath(pathname: string) {
-  if (pathname === "/") {
-    return true;
-  }
-
   return protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
 }
 
@@ -50,8 +42,8 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
-  if (accessToken && isPublicPath(pathname)) {
-    return NextResponse.redirect(new URL("/", request.url));
+  if (accessToken && pathname === "/login") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   const response = NextResponse.next();
