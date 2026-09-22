@@ -7,8 +7,7 @@ export default function StatusPage() {
     <AppShell>
       <PageContainer
         title="Status"
-        subtitle="Manage status entries"
-        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Status" }]}
+        subtitle="Manage status entries"        
       >
         <StatusListTable />
       </PageContainer>

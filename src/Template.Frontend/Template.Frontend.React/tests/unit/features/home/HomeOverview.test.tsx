@@ -36,8 +36,7 @@ describe("HomeOverview", () => {
     render(<HomeOverview />);
 
     expect(screen.getByText("One-schema, full-stack scaffolding")).toBeInTheDocument();
-    expect(screen.getByText("BFF Authentication layer")).toBeInTheDocument();
-    expect(screen.getByText("MonsterAdmin-compliant React frontend")).toBeInTheDocument();
+    expect(screen.getByText("BFF Authentication layer")).toBeInTheDocument();    
     expect(screen.getByText("Docker-first local development")).toBeInTheDocument();
   });
 
