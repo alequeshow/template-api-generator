@@ -37,7 +37,7 @@ export function HomeOverview() {
       {/* Hero */}
       <section className="sa-home-hero" aria-labelledby="home-hero-heading">
         <h2 id="home-hero-heading" className="sa-home-hero-title">
-          Template API Generator — Platform Overview
+          Template App Generator — Platform Overview
         </h2>
         <p className="sa-home-hero-subtitle">
           A full-stack solution generator that scaffolds .NET APIs, React frontends, Docker

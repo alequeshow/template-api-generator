@@ -7,8 +7,7 @@ export default function HomePage() {
     <AppShell>
       <PageContainer
         title="Platform Overview"
-        subtitle="Explore the platform capabilities — sign in to access the interactive workspace"
-        breadcrumbs={[{ label: "Home" }]}
+        subtitle="Explore the platform capabilities — sign in to access the interactive workspace"        
       >
         <HomeOverview />
       </PageContainer>
