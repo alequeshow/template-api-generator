@@ -1,15 +1,15 @@
-import { DashboardOverview } from "@/features/dashboard/components/DashboardOverview";
+import { HomeOverview } from "@/features/home/components/HomeOverview";
 import { AppShell } from "@/modules/smartadmin/components/AppShell";
 import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <AppShell>
       <PageContainer
-        title="Dashboard"
-        breadcrumbs={[{ label: "Dashboard" }]}
+        title="Platform Overview"
+        subtitle="Explore the platform capabilities — sign in to access the interactive workspace"        
       >
-        <DashboardOverview />
+        <HomeOverview />
       </PageContainer>
     </AppShell>
   );

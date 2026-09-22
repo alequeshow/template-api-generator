@@ -1,6 +1,8 @@
+"use client";
+
 import { Timeline, type TimelineItemData } from "@/shared/ui/Timeline";
 
-const experienceItems: TimelineItemData[] = [
+export const experienceItems: TimelineItemData[] = [
   {
     id: "exp-senior-engineer",
     badge: { content: "🚀", variant: "primary", size: "lg" },

@@ -96,6 +96,7 @@ describe("Timeline", () => {
       { id: "icon", badge: { content: "🚀", variant: "primary", size: "lg" }, children: "Body" },
       {
         id: "image",
+        // eslint-disable-next-line @next/next/no-img-element
         badge: { content: <img alt="user" src="/user.jpg" />, variant: "success", size: "sm" },
         children: "Body",
       },
