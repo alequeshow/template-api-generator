@@ -24,7 +24,7 @@ describe("HomeOverview", () => {
     render(<HomeOverview />);
 
     expect(
-      screen.getByRole("heading", { name: "Template API Generator — Platform Overview" }),
+      screen.getByRole("heading", { name: "Template App Generator — Platform Overview" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Sign in to get started" })).toHaveAttribute(
       "href",
