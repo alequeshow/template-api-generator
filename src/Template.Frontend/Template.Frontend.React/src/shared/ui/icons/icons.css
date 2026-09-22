@@ -1,0 +1,9 @@
+/*
+ * Vendored MonsterAdmin icon fonts (FontAwesome 4, Material Design Icons, Themify).
+ * Font files live in /public/vendor/icon-fonts and are referenced via the url() paths
+ * in each of these files. Do not edit the icon-name/content-code rules below; they are
+ * copied verbatim from Template.MonsterAdmin so class names match the template exactly.
+ */
+@import "./font-awesome.css";
+@import "./mdi.css";
+@import "./themify.css";

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { navigationItems } from "@/modules/smartadmin/navigation";
+import { Icon } from "@/shared/ui/Icon";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export function Navigation() {
               data-active={isActive}
               href={item.href}
             >
+              <Icon name={item.icon} className="sa-navigation-icon" />
               {item.label}
             </Link>
           </li>

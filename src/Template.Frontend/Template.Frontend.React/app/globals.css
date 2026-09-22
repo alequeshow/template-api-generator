@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@import "../src/shared/ui/icons/icons.css";
 @import "../src/modules/smartadmin/smartadmin.css";
 @import "../src/modules/smartadmin/account-menu.css";
 

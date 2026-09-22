@@ -5,7 +5,9 @@ import { PageContainer } from "@/modules/smartadmin/components/PageContainer";
 export default function DashboardPage() {
   return (
     <AppShell>
-      <PageContainer title="Dashboard" breadcrumbs={[{ label: "Dashboard" }]}>
+      <PageContainer 
+        title="Dashboard"        
+      >
         <DashboardOverview />
       </PageContainer>
     </AppShell>

@@ -4,21 +4,20 @@ import Link from "next/link";
 
 import { experienceItems } from "@/features/dashboard/components/ActivityTimeline";
 import { Timeline } from "@/shared/ui/Timeline";
+import { Icon } from "@/shared/ui/Icon";
 
 function FeatureCard({
-  emoji,
+  icon,
   title,
   description,
 }: {
-  emoji: string;
+  icon: string;
   title: string;
   description: string;
 }) {
   return (
     <div className="sa-home-feature-card">
-      <span className="sa-home-feature-icon" aria-hidden="true">
-        {emoji}
-      </span>
+      <Icon name={icon} className="sa-home-feature-icon" />
       <h3 className="sa-home-feature-title">{title}</h3>
       <p className="sa-home-feature-description">{description}</p>
     </div>
@@ -58,22 +57,17 @@ export function HomeOverview() {
         </h2>
         <div className="sa-home-feature-grid">
           <FeatureCard
-            emoji="⚡"
+            icon="mdi-speedometer"
             title="One-schema, full-stack scaffolding"
             description="Provide a JSON schema and get a complete .NET solution with CQRS handlers, repository pattern, JWT auth, and typed API endpoints — ready to run."
           />
           <FeatureCard
-            emoji="🛡️"
+            icon="fa-shield"
             title="BFF Authentication layer"
             description="HTTP-only cookie session management with CSRF protection handled server-side via a Next.js Backend-for-Frontend — tokens never reach the browser."
-          />
+          />          
           <FeatureCard
-            emoji="🎨"
-            title="MonsterAdmin-compliant React frontend"
-            description="A typed, reusable UI library built on the MonsterAdmin horizontal template: charts, data tables, modals, notifications, and an accessible account menu."
-          />
-          <FeatureCard
-            emoji="🐳"
+            icon="fa-cubes"
             title="Docker-first local development"
             description="Every generated solution ships with Docker Compose orchestration and a pre-configured reverse proxy so the entire stack runs with a single command."
           />
@@ -84,11 +78,7 @@ export function HomeOverview() {
       <section className="sa-home-timeline-section" aria-labelledby="home-experience-heading">
         <h2 id="home-experience-heading" className="sa-section-heading">
           Experience
-        </h2>
-        <p className="sa-home-timeline-description">
-          The timeline below is the same component and data displayed inside the authenticated
-          dashboard — it demonstrates the shared Timeline UI built for this platform.
-        </p>
+        </h2>        
         <Timeline items={experienceItems} layout="left" />
       </section>
     </div>
